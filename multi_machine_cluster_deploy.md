@@ -1,4 +1,4 @@
-# DolphinDB Multi-physical Nodes Cluster Deployment
+# DolphinDB Cluster Deployment on Multiple Servers
 
 A DolphinDB Cluster consists of 3 types of nodes: data node, agent, and controller. 
   *  Data are stored and queries (and more complex computations) are executed on the data nodes. 
@@ -19,7 +19,7 @@ P5: 10.1.1.9
 
 We set up the controller node on **P4**. We set up an agent node and data nodes on each of the other nodes. It should be noted here that each physical server must have an agent node to start to close the local data nodes. Each cluster has one and only one controller.
 
-#### 1. Download DolphinDB
+### 1. Download DolphinDB
 
 On each physical server, download DolphinDB from [DolphinDB](http://www.dolphindb.com/downloads.html) website and extract it to a directory. For example, extract it to the following directory:
 
@@ -27,7 +27,7 @@ On each physical server, download DolphinDB from [DolphinDB](http://www.dolphind
 /DolphinDB
 ```
 
-#### 2. Update the License File
+### 2. Update the License File
 
 If the user has obtained the Enterprise Edition license, please use it to replace the following file:
 
@@ -36,7 +36,7 @@ If the user has obtained the Enterprise Edition license, please use it to replac
 ```
 The license file of each physical server needs to be updated. The Enterprise Edition supports more nodes, CPU cores and memory than the community version.
 
-#### 3. Initial Configuration
+### 3. Initial Configuration
 
 To start a cluster, we must configure the controller node and the agent nodes. The data nodes can be configured either in this initial stage or on the web interface after the cluster is started. 
 
@@ -163,16 +163,15 @@ Parameter **localSite** in **controller.cfg** should have the same value as para
 
 Log in each of **P1**, **P2**, **P3** and **P5**, and run the command line described below in the directory where the DolphinDB executable is located. If you haven't changed the directory of the DolphinDB executable, it is located in "server" directory. The file **agent.log** is located in "log" subdirectory. If the agent fails to start properly, open this log file to find more information about the error.
 
-#### Linux
-
-It is recommended to start the background operation mode with the Linux command **nohup** (header) and **&** (tail), so that even if the terminal is disconnected, it will keep running. "-console" is enabled by default. If you would like to run in the background, you need set it to 0. Otherwise, the log file of **nohup** can occupy a lot of disk space. "-mode agent" means that the node is started in the agent mode; "-home" specifies the data and the metadata storage path; "-config" specifies the configuration file path; "-logFile" specifies the log file path.
-
-#### Start in background mode
+#### Start in background mode (Linux)
 ```
 nohup ./dolphindb -console 0 -mode agent -home data -config config/agent.cfg -logFile log/agent.log &
 ```
+In Linux, we recommend starting in the background mode with Linux command **nohup** (header) and **&** (tail). Even if the terminal is disconnected, DolphinDB will keep running. "-console" is set to 1 by default. To run in the background mode, we need to set it to 0 ("-console 0"). Otherwise, the system will quit after running for a while. 
 
-#### Start in console mode
+"-mode agent" means that the node is started as an agent; "-home" specifies the data and the metadata storage path; "-config" specifies the configuration file path; "-logFile" specifies the log file path.
+
+#### Start in console mode (Linux)
 
 ```
 ./dolphindb -mode agent -home data -config config/agent.cfg -logFile log/agent.log
@@ -261,7 +260,7 @@ Alternatively, we can start the data nodes with DolphinDB script on the controll
 startDataNode(["P1-NODE1", "P2-NODE1","P3-NODE1","P5-NODE1"])
 ```
 
-#### 4. Web-based cluster management
+### 4. Web-based cluster management
 
 We can change cluster configuration and add/delete data nodes on the web-based cluster manager. 
 
@@ -305,7 +304,6 @@ We also need to add the corresponding external domain name or IP in **controller
 ```
 publicName=19.56.128.24
 ```
-
 
 #### 4.5 Volumes
 
@@ -352,11 +350,11 @@ P2-NODE1.volumes=/VOL1/P2-NODE1,/VOL2/P2-NODE1
 P3-NODE1.volumes=/VOL1/P3-NODE1,/VOL2/P3-NODE1
 P5-NODE1.volumes=/VOL1/P5-NODE1,/VOL2/P5-NODE1
 ```
-#### 5. Cloud Deployment
+### 5. Cloud Deployment
 
-A DolphinDB cluster can be deployed on a LAN, or on private or public cloud. By default, DolphinDB assumes the cluster is on a LAN  (lanCluster=1) and uses UDP broadcast to monitor heartbeats. All the nodes on a cloud server, however, are not necessarily located in the same LAN, and may not support UDP. On a cloud server, we need to specify lanCluster=0 in **controller.cfg** and **agent.cfg** to implement communication between nodes in non-UDP mode. Otherwise, the cluster may not work properly as the heartbeats of the nodes may not be detected normally.
+A DolphinDB cluster can be deployed on a LAN, or on private or public cloud. By default, DolphinDB assumes the cluster is on a LAN  (lanCluster=1) and uses UDP broadcast to send heartbeats. All the nodes on a cloud server, however, are not necessarily located in the same LAN, and may not support UDP. On a cloud server, we need to specify lanCluster=0 in **controller.cfg** and **agent.cfg** to implement communication between nodes in non-UDP mode. Otherwise, the cluster may not work properly as the heartbeats of the nodes may not be detected normally.
 
-#### 6. Reference
+### 6. Reference
 
 For a complete list of the cluster configuration parameters and details, please refer to Chapter 10 of DolphinDB [help](http://dolphindb.com/help/ClusterSetup.html).
 

@@ -1,11 +1,11 @@
-# DolphinDB Single Physical Server Cluster Deployment
+# DolphinDB Cluster Deployment on Single Server
 
-A DolphinDB Cluster consists of 3 types of nodes: data node, agent, and controller. 
+A DolphinDB cluster consists of 3 types of nodes: data node, agent, and controller. 
   *  Data are stored and queries (and more complex computations) are executed on the data nodes. 
   *  An agent node executes the commands issued by the controller to start or close local data nodes. 
   *  The controller collects heartbeats of agents and data nodes, and monitors the status of each node. It provides the web interface for cluster management.
 
-#### 1. Download DolphinDB
+### 1. Download DolphinDB
 
 Download DolphinDB from [DolphinDB](http://www.dolphindb.com/downloads.html) website and extract it to a directory. For example, extract it to the following directory:
 
@@ -13,7 +13,7 @@ Download DolphinDB from [DolphinDB](http://www.dolphindb.com/downloads.html) web
 /DolphinDB
 ```
 
-#### 2. Update the License File
+### 2. Update the License File
 
 If the user has obtained the Enterprise Edition license, please use it to replace the following file:
 
@@ -22,7 +22,7 @@ If the user has obtained the Enterprise Edition license, please use it to replac
 ```
 The Enterprise Edition supports more nodes, CPU cores and memory than the community version.
  
-#### 3. Initial Configuration
+### 3. Initial Configuration
 
 To start a cluster, we must configure the controller node and the agent node. The data nodes can be configured either in this initial stage or on the web interface after the cluster is started. 
 
@@ -111,16 +111,15 @@ Parameter **localSite** in **controller.cfg** should have the same value as para
 
 Run the command line described below in the directory where the DolphinDB executable is located. If you haven't changed the directory of the DolphinDB executable, it is located in "server" directory. The file **agent.log** is located in "log" subdirectory. If the agent fails to start properly, open this log file to find more information about the error.
 
-#### Linux
-
-It is recommended to start the background operation mode with the Linux command **nohup** (header) and **&** (tail), so that even if the terminal is disconnected, it will keep running. "-console" is enabled by default. If you would like to run in the background, you need set it to 0. Otherwise, the log file of **nohup** can occupy a lot of disk space. "-mode agent" means that the node is started in the agent mode; "-home" specifies the data and the metadata storage path; "-config" specifies the configuration file path; "-logFile" specifies the log file path.
-
-#### Start in background mode
+#### Start in background mode (Linux)
 ```
 nohup ./dolphindb -console 0 -mode agent -home data -config config/agent.cfg -logFile log/agent.log &
 ```
+In Linux, we recommend starting in the background mode with Linux command **nohup** (header) and **&** (tail). Even if the terminal is disconnected, DolphinDB will keep running. "-console" is set to 1 by default. To run in the background mode, we need to set it to 0 ("-console 0"). Otherwise, the system will quit after running for a while. 
 
-#### Start in console mode
+"-mode agent" means that the node is started as an agent; "-home" specifies the data and the metadata storage path; "-config" specifies the configuration file path; "-logFile" specifies the log file path.
+
+#### Start in console mode (Linux)
 
 ```
 ./dolphindb -mode agent -home data -config config/agent.cfg -logFile log/agent.log
@@ -215,7 +214,7 @@ startDataNode(["DFS_NODE1", "DFS_NODE2","DFS_NODE3","DFS_NODE4"])
 ```
 
 
-#### 4. Web-based cluster management
+### 4. Web-based cluster management
 
 We can change cluster configuration and add/delete data nodes on the web-based cluster manager. 
 
@@ -244,6 +243,6 @@ Click on the button **Nodes Config** to configure the data nodes. This figure be
 ![](images/cluster_web_nodes_config.JPG)
 
 
-#### 5. Reference
+### 5. Reference
 
 For a complete list of the cluster configuration parameters and details, please refer to Chapter 10 of DolphinDB [help](http://dolphindb.com/help/ClusterSetup.html).
