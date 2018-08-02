@@ -44,11 +44,11 @@ The license file specifies the maximum amount of memory that DolphinDB can use. 
 
 Linux:
 ```
-./dolphindb -localHost:8900:local8900 -maxMem 32
+./dolphindb -localHost:8900:local8900 -maxMemSize 32
 ```
 Windows:
 ```
-dolphindb.exe -localHost:8900:local8900 -maxMem 32
+dolphindb.exe -localHost:8900:local8900 -maxMemSize 32
 ```
 
 #### 4. Connect to DolphinDB Server From Web
