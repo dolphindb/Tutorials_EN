@@ -22,17 +22,28 @@ If the user has obtained the Enterprise Edition license, please use it to replac
 
 Go to folder /DolphinDB/server/, and run dolphindb executable. 
 
-Linux: execute the following command:
+Linux console mode: 
 ```
 ./dolphindb
 ```
+Linux background mode: 
+```
+nohup ./dolphindb -console 0 &
+```
+In Linux, we recommend starting in the background mode with Linux command **nohup** (header) and **&** (tail). Even if the terminal is disconnected, DolphinDB will keep running. "-console" is set to 1 by default. To run in the background mode, we need to set it to 0 ("-console 0"). Otherwise, the system will quit after running for a while. 
+
 Windows: execute dolphindb.exe
 
 The default port number of the system is 8848. To change it (to 8900), use the following command line:
 
-Linux:
+Linux console mode:
 ```
 ./dolphindb -localhost:8900:local8900
+```
+
+Linux background mode:
+```
+nohup ./dolphindb -console 0 -localhost:8900:local8900 &
 ```
 
 Windows:
@@ -40,7 +51,7 @@ Windows:
 dolphindb.exe -localhost:8900:local8900
 ```
 
-The license file specifies the maximum amount of memory that DolphinDB can use. Users can reduce the limit by specifying the configuration parameter -maxMem when starting DolphinDB. 
+The license file specifies the maximum amount of memory that DolphinDB can use. Users can reduce the limit by specifying the configuration parameter -maxMemSize when starting DolphinDB. 
 
 Linux:
 ```
