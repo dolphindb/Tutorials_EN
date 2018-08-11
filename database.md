@@ -25,12 +25,13 @@ As DFS is excellent at partition management, fault tolerance, replica management
 
 #### 3. Partition Domains
 
-DolphinDB supports sequential, range, value, list, and composite partitions. 
+DolphinDB supports sequential, range, hash, value, list, and composite partitions. 
   *  Sequential domain can load large text files into memory faster than importing directly from text files. It can only be used in the local file system, not in the distributed file system. 
-  *  In a range partition (RANGE), each range defined by 2 adjacent elements of the partition scheme vector determines a partition. It is the most commonly used partition type. 
-  *  In a value domain (VALUE), each element of the partition scheme vector corresponds to a partition. 
+  *  Range partitions are determined by ranges. Each range is defined by 2 adjacent elements of the partition scheme vector. It is the most commonly used partition type.
+  *  Hash partitions are determined by a hash function on the specified partitioning column. Hash partition is a convenient way to generate a given number of partitions. 
+  *  In a value domain, each element of the partition scheme vector corresponds to a partition. 
   *  A list domain partitions data according to a list given by the user. It is more flexible than a range domain.
-  *  The composite domain (COMPO) is suitable for situations where 2 or 3 columns are frequently used in WHERE or GROUP BY clauses of queries on extremely large tables.  In a composite domain, we can have 2 or 3 partitioning columns. Each column can be of range, value, or list domain. For example, we can use a value domain on trading days, and a range domain on stock symbols. The order of the partitioning columns is irrelevant. 
+  *  The composite domain is suitable for situations where 2 or 3 columns are frequently used in WHERE or GROUP BY clauses of queries on extremely large tables.  In a composite domain, we can have 2 or 3 partitioning columns. Each column can be of range, value, or list domain. For example, we can use a value domain on trading days, and a range domain on stock symbols. The order of the partitioning columns is irrelevant. 
 
 When we create a new distributed database, we need to specify partitionType and partitionScheme. When we reopen an existing distributed database, we only need to specify folderDirectory. We cannot overwrite an existing distributed database with a different partitionType or partitionScheme. 
 
@@ -63,7 +64,7 @@ pt = loadTextEx(db, `pt, , "C:/DolphinDB/Data/t.txt")
 
 In a range domain (RANGE), partitions are determined by ranges, whose boundaries are two adjacent elements of the partition scheme vector. The starting value is inclusive and the ending value is exclusive. A row with the value of the partitioning column falling within a range belongs to the partition defined by this range. 
 
-In the example below, the database db has 2 partitions: [0,5) and [5,10). Table t is saved as a partitioned table pt with the partitioning column of ID in database db. 
+In the example below, database db has 2 partitions: [0,5) and [5,10). Table t is saved as a partitioned table pt with the partitioning column of ID in database db. 
 
 ```
 n=1000000
@@ -97,8 +98,27 @@ pt.append!(t);
 pt=loadTable(db,`pt)
 select count(x) from pt
 ```
+#### 3.3 HASH Domain
 
-#### 3.3  VALUE Domain
+In a hash domain (HASH), partitions are determined by a hash function on the specified partitioning column. Hash partition is a convenient way to generate a given number of partitions. However, there might be significant differences between the partition sizes if the distribution of the partitioning column values is skewed. To locate observations on a continuous range in the partitioning column, it is more efficient to use range partitions or value partitions than hash partitions.     
+
+In the example below, database db has 2 partitions. Table t is saved as a partitioned table pt with the partitioning column of ID in database db. 
+
+```
+n=1000000
+ID=rand(10, n)
+x=rand(1.0, n)
+t=table(ID, x)
+db=database("C:/DolphinDB/Data/hashdb", HASH,  [INT, 2])
+
+pt = db.createPartitionedTable(t, `pt, `ID)
+pt.append!(t);
+
+pt=loadTable(db,`pt)
+select count(x) from pt
+```
+
+#### 3.4  VALUE Domain
 
 In a value domain (VALUE), each element of the partition scheme vector corresponds to a partition. 
 ```
@@ -115,12 +135,12 @@ pt=loadTable(db,`pt)
 select count(x) from pt
 ```
 
-The example above defines a database db with 204 partitions. Each of these partitions is a month between January 2000 and December 2016. In the database db, table t is saved as a partitioned table pt with the partitioning column of month.
+The example above defines a database db with 204 partitions. Each of these partitions is a month between January 2000 and December 2016. In database db, table t is saved as a partitioned table pt with the partitioning column of month.
 
 ![](images/database/value.png)
 
 
-#### 3.4 LIST Domain
+#### 3.5 LIST Domain
 
 In a list domain, each element of a vector represents a partition. The different between a list domain and a value domain is that all the elements in a value domain partition scheme are scalars, whereas each element in a list domain partition scheme may be a vector.
 
@@ -142,7 +162,7 @@ The database above has 2 partitions. The first partition contains 3 tickers and 
 
 ![](images/database/list.png)
 
-#### 3.5 COMPO Domain
+#### 3.6 COMPO Domain
 
 A composite domain (COMPO) can have 2 or 3 partitioning columns. Each partitioning column can be of range, value, or list domain. The order of the partitioning columns is irrelevant.
 
