@@ -37,8 +37,6 @@ s.connect("localhost",8848, YOUR_USER_NAME, YOUR_PASS_WORD)
 
 Users can import text files into DolphinDB with a session method **loadText**. It returns a DolphinDB table object in Python, which corresponds to an in-memory table on the DolphinDB server. The DolphinDB table object in Python has a method **toDF** to convert it to a pandas DataFrame.
 
-This tutorial uses a csv file: [example.csv](data/example.csv). Note that Linux style absolute path must be provided in order for the DolphinDB server to locate the file.
-
 ```
 WORK_DIR = "C:/DolphinDB/Data"
 
