@@ -1,4 +1,4 @@
-# DolphinDB Python API
+# Python API for DolphinDB
 
 DolphinDB Python API integrates Python with DolphinDB server. DolphinDB objects can be easily converted into Python objects and vise versa. DolphinDB API supports both Python 2.7 and Python 3.6 & above. 
 This tutorial uses a csv file: [example.csv](data/example.csv). Note that Linux style absolute path must be provided in order for the DolphinDB server to locate the file.
