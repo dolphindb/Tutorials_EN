@@ -72,7 +72,7 @@ if s.existsDatabase(WORK_DIR+"/valuedb"):
     s.dropDatabase(WORK_DIR+"/valuedb")
 ```
 
-Create a value-based partitioned database. As there are only 3 stock symbols in the example.csv, we use **VALUE** as partition type. The parameter **partitions** indicates the partition scheme.
+Create a value-based partitioned database. As there are only 3 stock tickers in the example.csv, we use **VALUE** as partition type. The parameter **partitions** indicates the partition scheme.
 
 ```
 s.database('db', partitionType=VALUE, partitions=["AMZN","NFLX", "NVDA"], dbPath=WORK_DIR+"/valuedb")
@@ -581,7 +581,7 @@ DolphinDB table object in Python serves as a bridge between a DolphinDB table an
 
 ```
 dt = s.table(data={'id': [1, 2, 2, 3],
-                   'sym': ['APPL', 'AMNZ', 'AMNZ', 'A'],
+                   'ticker': ['APPL', 'AMNZ', 'AMNZ', 'A'],
                    'price': [22, 3.5, 21, 26]})
 print(dt.toDF())
 
