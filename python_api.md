@@ -7,8 +7,8 @@ The python API in essense encapsulates a subset of the DolphinDB script language
 | Method        | Explanation          |Trigger script execution|
 |:------------- |:-------------|:-------------|
 |showSQL|   Belongs to Table class| No|
-|ToDF()    | Belongs to Table class| Yes |
-|execute()    | Belongs to Table class|Yes|
+|ToDF()    | Belongs to Table class; converted from DolphinDB table object to pandas Dataframe object| Yes |
+|execute()    | Belongs to Table class; used with method update and delete|Yes|
 
 
 
