@@ -121,7 +121,7 @@ We can use the same function **loadTextEx** to create a in-memory partitioned da
 
 ```
 s.database('db', partitionType=VALUE, partitions=["GFGC","EWST","EGAS"], dbPath="")
-trade=s.loadTextEx(dbPath="db", partitionColumns=["sym"], tableName='trade', filePath=WORK_DIR + "/example.csv")
+trade=s.loadTextEx(dbPath="db", partitionColumns=["TICKER"], tableName='trade', filePath=WORK_DIR + "/example.csv")
 print(trade.toDF())
 
 ```
