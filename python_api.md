@@ -31,7 +31,7 @@ If you need to enter username and password:
 s.connect("localhost",8848, YOUR_USER_NAME, YOUR_PASS_WORD)
 ```
 
-### 2 Import data
+### 2 Import data to DolphinDB server
 
 #### 2.1 Import data as an in-memory table
 
@@ -177,7 +177,6 @@ print(trade.count())
 
 ```
 
-
 #### 2.3.4 ploadText: loadText in parallel mode
 
 If we use function **ploadText** to load a text file, it actually generates an in-memory partitioned table. Compared to the non-partitioned table, it will be much faster, but it also consumes twice as much memory.
@@ -192,9 +191,21 @@ print(trade.count())
 
 ````
 
+#### 2.4 Upload data from Python to the DolphinDB server
+
+We can upload a Python object through function **upload** to the DolphinDB server, which takes a Python dictionary object as input. For this dictionary object, the key is the variable name on DolphinDB server and the value is the Python object. This is equivalent to executing **t1=table(1 2 3 4 3 as id, 7.8, 4.6, 5.1, 9.6, 0.1 as value,5, 4, 3, 2, 1 as x)** on the DolphinDB server.
+
+```
+df = pd.DataFrame({'id': np.int32([1, 2, 3, 4, 3]), 'value':  np.double([7.8, 4.6, 5.1, 9.6, 0.1]), 'x': np.int32([5, 4, 3, 2, 1])})
+s.upload({'t1': df})
+print(s.run("t1.value.avg()"))
+
+# output
+5.44
+```
 
 
-#### 3 Load data from database
+#### 3 Load data from DolphinDB database
 
 To load data from database, use function **loadTable**.
 
@@ -572,21 +583,8 @@ Exception: ('Server Exception', 'table file does not exist: C:/Tutorials_EN/data
 ```
 
 
-#### 6. Upload data from Python to the DolphinDB server
 
-We can upload a Python object through function **upload** to the DolphinDB server, which takes a Python dictionary object as input. For this dictionary object, the key is the variable name on DolphinDB server and the value is the Python object. This is equivalent to executing **t1=table(1 2 3 4 3 as id, 7.8, 4.6, 5.1, 9.6, 0.1 as value,5, 4, 3, 2, 1 as x)** on the DolphinDB server.
-
-```
-df = pd.DataFrame({'id': np.int32([1, 2, 3, 4, 3]), 'value':  np.double([7.8, 4.6, 5.1, 9.6, 0.1]), 'x': np.int32([5, 4, 3, 2, 1])})
-s.upload({'t1': df})
-print(s.run("t1.value.avg()"))
-
-# output
-5.44
-```
-
-
-#### 7 Table object
+#### 6 Table object
 
 DolphinDB table object in Python serves as a bridge between a DolphinDB table and a pandas DataFrame. A DolphinDB table object can be created by the **table** method of a session. The input of the **table** method can be a dictionary, a DataFrame, or a table name on the DolphinDB server. It creates a table on the DolphinDB server and assigns it a random table name. The DolphinDB table object in Python has a method **toDF** to convert it to a pandas DataFrame.
 
