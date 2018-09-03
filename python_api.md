@@ -324,7 +324,7 @@ print(trade.select('ticker').groupby(['ticker']).count().sort(bys=['ticker desc'
 
 ```
 
-Group by column "sym" and calculate the sum of columns "vol" and "prc":
+Group by column "ticker" and calculate the sum of columns "vol" and "prc":
 
 ```
 print(trade.select(['vol','prc']).groupby(['ticker']).sum().toDF())
