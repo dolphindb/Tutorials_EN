@@ -28,7 +28,7 @@ from dolphindb import *
 If you need to enter username and password:
 
 ```
-s.connect("localhost",8848, YOUR_USER_NAME, YOUR_PASS_WORD)
+s.connect("localhost",8848, YOUR_USERNAME, YOUR_PASSWORD)
 ```
 
 ### 2 Import data to DolphinDB server
