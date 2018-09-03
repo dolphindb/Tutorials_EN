@@ -1,12 +1,14 @@
 # Python API for DolphinDB
 
-The Python API supports both Python 2.7 and Python 3.6 & above.  DolphinDB Python objects can be easily converted into Python objects and vise versa. The python API encapsulates a subset of the DolphinDB script language. When executed, the code completed with the python API is actually converted to a DolphinDB script, then executed on the DolphinDB server, and the execution results are saved to the server session, or serialized to the python client. There are two methods provided by the Python API for DolphinDB. The first one does not trigger the execution of the script, but only generates the script.  The second is a method that triggers script execution. The table below lists all the methods that either generate the DolphinDB script or trigger the DolphinDB script execution.
+The Python API supports both Python 2.7 and Python 3.6 & above. 
+
+The python API in essense encapsulates a subset of the DolphinDB script language. When executed, the python code is actually converted to a DolphinDB script, then executed on the DolphinDB server when triggered by certain methods, and the execution results are saved to the server session, or serialized to the python client. There are two kinds of methods provided by the Python API for this purpose. The first one does not trigger the execution of the script, but only generates the script.  The second is a method that triggers script execution. The table below lists all the methods that either generate the DolphinDB script or trigger the DolphinDB script execution.
 
 | Method        | Explanation          |Trigger script execution|
 |:------------- |:-------------|:-------------|
 |showSQL|   Belongs to Table class| No|
 |ToDF()    | Belongs to Table class| Yes |
-|execute()    |        Belongs to Table class|Yes|
+|execute()    | Belongs to Table class|Yes|
 
 
 
