@@ -6,3 +6,4 @@
 #### [Partitioned Databases Design and Manipulation](https://github.com/dolphindb/Tutorials_EN/blob/master/database.md)
 #### [Partitioned In-Memory Tables Loading and Manipulation](https://github.com/dolphindb/Tutorials_EN/blob/master/partitioned_in_memory_table.md)
 #### [Security and User Access Control](https://github.com/dolphindb/Tutorials_EN/blob/master/ACL_and_Security.md)
+#### [Python API for DolphinDB](https://github.com/dolphindb/Tutorials_EN/blob/master/python_api.md)
