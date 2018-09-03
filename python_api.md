@@ -415,8 +415,8 @@ print(trade.merge(t1,on=["TICKER","date"]).select("*").toDF())
 2   AMZN  2015.12.31  3749860  675.89001  675.85999  675.94000   695
 ```
 
-#### 4.8.2 merge_asof
-Method merge_asof corresponds to DolphindB as of join(aj). The joining column of method **merge_asof** must be integer or temporal data type. If there is only 1 joining column, the asof join function assumes the right table is sorted on the joining column. 
+#### 4.8.2 **merge_asof**
+Method **merge_asof** corresponds to DolphinDB asof join(aj). The joining column of method **merge_asof** must be integer or temporal data type. If there is only 1 joining column, the asof join function assumes the right table is sorted on the joining column. 
 If there are multiple joining columns, the asof join function assumes the right table is sorted on the last joining column within each group defined by the other joining columns. In the example below, although there are no values for 1997 in table t1, 
 the joined table uses the last lastest available data points from 1993.12.31. 
 
@@ -437,7 +437,7 @@ print(trade.merge_asof(t1,on=["date"]).select(["date","prc","open"]).top(5).toDF
 
 ```
 
-#### 5. Append, update and delete
+#### 5 Append, update and delete
 
 #### 5.1 Append data to a table
 
@@ -459,7 +459,7 @@ print (c2)
 
 #### 5.2 Update data from a table
 
-Note that function update must be followed by function execute in order to update the table
+Note that function **update** must be followed by function **execute** in order to update the table
 
 ```
 trade = s.table(dbPath=WORK_DIR+"/valuedb", data="trade", inMem=True)
@@ -477,7 +477,7 @@ print(t1.toDF())
 
 #### 5.3 Delete data from a table
 
-Note that function delete must be followed by function execute in order to delete the data from the table
+Note that function **delete** must be followed by function **execute** in order to delete the data from the table
 
 ```
 trade.delete().where('date<2013.01.01').execute()
@@ -520,7 +520,7 @@ Exception: ('Server Exception', 'table file does not exist: C:/Tutorials_EN/data
 
 #### 6. Upload data from Python to the DolphinDB server
 
-We can upload a python object through function **upload** to the DolphinDB server, which takes a python dictionary object as input. For this dictionary object, the key is the variable name on DolphinDB server and the value is the python object. This is equivalent to executing **t1=table(1 2 3 4 3 as id, 7.8, 4.6, 5.1, 9.6, 0.1 as value,5, 4, 3, 2, 1 as x)** on the DolphinDB server.
+We can upload a Python object through function **upload** to the DolphinDB server, which takes a Python dictionary object as input. For this dictionary object, the key is the variable name on DolphinDB server and the value is the Python object. This is equivalent to executing **t1=table(1 2 3 4 3 as id, 7.8, 4.6, 5.1, 9.6, 0.1 as value,5, 4, 3, 2, 1 as x)** on the DolphinDB server.
 
 ```
 df = pd.DataFrame({'id': np.int32([1, 2, 3, 4, 3]), 'value':  np.double([7.8, 4.6, 5.1, 9.6, 0.1]), 'x': np.int32([5, 4, 3, 2, 1])})
@@ -535,7 +535,7 @@ print(s.run("t1.value.avg()"))
 
 
 
-**Run**
+#### 1 **run**
 
 A session object has a method **run** that can be used to execute any DolphinDB script. If the script returns an object in DolphinDB, method **run** converts the object to a corresponding object in Python.  
 
@@ -580,7 +580,7 @@ print(df)
 ```
 The result is a pandas DataFrame.
 
-#### 2. Import Data as an in-memory table
+#### 2 Import Data as an in-memory table
 
 Users can import text files into DolphinDB with a session method **loadText**. It returns a DolphinDB table object in Python, which corresponds to an in-memory table on the DolphinDB server. The DolphinDB table object in Python has a method **toDF** to convert it to a pandas DataFrame.
 
@@ -616,17 +616,17 @@ print(df)
 
 ```
 
-The default delimiter for function **ploadText** is comma ",". You can specify other single characters as delimiters. For example, to import a tabular text file:
+The default delimiter for function **loadText** is comma ",". You can specify other single characters as delimiters. For example, to import a tabular text file:
 
 ```
 
-t1=s.ploadText("t1", WORK_DIR+"/t1.tsv", '\t')
+t1=s.loadText("t1", WORK_DIR+"/t1.tsv", '\t')
 ```
 
 
-#### Table object
+#### 3 Table object
 
-DolphinDB table object in Python serves as a bridge between a DolphinDB table and a pandas DataFrame. A DolphinDB table object can be created by the table method of a session. The input of the table method can be a dictionary, a DataFrame, or a table name on the DolphinDB server. It creates a table on the DolphinDB server and assigns it a random table name. The DolphinDB table object in Python has a method **toDF** to convert it to a pandas DataFrame.
+DolphinDB table object in Python serves as a bridge between a DolphinDB table and a pandas DataFrame. A DolphinDB table object can be created by the **table** method of a session. The input of the **table** method can be a dictionary, a DataFrame, or a table name on the DolphinDB server. It creates a table on the DolphinDB server and assigns it a random table name. The DolphinDB table object in Python has a method **toDF** to convert it to a pandas DataFrame.
 
 ```
 dt = s.table(data={'id': [1, 2, 2, 3],
@@ -669,12 +669,12 @@ select avg(price) from T699daec5 where ((price > 10) and (id < 3)) group by id
 
 ```
 
-#### 3. Load data into a partitioned database
+#### 4 Load data into a partitioned database
 
 To load data with function **loadText**, the data must be smaller than available memory. To work with large data files, a better way is to load data into a partitioned database.
 
 
-#### 3.1 Create a partitioned database
+#### 4.1 Create a partitioned database
 
 First, check if the database exists. If it exists, drop the database.
 
@@ -698,7 +698,7 @@ s.database('db',partitionType=VALUE, partitions=["GFGC","EWST", "EGAS"], dbPath=
 
 In addition to the VALUE partition, other partitions supported by DolphinDB include: SEQ, HASH, RANGE and COMBO.
 
-#### 3.2 Create a partitioned table and append data to the table
+#### 4.2 Create a partitioned table and append data to the table
 
 After the database is created successfully, you can import the text file into the partitioned database with function **loadTextEx**. If the partitioned table does not exist, the function creates a partition table (with the given table name) in the database and appends the data to the partitioned table. Otherwise, the function loads the input data directly into the partitioned table.
 
@@ -732,11 +732,11 @@ To refer to the table later:
 ```
 
 
-#### 3.3 In-memory partitioned table
+#### 4.3 In-memory partitioned table
 
 To utilize distributed computing on the partitioned database, we can import data directly into an in-memory partitioned table.
 
-#### 3.3.1 loadTextEx
+#### 4.3.1 loadTextEx
 
 We can use the same function loadTextEx, which differs from the disk-based partitioned table in that the dbPath is an empty string.
 
@@ -765,7 +765,7 @@ print(trade.toDF())
 [13136 rows x 6 columns]
 ```
 
-#### 3.3.2 loadTableBySQL
+#### 4.3.2 loadTableBySQL
 
 Import partial data from a on-disk partitioned table into a in-memory partitioned table through function s.loadTableBySQL
 
@@ -785,7 +785,7 @@ print(trade.count())
 ```
 
 
-#### 3.3.3 ploadText: loadText in parallel mode
+#### 4.3.3 ploadText: loadText in parallel mode
 
 If we use function **ploadText** to load a text file, it actually generates an in-memory partitioned table. Compared to the non-partitioned table, it will be much faster, but it also consumes twice as much memory.
 
