@@ -529,102 +529,10 @@ print(s.run("t1.value.avg()"))
 
 # output
 5.44
-
 ```
 
 
-
-
-#### 1 **run**
-
-A session object has a method **run** that can be used to execute any DolphinDB script. If the script returns an object in DolphinDB, method **run** converts the object to a corresponding object in Python.  
-
-To calculate the weighted average of a vector:
-
-```
-print(s.run('wavg([100, 60, 300], [1, 1.5, 2])'))
-
-# output
-175.55556
-
-```
-
-To generate a vector and then sort it:
-
-```
-# create a vector v1 on the DolphinDB server
-s.run("v1=3 1 2 5 7; sort v1")
-
-# output
-array([1, 2, 3, 5, 7])
-```
-The result is a numpy arrary object.
-
-
-To generate a table:
-
-```
-# create a table t1 on the DolphinDB server
-s.run("t1=table(1 2 3 as id, 4 5 6 as v)")
-
-df=s.run("select * from t1")
-
-print(df)
-
-# output
-   id  v
-0   1  4
-1   2  5
-2   3  6
-
-```
-The result is a pandas DataFrame.
-
-#### 2 Import Data as an in-memory table
-
-Users can import text files into DolphinDB with a session method **loadText**. It returns a DolphinDB table object in Python, which corresponds to an in-memory table on the DolphinDB server. The DolphinDB table object in Python has a method **toDF** to convert it to a pandas DataFrame.
-
-
-
-```
-WORK_DIR = "C:/DolphinDB/Data"
-
-# return a DolphinDB table object in Python
-trade=s.loadText(WORK_DIR+"/example.csv")
-print(trade.count())
-
-# output
-13136
-
-
-df = trade.toDF()
-print(df)
-
-# output
-        TICKER        date       VOL        PRC        BID       ASK
-0       AMZN  1997.05.16   6029815   23.50000   23.50000   23.6250
-1       AMZN  1997.05.17   1232226   20.75000   20.50000   21.0000
-2       AMZN  1997.05.20    512070   20.50000   20.50000   20.6250
-3       AMZN  1997.05.21    456357   19.62500   19.62500   19.7500
-4       AMZN  1997.05.22   1577414   17.12500   17.12500   17.2500
-5       AMZN  1997.05.23    983855   16.75000   16.62500   16.7500
-...
-13134   NFLX  2016.12.29   3444729  125.33000  125.31000  125.3300
-13135   NFLX  2016.12.30   4455012  123.80000  123.80000  123.8300
-
-[13136 rows x 6 columns]
-
-```
-
-The default delimiter for function **loadText** is comma ",". You can specify other single characters as delimiters. For example, to import a tabular text file:
-
-```
-
-t1=s.loadText("t1", WORK_DIR+"/t1.tsv", '\t')
-```
-
-
-#### 3 Table object
+#### 7 Table object
 
 DolphinDB table object in Python serves as a bridge between a DolphinDB table and a pandas DataFrame. A DolphinDB table object can be created by the **table** method of a session. The input of the **table** method can be a dictionary, a DataFrame, or a table name on the DolphinDB server. It creates a table on the DolphinDB server and assigns it a random table name. The DolphinDB table object in Python has a method **toDF** to convert it to a pandas DataFrame.
 
