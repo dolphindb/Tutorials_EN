@@ -12,6 +12,8 @@ The python API in essense encapsulates a subset of the DolphinDB script language
 
 
 
+
+
 This tutorial uses a csv file: [example.csv](data/example.csv). Note that Linux style absolute path must be provided in order for the DolphinDB server to locate the file.
 
 ### 1 Connect to DolphinDB
@@ -240,14 +242,138 @@ print(trade.count())
 
 ```
 
+#### 4 Manipulate Databases and Tables
 
-#### 4 SQL query and computation
+DolphinDB table object in Python serves as a bridge between a DolphinDB table and a pandas DataFrame. A DolphinDB table object can be created by the **table** method of a session. The input of the **table** method can be a dictionary, a DataFrame, or a table name on the DolphinDB server. It creates a table on the DolphinDB server and assigns it a random table name. The DolphinDB table object in Python has a method **toDF** to convert it to a pandas DataFrame.
+
+```
+dt = s.table(data={'id': [1, 2, 2, 3],
+                   'ticker': ['APPL', 'AMNZ', 'AMNZ', 'A'],
+                   'price': [22, 3.5, 21, 26]})
+print(dt.toDF())
+
+# output
+   id  price   sym
+0   1   22.0  APPL
+1   2    3.5  AMNZ
+2   2   21.0  AMNZ
+3   3   26.0     A
+
+```
+
+It generates a SQL query and sends it to the DolphinDB server. A table object is returned. The example below selects column **price** and calculates the average price for each **id**.
+
+```
+# average price for each id
+
+print(dt['price'][dt.id < 3].groupby('id').avg().toDF())
+
+# output
+   id  avg_price
+0   1       22.0
+1   2       12.25
+
+print(dt['price'][(dt.price > 10) & (dt.id < 3)].groupby('id').avg().toDF())
+
+# output
+   id  avg_price
+0   1       22.0
+1   2       21.0
+
+print(  dt['price'][(dt.price > 10) & (dt.id < 3)].groupby('id').avg().showSQL())
+
+# output
+select avg(price) from T699daec5 where ((price > 10) and (id < 3)) group by id
+
+```
+
+#### 4.1 Append data to a table
+
+Data can be appended to a table with function **append**.
+
+```
+trade = s.table(dbPath=WORK_DIR+"/valuedb", data="trade", inMem=True)
+c1 = trade.count()
+print (c1)
+
+ take the top 10 results from the table "trade" and assign it to variable "top10" on the server end
+top10 = trade.top(10).executeAs("top10")
+
+append table "top10" to table "trade"
+c2 = trade.append(top10).count()
+print (c2)
+```
+
+
+#### 4.2 Update data from a table
+
+Note that function **update** must be followed by function **execute** in order to update the table
+
+```
+trade = s.table(dbPath=WORK_DIR+"/valuedb", data="trade", inMem=True)
+trade = trade.update(["VOL"],["999999"]).where("TICKER=`AMZN").where(["date=2015.12.16"]).execute()
+t1=trade.where("ticker=`AMZN").where("VOL=999999")
+print(t1.toDF())
+
+
+# output
+
+  TICKER        date     VOL        PRC        BID        ASK
+0   AMZN  2015.12.16  999999  675.77002  675.76001  675.83002
+
+```
+
+#### 4.3 Delete data from a table
+
+Note that function **delete** must be followed by function **execute** in order to delete the data from the table
+
+```
+trade.delete().where('date<2013.01.01').execute()
+print(trade.count())
+
+# output
+
+3024
+
+```
+
+#### 4.4 Drop table columns
+
+```
+trade = s.table(dbPath=WORK_DIR + "/valuedb", data="trade", inMem=True)
+t1=trade.drop(['ask', 'bid'])
+print(t1.top(5))
+
+  TICKER        date      VOL     PRC
+0   AMZN  1997.05.15  6029815  23.500
+1   AMZN  1997.05.16  1232226  20.750
+2   AMZN  1997.05.19   512070  20.500
+3   AMZN  1997.05.20   456357  19.625
+4   AMZN  1997.05.21  1577414  17.125
+
+```
+
+#### 4.5 Drop a table
+
+After a table is dropped, it can be no longer used. 
+
+```
+s.dropTable(WORK_DIR + "/valuedb", "trade")
+trade = s.table(dbPath=WORK_DIR + "/valuedb", data="trade", inMem=True)
+
+Exception: ('Server Exception', 'table file does not exist: C:/Tutorials_EN/data/valuedb/trade.tbl')
+
+```
+
+
+
+#### 5 SQL query
 
 DolphinDB's table class provides flexible chained methods to help users generate SQL statements.
 
-#### 4.1 **select**
+#### 5.1 **select**
 
-#### 4.1.1 Use list as input
+#### 5.1.1 Use list as input
 
 We can use a list of field names in **select** method to select columns. We can also use **where** method to filter the selection.
 
@@ -276,7 +402,7 @@ select date,bid,ask,prc,vol from Tff260d29 where TICKER=`AMZN and bid!=NULL and 
 
 ```
 
-#### 4.1.2 Use string as input
+#### 5.1.2 Use string as input
 
 We can also pass a list of field names as a string to **select** method and conditions as string to **where** method.
 
@@ -297,7 +423,7 @@ trade.select("ticker, date, vol").where("bid!=NULL, ask!=NULL, vol>50000000").to
 
 ```
 
-#### 4.2 **top**
+#### 5.2 **top**
 
 Get the top records in a table. 
 
@@ -316,7 +442,7 @@ trade.top(5).toDF()
 
 ```
 
-#### 4.3 **selectAsVector**
+#### 5.3 **selectAsVector**
 
 Export a single column as a vector. 
 
@@ -329,7 +455,7 @@ print(t.where('TICKER=`AMZN').where('date>2016.12.15').sort('date').selectAsVect
 ```
 
 
-#### 4.4 **groupby**
+#### 5.4 **groupby**
 
 Method **groupby** must be followed by an aggregate function such as **count**, **sum**, **avg**, **std**, **agg** or **agg2**. **agg2** is for DolphinDB functions with 2 arguments.
 
@@ -377,7 +503,7 @@ print(trade.select('count(ask)').groupby(['vol']).having('count(ask)>1').toDF())
 
 ```
 
-#### 4.5 **contextby**
+#### 5.5 **contextby**
 
 **contextby** is similar to **groupby** except that **groupby** returns a scalar for each group but **contextby** returns a vector for each group. The vector size is the same as the number of rows in the group. 
 
@@ -400,7 +526,58 @@ print(df)
 
 ```
 
-#### 4.6 Regression
+
+
+#### 5.6 Table join
+
+Use method **merge** for inner, left, and outer join; method **merge_asof** for "asof" join.
+
+#### 5.6.1 **merge**
+
+Specify joining columns with parameter **on** if joining column names are identical in both tables; use parameters **left_on** and **right_on** when joining column names are different. Parameter "how" indicates table join type.
+
+
+Inner join with a partitioned table
+
+```
+trade = s.table(dbPath=WORK_DIR+"/valuedb", data="trade")
+t1 = s.table(data={'TICKER': ['AMZN', 'AMZN', 'AMZN'], 'date': ['2015.12.31', '2015.12.30', '2015.12.29'], 'open': [695, 685, 674]})
+print(trade.merge(t1,on=["TICKER","date"]).select("*").toDF())
+
+# outuput
+  TICKER        date      VOL        PRC        BID        ASK  open
+0   AMZN  2015.12.29  5734996  693.96997  693.96997  694.20001   674
+1   AMZN  2015.12.30  3519303  689.07001  689.07001  689.09998   685
+2   AMZN  2015.12.31  3749860  675.89001  675.85999  675.94000   695
+```
+
+#### 5.6.2 **merge_asof**
+Method **merge_asof** corresponds to DolphinDB asof join(aj). The joining column of method **merge_asof** must be integer or temporal data type. If there is only 1 joining column, the asof join function assumes the right table is sorted on the joining column. 
+If there are multiple joining columns, the asof join function assumes the right table is sorted on the last joining column within each group defined by the other joining columns. In the example below, although there are no values for 1997 in table t1, 
+the joined table uses the last lastest available data points from 1993.12.31. 
+
+```
+from datetime import datetime
+dates = [Date.from_date(x) for x in [datetime(1993,12,31), datetime(2015,12,30), datetime(2015,12,29)]]
+t1 = s.table(data={'TICKER': ['AMZN', 'AMZN', 'AMZN'], 'date': dates, 'open': [695, 685, 674]})
+
+print(trade.merge_asof(t1,on=["date"]).select(["date","prc","open"]).top(5).toDF())
+
+         date     prc  open
+0  1997.05.16  23.500   23
+1  1997.05.17  20.750   23
+2  1997.05.20  20.500   23
+3  1997.05.21  19.625   23
+4  1997.05.22  17.125   23
+
+
+```
+
+
+
+#### 6 Computing
+
+#### 6.1 Regression
 
 Method **ols** conducts regression analysis. The result is a dictionary with ANOVA, RegressionStat and Coefficient.
 
@@ -440,7 +617,7 @@ print(z["Coefficient"].beta[1])
 0.6053065019659698
 ```
 
-#### 4.7 **run**
+#### 6.2 **run**
 
 A session object has a method **run** that can be used to execute any DolphinDB script. If the script returns an object in DolphinDB, method **run** converts the object to a corresponding object in Python.  
 
@@ -453,178 +630,5 @@ t = s.run("select bid, ask, prc from trade where bid!=NULL, ask!=NULL, vol>1000"
 print(t)
 ```
 
-
-
-#### 4.8 Table join
-
-Use method **merge** for inner, left, and outer join; method **merge_asof** for "asof" join.
-
-#### 4.8.1 **merge**
-
-Specify joining columns with parameter **on** if joining column names are identical in both tables; use parameters **left_on** and **right_on** when joining column names are different. Parameter "how" indicates table join type.
-
-
-Inner join with a partitioned table
-
-```
-trade = s.table(dbPath=WORK_DIR+"/valuedb", data="trade")
-t1 = s.table(data={'TICKER': ['AMZN', 'AMZN', 'AMZN'], 'date': ['2015.12.31', '2015.12.30', '2015.12.29'], 'open': [695, 685, 674]})
-print(trade.merge(t1,on=["TICKER","date"]).select("*").toDF())
-
-# outuput
-  TICKER        date      VOL        PRC        BID        ASK  open
-0   AMZN  2015.12.29  5734996  693.96997  693.96997  694.20001   674
-1   AMZN  2015.12.30  3519303  689.07001  689.07001  689.09998   685
-2   AMZN  2015.12.31  3749860  675.89001  675.85999  675.94000   695
-```
-
-#### 4.8.2 **merge_asof**
-Method **merge_asof** corresponds to DolphinDB asof join(aj). The joining column of method **merge_asof** must be integer or temporal data type. If there is only 1 joining column, the asof join function assumes the right table is sorted on the joining column. 
-If there are multiple joining columns, the asof join function assumes the right table is sorted on the last joining column within each group defined by the other joining columns. In the example below, although there are no values for 1997 in table t1, 
-the joined table uses the last lastest available data points from 1993.12.31. 
-
-```
-from datetime import datetime
-dates = [Date.from_date(x) for x in [datetime(1993,12,31), datetime(2015,12,30), datetime(2015,12,29)]]
-t1 = s.table(data={'TICKER': ['AMZN', 'AMZN', 'AMZN'], 'date': dates, 'open': [695, 685, 674]})
-
-print(trade.merge_asof(t1,on=["date"]).select(["date","prc","open"]).top(5).toDF())
-
-         date     prc  open
-0  1997.05.16  23.500   23
-1  1997.05.17  20.750   23
-2  1997.05.20  20.500   23
-3  1997.05.21  19.625   23
-4  1997.05.22  17.125   23
-
-
-```
-
-#### 5 Append, update and delete
-
-#### 5.1 Append data to a table
-
-Data can be appended to a table with function **append**.
-
-```
-trade = s.table(dbPath=WORK_DIR+"/valuedb", data="trade", inMem=True)
-c1 = trade.count()
-print (c1)
-
- take the top 10 results from the table "trade" and assign it to variable "top10" on the server end
-top10 = trade.top(10).executeAs("top10")
-
-append table "top10" to table "trade"
-c2 = trade.append(top10).count()
-print (c2)
-```
-
-
-#### 5.2 Update data from a table
-
-Note that function **update** must be followed by function **execute** in order to update the table
-
-```
-trade = s.table(dbPath=WORK_DIR+"/valuedb", data="trade", inMem=True)
-trade = trade.update(["VOL"],["999999"]).where("TICKER=`AMZN").where(["date=2015.12.16"]).execute()
-t1=trade.where("ticker=`AMZN").where("VOL=999999")
-print(t1.toDF())
-
-
-# output
-
-  TICKER        date     VOL        PRC        BID        ASK
-0   AMZN  2015.12.16  999999  675.77002  675.76001  675.83002
-
-```
-
-#### 5.3 Delete data from a table
-
-Note that function **delete** must be followed by function **execute** in order to delete the data from the table
-
-```
-trade.delete().where('date<2013.01.01').execute()
-print(trade.count())
-
-# output
-
-3024
-
-```
-
-#### 5.4 Drop table columns
-
-```
-trade = s.table(dbPath=WORK_DIR + "/valuedb", data="trade", inMem=True)
-t1=trade.drop(['ask', 'bid'])
-print(t1.top(5))
-
-  TICKER        date      VOL     PRC
-0   AMZN  1997.05.15  6029815  23.500
-1   AMZN  1997.05.16  1232226  20.750
-2   AMZN  1997.05.19   512070  20.500
-3   AMZN  1997.05.20   456357  19.625
-4   AMZN  1997.05.21  1577414  17.125
-
-```
-
-#### 5.5 Drop a table
-
-After a table is dropped, it can be no longer used. 
-
-```
-s.dropTable(WORK_DIR + "/valuedb", "trade")
-trade = s.table(dbPath=WORK_DIR + "/valuedb", data="trade", inMem=True)
-
-Exception: ('Server Exception', 'table file does not exist: C:/Tutorials_EN/data/valuedb/trade.tbl')
-
-```
-
-
-
-#### 6 Table object
-
-DolphinDB table object in Python serves as a bridge between a DolphinDB table and a pandas DataFrame. A DolphinDB table object can be created by the **table** method of a session. The input of the **table** method can be a dictionary, a DataFrame, or a table name on the DolphinDB server. It creates a table on the DolphinDB server and assigns it a random table name. The DolphinDB table object in Python has a method **toDF** to convert it to a pandas DataFrame.
-
-```
-dt = s.table(data={'id': [1, 2, 2, 3],
-                   'ticker': ['APPL', 'AMNZ', 'AMNZ', 'A'],
-                   'price': [22, 3.5, 21, 26]})
-print(dt.toDF())
-
-# output
-   id  price   sym
-0   1   22.0  APPL
-1   2    3.5  AMNZ
-2   2   21.0  AMNZ
-3   3   26.0     A
-
-```
-
-It generates a SQL query and sends it to the DolphinDB server. A table object is returned. The example below selects column **price** and calculates the average price for each **id**.
-
-```
-# average price for each id
-
-print(dt['price'][dt.id < 3].groupby('id').avg().toDF())
-
-# output
-   id  avg_price
-0   1       22.0
-1   2       12.25
-
-print(dt['price'][(dt.price > 10) & (dt.id < 3)].groupby('id').avg().toDF())
-
-# output
-   id  avg_price
-0   1       22.0
-1   2       21.0
-
-print(  dt['price'][(dt.price > 10) & (dt.id < 3)].groupby('id').avg().showSQL())
-
-# output
-select avg(price) from T699daec5 where ((price > 10) and (id < 3)) group by id
-
-```
 
 
