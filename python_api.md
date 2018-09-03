@@ -113,20 +113,77 @@ TICKER        date       VOL        PRC        BID       ASK
 [13136 rows x 6 columns]
 ```
 
+To refer to the table later:
+
+```
+ trade = s.table(dbPath=WORK_DIR+"/valuedb", data="trade")
+```
+
+
+
 #### 2.3 Import data as in-memory partitioned table
 
+#### 2.3.1 through loadTextEx
 We can import data as an in-memory partitioned table. Operations on an in-memory partitioned table are faster than those on a nonpartitioned in-memory table as the former utilizes parallel computing.
 
 We can use the same function **loadTextEx** to create a in-memory partitioned database, but use an empty string for the parameter **dbPath**.
 
 ```
-s.database('db', partitionType=VALUE, partitions=["GFGC","EWST","EGAS"], dbPath="")
+s.database('db', partitionType=VALUE, partitions=["AMZN","NFLX", "NVDA"], dbPath="")
 trade=s.loadTextEx(dbPath="db", partitionColumns=["TICKER"], tableName='trade', filePath=WORK_DIR + "/example.csv")
 print(trade.toDF())
 
 ```
 
-### 3 Load data from database
+#### 2.3.2 Through loadTable
+
+To load "NFLX" and "NVDA" partitions as an in-memory partitioned table:
+```
+trade = s.loadTable(dbPath=WORK_DIR+"/valuedb", tableName="trade", partitions=["NFLX","NVDA"], memoryMode=True)
+
+print(trade.count())
+
+# output
+
+8195
+```
+#### 2.3.3 Through loadTableBySQL
+
+Import partial data from a on-disk partitioned table into a in-memory partitioned table through function s.loadTableBySQL
+
+```
+if s.existsDatabase(WORK_DIR+"/valuedb"  or os.path.exists(WORK_DIR+"/valuedb")):
+    s.dropDatabase(WORK_DIR+"/valuedb")
+s.database(dbName='db', partitionType=VALUE, partitions=["AMZN","NFLX", "NVDA"], dbPath=WORK_DIR+"/valuedb")
+t = s.loadTextEx("db",  tableName='trade',partitionColumns=["TICKER"], filePath=WORK_DIR + "/example.csv")
+
+trade = s.loadTableBySQL(dbPath=WORK_DIR+"/valuedb", sql="select * from trade where date>2010.01.01")
+print(trade.count())
+
+# output 
+
+5286
+
+```
+
+
+#### 2.3.4 ploadText: loadText in parallel mode
+
+If we use function **ploadText** to load a text file, it actually generates an in-memory partitioned table. Compared to the non-partitioned table, it will be much faster, but it also consumes twice as much memory.
+
+```
+trade=s.ploadText(WORK_DIR+"/example.csv")
+print(trade.count())
+
+# output
+
+13136
+
+````
+
+
+
+#### 3 Load data from database
 
 To load data from database, use function **loadTable**.
 
@@ -162,20 +219,6 @@ print(trade.count())
 4941
 
 ```
-
-To load "NFLX" and "NVDA" partitions as an in-memory partitioned table:
-```
-trade = s.loadTable(dbPath=WORK_DIR+"/valuedb", tableName="trade", partitions=["NFLX","NVDA"], memoryMode=True)
-
-print(trade.count())
-
-# output
-
-8195
-
-
-```
-
 
 
 #### 4 SQL query and computation
@@ -577,133 +620,4 @@ select avg(price) from T699daec5 where ((price > 10) and (id < 3)) group by id
 
 ```
 
-#### 4 Load data into a partitioned database
-
-To load data with function **loadText**, the data must be smaller than available memory. To work with large data files, a better way is to load data into a partitioned database.
-
-
-#### 4.1 Create a partitioned database
-
-First, check if the database exists. If it exists, drop the database.
-
-```
-if s.existsDatabase(WORK_DIR+"/valuedb"):
-    s.dropDatabase(WORK_DIR+"/valuedb")
-```
-
-
-Then, create a value-based partitioned database. Since there are only 3 stock symbols in the example.csv, we use **VALUE** as partition type. The parameter **partitions** indicates the partition scheme.
-
-```
-s.database('db', partitionType=VALUE, partitions=["GFGC","EWST", "EGAS"], dbPath="C:/Tutorials_EN/data/valuedb")
-```
-
-The only difference between creating a partitioned database on DFS (distributed file system) and creating a local database is the different database path. All DFS database paths start with "dfs://"
-
-```
-s.database('db',partitionType=VALUE, partitions=["GFGC","EWST", "EGAS"], dbPath="dfs://valuedb")
-```
-
-In addition to the VALUE partition, other partitions supported by DolphinDB include: SEQ, HASH, RANGE and COMBO.
-
-#### 4.2 Create a partitioned table and append data to the table
-
-After the database is created successfully, you can import the text file into the partitioned database with function **loadTextEx**. If the partitioned table does not exist, the function creates a partition table (with the given table name) in the database and appends the data to the partitioned table. Otherwise, the function loads the input data directly into the partitioned table.
-
-Parameter **dbPath** is the database path; **tableName** is the partitioned table name; **partitionColumns** indicates the partitioning columns; **filePath** is the absolute path of the text file; **delimiter** is the separator of the file (comma by default).
-
-In the following example, function **loadTextEx** creates a partitioned table **trade** on the server end and then appends the data from **example.csv** to the table. 
-
-```
-trade = s.loadTextEx("db",  tableName='trade',partitionColumns=["TICKER"], filePath=WORK_DIR + "/example.csv")
-print(trade.toDF())
-
-# output
-        TICKER        date       VOL        PRC        BID       ASK
-0       AMZN  1997.05.16   6029815   23.50000   23.50000   23.6250
-1       AMZN  1997.05.17   1232226   20.75000   20.50000   21.0000
-2       AMZN  1997.05.20    512070   20.50000   20.50000   20.6250
-3       AMZN  1997.05.21    456357   19.62500   19.62500   19.7500
-4       AMZN  1997.05.22   1577414   17.12500   17.12500   17.2500
-5       AMZN  1997.05.23    983855   16.75000   16.62500   16.7500
-...
-13134   NFLX  2016.12.29   3444729  125.33000  125.31000  125.3300
-13135   NFLX  2016.12.30   4455012  123.80000  123.80000  123.8300
-
-[13136 rows x 6 columns]
-```
-
-To refer to the table later:
-
-```
- trade = s.table(dbPath=WORK_DIR+"/valuedb", data="trade")
-```
-
-
-#### 4.3 In-memory partitioned table
-
-To utilize distributed computing on the partitioned database, we can import data directly into an in-memory partitioned table.
-
-#### 4.3.1 loadTextEx
-
-We can use the same function loadTextEx, which differs from the disk-based partitioned table in that the dbPath is an empty string.
-
-
-```
-# create a in-memory partitioned database **db**. note that dbPath must be empty
-s.database('db',partitionType=VALUE, partitions=["AMZN","NFLX", "NVDA"], dbPath="")
-
-# **dbPath** specifies here the database handle **db** on the server end instead of a real database path since we just create a in-memory database **db**
-
-trade=s.loadTextEx(dbPath="db", partitionColumns=["TICKER"], tableName='trade', filePath=WORK_DIR + "/example.csv")
-print(trade.toDF())
-
-# output
-     TICKER        date       VOL       PRC       BID       ASK
-0       AMZN  1997.05.15   6029815   23.5000   23.5000   23.6250
-1       AMZN  1997.05.16   1232226   20.7500   20.5000   21.0000
-2       AMZN  1997.05.19    512070   20.5000   20.5000   20.6250
-3       AMZN  1997.05.20    456357   19.6250   19.6250   19.7500
-4       AMZN  1997.05.21   1577414   17.1250   17.1250   17.2500
-...
-
-13134   NVDA  2016.12.29  54384676  111.4300  111.2600  111.4200
-13135   NVDA  2016.12.30  30323259  106.7400  106.7300  106.7500
-
-[13136 rows x 6 columns]
-```
-
-#### 4.3.2 loadTableBySQL
-
-Import partial data from a on-disk partitioned table into a in-memory partitioned table through function s.loadTableBySQL
-
-```
-if s.existsDatabase(WORK_DIR+"/valuedb"  or os.path.exists(WORK_DIR+"/valuedb")):
-    s.dropDatabase(WORK_DIR+"/valuedb")
-s.database(dbName='db', partitionType=VALUE, partitions=["AMZN","NFLX", "NVDA"], dbPath=WORK_DIR+"/valuedb")
-t = s.loadTextEx("db",  tableName='trade',partitionColumns=["TICKER"], filePath=WORK_DIR + "/example.csv")
-
-trade = s.loadTableBySQL(dbPath=WORK_DIR+"/valuedb", sql="select * from trade where date>2010.01.01")
-print(trade.count())
-
-# output 
-
-5286
-
-```
-
-
-#### 4.3.3 ploadText: loadText in parallel mode
-
-If we use function **ploadText** to load a text file, it actually generates an in-memory partitioned table. Compared to the non-partitioned table, it will be much faster, but it also consumes twice as much memory.
-
-```
-trade=s.ploadText(WORK_DIR+"/example.csv")
-print(trade.count())
-
-# output
-
-13136
-
-````
 
