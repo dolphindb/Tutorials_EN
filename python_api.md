@@ -24,7 +24,6 @@ Python interacts with DolphinDB through a session. In the following example, we 
 import dolphindb as ddb
 s = ddb.session()
 s.connect("localhost",8848)
-from dolphindb import *
 ```
 
 If you need to enter username and password:
@@ -37,7 +36,7 @@ s.connect("localhost",8848, YOUR_USERNAME, YOUR_PASSWORD)
 
 #### 2.1 Import data as an in-memory table
 
-Users can import text files into DolphinDB with a session method **loadText**. It returns a DolphinDB table object in Python, which corresponds to an in-memory table on the DolphinDB server. The DolphinDB table object in Python has a method **toDF** to convert it to a pandas DataFrame.
+Users can import text files into DolphinDB with a session method called **loadText**. It returns a DolphinDB table object in Python, which corresponds to an in-memory table on the DolphinDB server. The DolphinDB table object in Python has a method **toDF** to convert it to a pandas DataFrame.
 
 ```
 WORK_DIR = "C:/DolphinDB/Data"
@@ -140,7 +139,10 @@ We can import data as an in-memory partitioned table. Operations on an in-memory
 We can use the same function **loadTextEx** to create a in-memory partitioned database, but use an empty string for the parameter **dbPath**.
 
 ```
+# 'db' inidcates the database handle name
 s.database('db', partitionType=VALUE, partitions=["AMZN","NFLX", "NVDA"], dbPath="")
+
+# "dbPath='db'" means that the system uses database handle 'db' to import data into in-memory partitioned table trade
 trade=s.loadTextEx(dbPath="db", partitionColumns=["TICKER"], tableName='trade', filePath=WORK_DIR + "/example.csv")
 print(trade.toDF())
 
@@ -148,11 +150,13 @@ print(trade.toDF())
 
 #### 2.3.2 Through loadTable
 
+When memoryNode is set to True,
 To load "NFLX" and "NVDA" partitions as an in-memory partitioned table:
 ```
 trade = s.loadTable(dbPath=WORK_DIR+"/valuedb", tableName="trade", partitions=["NFLX","NVDA"], memoryMode=True)
 
-print(trade.count())
+#show how many rows in the table
+print(trade.rows)
 
 # output
 
@@ -169,7 +173,7 @@ s.database(dbName='db', partitionType=VALUE, partitions=["AMZN","NFLX", "NVDA"],
 t = s.loadTextEx("db",  tableName='trade',partitionColumns=["TICKER"], filePath=WORK_DIR + "/example.csv")
 
 trade = s.loadTableBySQL(dbPath=WORK_DIR+"/valuedb", sql="select * from trade where date>2010.01.01")
-print(trade.count())
+print(trade.rows)
 
 # output 
 
@@ -183,7 +187,7 @@ If we use function **ploadText** to load a text file, it actually generates an i
 
 ```
 trade=s.ploadText(WORK_DIR+"/example.csv")
-print(trade.count())
+print(trade.rows)
 
 # output
 
@@ -205,9 +209,9 @@ print(s.run("t1.value.avg()"))
 ```
 
 
-#### 3 Load data from DolphinDB database
+#### 3 Load DolphinDB database
 
-To load data from database, use function **loadTable**.
+To load data from database, use function **loadTable**. Parameter **dbPath** specifies the database location, while argument tableName **indicates** the partitioned table name.
 
 ```
 trade = s.loadTable(dbPath=WORK_DIR+"/valuedb", tableName="trade")
@@ -234,7 +238,7 @@ To load only the "AMZN" partition:
 
 ```
 trade = s.loadTable(dbPath=WORK_DIR+"/valuedb", tableName="trade", partitions="AMZN")
-print(trade.count())
+print(trade.rows)
 
 # output
 
@@ -289,25 +293,50 @@ select avg(price) from T699daec5 where ((price > 10) and (id < 3)) group by id
 
 #### 4.1 Append data to a table
 
-Data can be appended to a table with function **append**.
+#### 4.11 Append a table to a partitioned table on disk.
 
 ```
-trade = s.table(dbPath=WORK_DIR+"/valuedb", data="trade", inMem=True)
-c1 = trade.count()
-print (c1)
+trade = s.table(dbPath=WORK_DIR+"/valuedb", data="trade")
+c1 = trade.rows
+print(c1)
 
- take the top 10 results from the table "trade" and assign it to variable "top10" on the server end
+#output
+13136
+
+# take the top 10 results from the table "trade" and assign it to variable "top10" on the server end
 top10 = trade.top(10).executeAs("top10")
 
-append table "top10" to table "trade"
-c2 = trade.append(top10).count()
-print (c2)
+trade.append(top10)
+
+trade = s.table(dbPath=WORK_DIR+"/valuedb", data="trade")
+c1 = trade.rows
+print (c1)
+
+
+# output
+13146
+```
+
+#### 4.12 Append a table to a in-memory table
+
+
+```
+trade=s.loadText(WORK_DIR+"/example.csv")
+top10 = trade.top(10).executeAs("top10")
+t1=trade.append(top10)
+
+print(t1.rows)
+
+# output
+13146
+
 ```
 
 
 #### 4.2 Update data from a table
 
-Note that function **update** must be followed by function **execute** in order to update the table
+Note that function **update** must be followed by function **execute** in order to update the table. Note that inMem has to be set to True in order to make update to the partitioned table
+as on-disk partitioned table does not support update.
 
 ```
 trade = s.table(dbPath=WORK_DIR+"/valuedb", data="trade", inMem=True)
@@ -323,13 +352,14 @@ print(t1.toDF())
 
 ```
 
+
 #### 4.3 Delete data from a table
 
 Note that function **delete** must be followed by function **execute** in order to delete the data from the table
 
 ```
 trade.delete().where('date<2013.01.01').execute()
-print(trade.count())
+print(trade.rows)
 
 # output
 
@@ -365,8 +395,6 @@ Exception: ('Server Exception', 'table file does not exist: C:/Tutorials_EN/data
 
 ```
 
-
-
 #### 5 SQL query
 
 DolphinDB's table class provides flexible chained methods to help users generate SQL statements.
@@ -375,7 +403,92 @@ DolphinDB's table class provides flexible chained methods to help users generate
 
 #### 5.1.1 Use list as input
 
-We can use a list of field names in **select** method to select columns. We can also use **where** method to filter the selection.
+We can use a list of field names in **select** method to select columns.
+
+```
+trade = s.loadTable(dbPath=WORK_DIR+"/valuedb", tableName="trade", memoryMode=True)
+print(trade.select(['ticker','date','bid','ask','prc','vol']).toDF())
+
+# output
+
+  TICKER        date      VOL     PRC     BID     ASK
+0   AMZN  1997.05.15  6029815  23.500  23.500  23.625
+1   AMZN  1997.05.16  1232226  20.750  20.500  21.000
+2   AMZN  1997.05.19   512070  20.500  20.500  20.625
+3   AMZN  1997.05.20   456357  19.625  19.625  19.750
+4   AMZN  1997.05.21  1577414  17.125  17.125  17.250
+...
+
+```
+
+We can use the **showSQL** method to display the SQL statement.
+
+```
+print(trade.select(['ticker','date','bid','ask','prc','vol']).showSQL())
+
+# output
+select ticker,date,bid,ask,prc,vol from Tff260d29
+
+```
+
+#### 5.1.2 Use string as input
+
+We can also pass a list of field names as a string to **select** method and conditions as string to **where** method.
+
+```
+trade.select("ticker, date, vol").toDF()
+
+# output
+     ticker        date       vol
+0       AMZN  1997.05.15   6029815
+1       AMZN  1997.05.16   1232226
+2       AMZN  1997.05.19    512070
+3       AMZN  1997.05.20    456357
+4       AMZN  1997.05.21   1577414
+...
+
+```
+
+
+#### 5.1.3 **selectAsVector**
+
+Export a single column as a vector.
+
+```
+print(t.where('TICKER=`AMZN').where('date>2016.12.15').sort('date').selectAsVector('prc'))
+
+#output
+[757.77002 766.      771.21997 770.59998 766.34003 760.59003 771.40002
+ 772.13    765.15002 749.87   ]
+```
+
+
+#### 5.2 **top**
+
+Get the top records in a table.
+
+```
+trade.top(5).toDF()
+
+
+
+# output
+      TICKER        date       VOL        PRC        BID       ASK
+0       AMZN  1997.05.16   6029815   23.50000   23.50000   23.6250
+1       AMZN  1997.05.17   1232226   20.75000   20.50000   21.0000
+2       AMZN  1997.05.20    512070   20.50000   20.50000   20.6250
+3       AMZN  1997.05.21    456357   19.62500   19.62500   19.7500
+4       AMZN  1997.05.22   1577414   17.12500   17.12500   17.2500
+
+```
+
+#### 5.3 **where**
+
+We can also use **where** method to filter the selection.
+
+#### 5.3.1 Use chaining method
+
+We can use chaining method to apply multiple where conditions.
 
 ```
 trade = s.loadTable(dbPath=WORK_DIR+"/valuedb", tableName="trade", memoryMode=True)
@@ -402,7 +515,7 @@ select date,bid,ask,prc,vol from Tff260d29 where TICKER=`AMZN and bid!=NULL and 
 
 ```
 
-#### 5.1.2 Use string as input
+#### 5.3.2 Use string as input
 
 We can also pass a list of field names as a string to **select** method and conditions as string to **where** method.
 
@@ -421,37 +534,6 @@ trade.select("ticker, date, vol").where("bid!=NULL, ask!=NULL, vol>50000000").to
 39   NVDA  2016.12.28   57384116
 40   NVDA  2016.12.29   54384676
 
-```
-
-#### 5.2 **top**
-
-Get the top records in a table. 
-
-```
-trade.top(5).toDF()
-
-
-
-# output
-      TICKER        date       VOL        PRC        BID       ASK
-0       AMZN  1997.05.16   6029815   23.50000   23.50000   23.6250
-1       AMZN  1997.05.17   1232226   20.75000   20.50000   21.0000
-2       AMZN  1997.05.20    512070   20.50000   20.50000   20.6250
-3       AMZN  1997.05.21    456357   19.62500   19.62500   19.7500
-4       AMZN  1997.05.22   1577414   17.12500   17.12500   17.2500
-
-```
-
-#### 5.3 **selectAsVector**
-
-Export a single column as a vector. 
-
-```
-print(t.where('TICKER=`AMZN').where('date>2016.12.15').sort('date').selectAsVector('prc'))
-
-#output
-[757.77002 766.      771.21997 770.59998 766.34003 760.59003 771.40002
- 772.13    765.15002 749.87   ]
 ```
 
 
@@ -505,24 +587,83 @@ print(trade.select('count(ask)').groupby(['vol']).having('count(ask)>1').toDF())
 
 #### 5.5 **contextby**
 
-**contextby** is similar to **groupby** except that **groupby** returns a scalar for each group but **contextby** returns a vector for each group. The vector size is the same as the number of rows in the group. 
+**contextby** is similar to **groupby** except that **groupby** returns a scalar for each group but **contextby** returns a vector for each group. The vector size is the same as the number of rows in the group.
+
+#### 5.5.1 contextby + top
 
 ```
-df= s.loadTable(dbPath=WORK_DIR+"/valuedb", tableName="trade").select(["vol","prc"]).contextby('ticker').sum().top(10).toDF()
+df= s.loadTable(dbPath=WORK_DIR+"/valuedb", tableName="trade").contextby('ticker').top(5).toDF()
 print(df)
 
-# output
-  ticker      sum_vol       sum_prc
-0   AMZN  33706396492  772503.81377
-1   AMZN  33706396492  772503.81377
-2   AMZN  33706396492  772503.81377
-3   AMZN  33706396492  772503.81377
-4   AMZN  33706396492  772503.81377
-5   AMZN  33706396492  772503.81377
-6   AMZN  33706396492  772503.81377
-7   AMZN  33706396492  772503.81377
-8   AMZN  33706396492  772503.81377
-9   AMZN  33706396492  772503.81377
+  TICKER        date      VOL     PRC     BID     ASK
+0   AMZN  1997.05.15  6029815  23.500  23.500  23.625
+1   AMZN  1997.05.16  1232226  20.750  20.500  21.000
+2   AMZN  1997.05.19   512070  20.500  20.500  20.625
+3   AMZN  1997.05.20   456357  19.625  19.625  19.750
+4   AMZN  1997.05.21  1577414  17.125  17.125  17.250
+
+```
+
+#### 5.5.2 contextby + having
+
+```
+df= s.loadTable(dbPath=WORK_DIR+"/valuedb", tableName="trade").contextby('ticker').having(" sum(VOL)>40000000000").toDF()
+print(df)
+
+     TICKER        date       VOL       PRC       BID       ASK
+0      NVDA  1999.01.22   5702636   19.6875   19.6250   19.6875
+1      NVDA  1999.01.25   1074571   21.7500   21.7500   21.8750
+2      NVDA  1999.01.26    719199   20.0625   20.0625   20.1250
+3      NVDA  1999.01.27    510637   20.0000   19.8750   20.0000
+4      NVDA  1999.01.28    476094   19.9375   19.8750   20.0000
+5      NVDA  1999.01.29    509718   19.0000   19.0000   19.3125
+...
+4512   NVDA  2016.12.27  29857132  117.3200  117.3100  117.3200
+4513   NVDA  2016.12.28  57384116  109.2500  109.2500  109.2900
+4514   NVDA  2016.12.29  54384676  111.4300  111.2600  111.4200
+4515   NVDA  2016.12.30  30323259  106.7400  106.7300  106.7500
+
+```
+
+
+#### 5.5.3 contextby multiple columns and calculated columns
+
+**Vector functions**
+
+```
+df= s.loadTable(dbPath=WORK_DIR+"/valuedb", tableName="trade").select("TICKER, month(date) as month, cumsum(VOL").contextBy("TICKER,month(date)").toDF()
+print(df)
+
+    TICKER     month  cumsum_VOL
+0       AMZN  1997.05M     6029815
+1       AMZN  1997.05M     7262041
+2       AMZN  1997.05M     7774111
+3       AMZN  1997.05M     8230468
+4       AMZN  1997.05M     9807882
+...
+13133   NVDA  2016.12M   367356016
+13134   NVDA  2016.12M   421740692
+13135   NVDA  2016.12M   452063951
+
+```
+
+**Aggregated functions**
+
+```
+df= s.loadTable(dbPath=WORK_DIR+"/valuedb", tableName="trade").select("TICKER, month(date) as month, sum(VOL").contextBy("TICKER,month(date)").toDF()
+print(df)
+
+ TICKER     month    sum_VOL
+0       AMZN  1997.05M   13736587
+1       AMZN  1997.05M   13736587
+2       AMZN  1997.05M   13736587
+3       AMZN  1997.05M   13736587
+4       AMZN  1997.05M   13736587
+5       AMZN  1997.05M   13736587
+...
+13133   NVDA  2016.12M  452063951
+13134   NVDA  2016.12M  452063951
+13135   NVDA  2016.12M  452063951
 
 ```
 
@@ -530,7 +671,7 @@ print(df)
 
 #### 5.6 Table join
 
-Use method **merge** for inner, left, and outer join; method **merge_asof** for "asof" join.
+We use method **merge** for inner, left, and outer join; method **merge_asof** for "asof" join; method **merge_window** for "window join".
 
 #### 5.6.1 **merge**
 
@@ -574,6 +715,32 @@ print(trade.merge_asof(t1,on=["date"]).select(["date","prc","open"]).top(5).toDF
 ```
 
 
+#### 5.6.3 **merge_window**
+
+**merge_window** as "window join" is a generalization of "asof" join. For each row in leftTable, window join applies aggregate functions on a window of rows in rightTable.If window defined by parameters: leftBound and rightBound,
+for each row in leftTable with the value of the last column in matchCols equal to t, find the rows in rightTable with matching values of the other columns in matchCols and the value of the last column in matchCols between (t+w1) and (t+w2),
+then apply aggFunctions to the selected rows in rightTable.The only difference between window join and prevailing window join is that if rightTable doesn't contain a matching value for w1 (the left boundary of window),
+prevailing window join will fill it with the last value before w1 (with all the matching columns except the last one are matched), and apply the aggregate functions.
+
+```
+t= s.loadText(filename=WORK_DIR+"/example.csv")
+wjt = t.merge_window(t, -10, -5, aggFunctions='<sum(VOL)>', on=["TICKER","date"]).toDF()
+print(wjt)
+
+   TICKER        date       VOL        PRC        BID       ASK     sum_VOL
+0       AMZN  1997.05.15   6029815   23.50000   23.50000   23.6250         NaN
+1       AMZN  1997.05.16   1232226   20.75000   20.50000   21.0000         NaN
+2       AMZN  1997.05.19    512070   20.50000   20.50000   20.6250         NaN
+3       AMZN  1997.05.20    456357   19.62500   19.62500   19.7500   6029815.0
+4       AMZN  1997.05.21   1577414   17.12500   17.12500   17.2500   7262041.0
+5       AMZN  1997.05.22    983855   16.75000   16.62500   16.7500   7262041.0
+6       AMZN  1997.05.23   1330026   18.00000   18.00000   18.1250   7262041.0
+7       AMZN  1997.05.27    726192   19.00000   19.00000   19.1250   4761922.0
+8       AMZN  1997.05.28    382132   18.37500   18.37500   18.6250   6091948.0
+9       AMZN  1997.05.29    289970   18.06250   18.00000   18.1250   4859722.0
+...
+
+```
 
 #### 6 Computing
 
