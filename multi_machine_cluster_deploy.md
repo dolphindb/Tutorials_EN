@@ -56,7 +56,7 @@ mkdir /DolphinDB/server/log
 In "config" directory, create the configuration file of the controller (**controller.cfg**). As an example, we can specify the following commonly used parameters in **controller.cfg**. Only **localSite** is mandatory. All other parameters are optional.
 
 ```
-localSite=10.1.1.7:8900:master
+localSite=10.1.1.7:8990:master
 localExecutors=3
 maxConnections=128
 maxMemSize=16
@@ -67,7 +67,7 @@ dfsReplicaReliabilityLevel=0
 ```
 | Parameter Configuration        | Explanation          |
 |:------------- |:-------------|
-|localSite=10.1.1.7::master|     Host address, port number and alias of the local node.|
+|localSite=10.1.1.7:8990:master|     Host address, port number and alias of the local node.|
 |localExecutors=3          |      The number of local executors. The default value is the number of cores of the CPU - 1.   |
 |maxConnections=128     |         The maximum number of inward connections.|
 |maxMemSize=16          |        The maximum memory (in terms of GB) allocated to DolphinDB. If set to 0, it means no limit on memory usage.|
