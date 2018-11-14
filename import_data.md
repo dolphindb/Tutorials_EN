@@ -55,7 +55,7 @@ When loading a text file, the system determines the data type of each column bas
 For example, the volume column is recognized as INT type, but we would like it to be LONG type. In this case, we need to modify the `schema` table. We can use following script:
 ```
 nameCol = `symbol`exchange`cycle`tradingDay`date`time`open`high`low`close`volume`turnover`unixTime
-typeCol = [SYMBOL,SYMBOL,INT,DATE,DATE,INT,DOUBLE,DOUBLE,DOUBLE,DOUBLE,INT,DOUBLE,LONG]
+typeCol = `SYMBOL`SYMBOL`INT`DATE`DATE`INT`DOUBLE`DOUBLE`DOUBLE`DOUBLE`INT`DOUBLE`LONG
 schemaTb = table(nameCol as name,typeCol as type)
 ```
 
