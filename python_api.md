@@ -224,11 +224,11 @@ dt = s.table(data={'id': [1, 2, 2, 3],
 print(s.loadTable("test").toDF())
 
 # output
-   id  price   sym
-0   1   22.0  AAPL
-1   2    3.5  AMZN
-2   2   21.0  AMZN
-3   3   26.0     A
+   id  ticker   price
+0   1   AAPL    22.0
+1   2   AMZN     3.5
+2   2   AMZN    21.0
+3   3      A    26.0
 
 ```
 
