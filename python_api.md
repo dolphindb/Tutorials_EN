@@ -200,6 +200,8 @@ print(trade.rows)
 We can upload a Python object to the DolphinDB server with function **upload**. The input of function **upload** is a Python dictionary object. For this dictionary object, the key is the variable name on DolphinDB server and the value is the Python object.
 
 ```
+import pandas as pd
+import numpy as np
 df = pd.DataFrame({'id': np.int32([1, 2, 3, 4, 3]), 'value':  np.double([7.8, 4.6, 5.1, 9.6, 0.1]), 'x': np.int32([5, 4, 3, 2, 1])})
 s.upload({'t1': df})
 print(s.run("t1.value.avg()"))
