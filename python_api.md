@@ -586,7 +586,7 @@ Method **groupby** must be followed by an aggregate function such as **count**, 
 
 ```
 trade = s.loadTable(tableName="trade",dbPath=WORK_DIR+"/valuedb")
-print(trade.select('ticker').groupby(['ticker']).count().sort(bys=['ticker desc']).toDF())
+print(trade.select('count(*)').groupby(['ticker']).sort(bys=['ticker desc']).toDF())
 
 # output
   ticker  count_ticker
