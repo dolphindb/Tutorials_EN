@@ -667,7 +667,7 @@ print(df)
 
 ```
 ```
-df= s.loadTable(tableName="trade",dbPath=WORK_DIR+"/valuedb").select("TICKER, month(date) as month, sum(VOL").contextBy("TICKER,month(date)").toDF()
+df= s.loadTable(tableName="trade",dbPath=WORK_DIR+"/valuedb").select("TICKER, month(date) as month, sum(VOL").contextby("TICKER,month(date)").toDF()
 print(df)
 
  TICKER     month    sum_VOL
