@@ -33,7 +33,7 @@ DolphinDB supports sequential, range, hash, value, list, and composite partition
   *  A list domain partitions data according to a list given by the user. It is more flexible than a range domain.
   *  The composite domain is suitable for situations where 2 or 3 columns are frequently used in WHERE or GROUP BY clauses of queries on extremely large tables.  In a composite domain, we can have 2 or 3 partitioning columns. Each column can be of range, value, or list domain. For example, we can use a value domain on trading days, and a range domain on stock symbols. The order of the partitioning columns is irrelevant. 
 
-When we create a new distributed database, we need to specify partitionType and partitionScheme. When we reopen an existing distributed database, we only need to specify folderDirectory. We cannot overwrite an existing distributed database with a different partitionType or partitionScheme. 
+When we create a new distributed database, we need to specify "partitionType" and "partitionScheme". When we reopen an existing distributed database, we only need to specify "folderDirectory". We cannot overwrite an existing distributed database with a different "partitionType" and "partitionScheme". 
 
 When we use aggregate functions on a partitioned table, we can achieve optimal performance if GROUP BY columns are also partitioning columns. 
 
@@ -139,6 +139,7 @@ The example above defines a database db with 204 partitions. Each of these parti
 
 ![](images/database/value.png)
 
+The partition scheme of a value domain can be appended with new values after it is created. Please check function `addValuePartitions` in user manual for details. 
 
 #### 3.5 LIST Domain
 
@@ -193,6 +194,7 @@ Click on a date partition, we can see the range domain has 2 partitions:
 
 ![](images/database/hier2.png)
 
+If one of the partitioning columns of a composite domain is of value domain, it can be appended with new values after it is created. Please check function `addValuePartitions` in user manual for details. 
 
 #### 4. Partition guidelines
 
@@ -217,7 +219,7 @@ the target data can be quickly loaded instead of scanning the entire table, resu
 
 #### 4.2 Partition size should not be too large
 
-A single DolphinDB partition can support up to 2 billion rows. In practice, however, a single partition should have a significantly less number of rows. The columns in a partition are stored as separate files on disk after compression. When a query reads the partition, the system selects the necessary columns and loads into memory after decompression. Too large partitions may slow down the system, as it may cause insufficient memory with multiple threads running in parallel, or it may make the system swap data between disk and memory too frequently. As a rule of thumb, assume the available memory of a data node is S and the number of workers is W, then it is recommended that a partition is less than S/8W in memory after decompression，For example, with available memory of 32GB and 8 workers, a single partition should be smaller than 32GB/8/8=512MB.
+The columns in a partition are stored as separate files on disk after compression. When a query reads the partition, the system selects the necessary columns and loads into memory after decompression. Too large partitions may slow down the system, as it may cause insufficient memory with multiple threads running in parallel, or it may make the system swap data between disk and memory too frequently. As a rule of thumb, assume the available memory of a data node is S and the number of workers is W, then it is recommended that a partition is less than S/8W in memory after decompression，For example, with available memory of 32GB and 8 workers, a single partition should be smaller than 32GB/8/8=512MB.
 
 Given a query, the number of subtasks is the same as the number of partitions involved. Therefore if partitions are too large, the system cannot fully take advantage of distributed computing on multiple partitions.
 
@@ -239,7 +241,7 @@ For example, the distribution of trading activities of stocks is highly skewed. 
 
 Significant differences between partition sizes may cause load imbalance. Some nodes may have heavy workload while other nodes idle. If a task is has multiple subtasks, it returns the final result only after the last subtask is finished. As each subtask works on a different partition, if data are not distributed evenly among partitions, it may increase the execution time.
 
-A useful tool for partition data evenly is function *cutPoints(X, N, [freq])*, where *X* is a vector; *N* means the number of buckets the elements of *X* will be grouped into; and the optional argument *freq* is a vector of the same length as *X* indicating the frequency of each element in *X*. It returns a vector with *(N+1)* elements such that the elements of *X* are evenly distributed within each of the *N* buckets indicated by the vector. It can be used to get the partition scheme of a range domain in a distributed database. 
+A useful tool for partition data evenly is function `cutPoints(X, N, [freq])`, where X is a vector; N means the number of buckets the elements of X will be grouped into; and the optional argument freq is a vector of the same length as X indicating the frequency of each element in X. It returns a vector with (N+1) elements such that the elements of X are evenly distributed within each of the N buckets indicated by the vector. It can be used to get the partition scheme of a range domain in a distributed database. 
 
 
 ```
@@ -283,7 +285,7 @@ stockDB.createPartitionedTable(quoteSchema, "quotes", `date`sym)
 tradeSchema = table(10:0, `sym`date`time`price`vol, [SYMBOL,DATE,TIME,DOUBLE,INT])
 stockDB.createPartitionedTable(tradeSchema, "trades", `date`sym)
 ```
-In the examples above, the distributed tables *quotes* and *trades* are located in the same distributed database. 
+In the examples above, the distributed tables quotes and trades are located in the same distributed database. 
 
 #### 5. Import data into distributed databases
 
@@ -291,7 +293,7 @@ DolphinDB is an OLAP database system. It is designed for fast storage and query/
 
 #### 5.1 Replicas
 
-DolphinDB can make multiple replicas for each partition. The number of replicas is 2 by default, and can be changed by setting the configuration parameter *dfsReplicationFactor*. 
+DolphinDB can make multiple replicas for each partition. The number of replicas is 2 by default, and can be changed by setting the configuration parameter "dfsReplicationFactor". 
 
 There are 2 purposes of replicas: 
 (1) Fault tolerance: if a node is down, the system can use a replica for ongoing projects
@@ -299,7 +301,7 @@ There are 2 purposes of replicas:
 
 DolphinDB adopts two-phase commit protocol to ensure strong consistency of all replicas of the same partition on different nodes when writing data into the database. 
 
-There is an important configuration parameter *dfsReplicaReliabilityLevel* in the configuration file of the controller (*controller.cfg*). It determines if multiple replicas are allowed to reside on nodes of the same physical server. In development stage, we can set it to 0 allowing multiple replicas on the same machine. In production stage, however, we should set it to 1 to ensure load balance.
+There is an important configuration parameter "dfsReplicaReliabilityLevel" in the configuration file of the controller (controller.cfg). It determines if multiple replicas are allowed to reside on nodes of the same physical server. In development stage, we can set it to 0 allowing multiple replicas on the same machine. In production stage, however, we should set it to 1 to ensure load balance.
 
 #### 5.2 Transactions
 
@@ -367,7 +369,7 @@ loadTable("dfs://stockDB", "quotes").append!(quotes)
 
 ##### 5.4.1 Import data from text files
 
-DolphinDB provides 3 function to load text files: loadText, ploadText, and loadTextEx. loadText and ploadText load text files smaller than the server memory into memory. ploadText loads data in parallel as a partitioned table in memory and is faster than loadText. loadTextEx can load files much larger than the server memory and can load data directly to databases.
+DolphinDB provides 3 function to load text files: `loadText`, `ploadText`, and `loadTextEx`. `loadText` and `ploadText` load text files smaller than the server memory into memory. `ploadText` loads data in parallel as a partitioned table in memory and is faster than `loadText`. `loadTextEx` can load files much larger than the server memory and can load data directly to databases.
 
 ```
 t=loadText(workDir + "/trades.txt")
@@ -402,7 +404,7 @@ loadTable("dfs://stockDB", "quotes").append!(t)
 
 ##### 5.4.4 Import data with programming APIs
 
-DolphinDB provides APIs for Python, Java, C++, C#, etc. After getting data with these languages, we can call function append! to import data into distributed databases in DolphinDB. The following script is an example with Java API.
+DolphinDB provides APIs for Python, Java, C++, C#, R and JavaScript. After getting data with these languages, we can call function `append!` to import data into distributed databases in DolphinDB. The following script is an example for Java API.
 
 ```
 DBConnection conn = new DBConnection();
@@ -420,5 +422,65 @@ BasicTable quotes = ...
 List<Entity> args = new ArrayList<Entity>(1);
 args.add(quotes);
 conn.run("saveQuotes", args)
+```
+
+#### 6. Queries on partitioned tables
+
+The execution of most distributed queries does not need all partitions of a distributed table. It could save a significant amount of time if the system can narrow down relevant partitions before loading and processing data. 
+
+DolphinDB conducts partition pruning based on relational operators (<, <=, =, ==, >, >=, in, between) and logical operators (or, and) with the partitioning column(s).
+
+```
+n=10000000
+id=take(1..1000, n).sort()
+date=1989.12.31+take(1..365, n)
+announcementDate=date+rand(1..10, n)
+x=rand(1.0, n)
+y=rand(10, n)
+t=table(id, date, announcementDate, x, y)
+db=database("dfs://rangedb1", RANGE, [1990.01.01, 1990.03.01, 1990.05.01, 1990.07.01, 1990.09.01, 1990.11.01, 1991.01.01])
+pt = db.createPartitionedTable(t, `pt, `date)
+pt.append!(t);
+
+pt=db.loadTable(`pt);
+```
+
+The following queries can narrow down relevant partitions:
+
+```
+select * from pt where date>1990.04.01 and date<1990.06.01;
+```
+The system determines that only 2 partitions ([1990.03.01, 1990.05.01) and [1990.05.01, 1990.07.01)) are relevant to this query.
+
+```
+select * from pt where date>1990.12.01-10;
+```
+The system determines that only 1 partition [1990.11.01, 1991.01.01) is relevant to this query.
+
+```
+select count(*) from pt where date between 1990.08.01:1990.12.01 group by date;
+```
+The system determines that only 3 partitions ([1990.07.01, 1990.09.01), [1990.09.01, 1990.11.01) and [1990.11.01, 1991.01.01)) are relevant to this query.
+
+```
+select * from pt where y<5 and date between 1990.08.01:1990.08.31;
+```
+The system narrows down the relevant partitions to [1990.07.01, 1990.09.01). Please note that in this step, the system ignores the condition of y<5. After loading the relevant partition, the system will use the condition of y<5 to further filter the data.
+
+The following queries cannot narrow down the relevant partitions. If used on a huge partitioned table, they will take a long time to finish. For this reason these queries should be avoided. 
+
+```
+select * from pt where date+10>1990.08.01;
+
+select * from pt where 1990.08.01<date<1990.09.01;
+
+select * from pt where month(date)<=1990.03M;
+
+select * from pt where y<5;
+
+announcementDate=1990.08.08
+select * from pt where date<announcementDate-3;
+
+select * from pt where y<5 or date between 1990.08.01:1990.08.31;
 ```
 
