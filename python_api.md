@@ -1,17 +1,17 @@
 # Python API for DolphinDB
 
-DolphinDB Python API supports Python 3.6 or above.
+DolphinDB Python API supports Python 2.7, Python 3.6 or above.
 
-DolphinDB Python API in essense encapsulates a subset of the DolphinDB script language. It converts Python script to DolphinDB script to be executed on the DolphinDB server. The execution result can either be saved to an object on DolphinDB server, or be serialized to a Python client object. 
+DolphinDB Python API in essense encapsulates a subset of DolphinDB's scripting language. It converts Python script to DolphinDB script to be executed on the DolphinDB server. The result can either be saved on DolphinDB server or be serialized to a Python client object. 
 
-There are 2 types of Python API methods. The first type generates DolphinDB script but does not trigger script execution; the second type triggers script execution. Most Python API methods are of the first type. The table below lists all the methods of the second type. They all belong to the table class. 
+There are 2 types of Python API methods. The first type generates DolphinDB script but does not trigger script execution; the second type triggers script execution. Most Python API methods are of the first type. The table below lists all methods of the second type. They all belong to the table class. 
 
 | Method        | Explanation          |
 |:------------- |:-------------|
 |connect(host, port, [username, password])    | Connect a session to a DolphinDB server |
 |toDF()    | Convert a DolphinDB table object to a pandas Dataframe object |
 |executeAs(tableName)    | Save a table on DolphinDB server with the specified table name |
-|execute()    | Used with **update** and **delete** methods |
+|execute()    | Used with `update` and `delete` methods |
 |database(dbPath, ......)    | Create or reload a database |
 |dropDatabase(dbPath)    | Delete a database |
 |dropPartition(dbPath, partitionPaths)    | Delete database partitions |
@@ -32,7 +32,7 @@ s = ddb.session()
 s.connect("localhost",8848)
 ```
 
-If you need to enter username and password:
+If you need to enter a username and password:
 
 ```
 s.connect("localhost",8848, YOUR_USERNAME, YOUR_PASSWORD)
@@ -42,13 +42,13 @@ The default admin account username and password for DolphinDB server are "admin"
 
 ### 2 Import data to DolphinDB server
 
-There are 3 types of DolphinDB databases based on where they are saved: in DFS (Distributed File System), in local file system and in memory. DolphinDB is a distributed database system and achieves optimal performance in DFS mode. DFS also automatically manages data storage and duplication. Therefore, we highly recommend to use DFS mode. Please refer to the tutorial multi_machine_cluster_deploy for details. For users to get started quickly, we also use databases in the local file system in the examples in this tutorial. All DFS database paths start with "dfs://".
+There are 3 types of DolphinDB databases: in-memory database, local file system database and DFS (Distributed File System) database. DFS automatically manages data storage and replicas. DolphinDB is a distributed database system and achieves optimal performance in DFS mode. Therefore, we highly recommend to use DFS mode. Please refer to the tutorial [multi_machine_cluster_deploy](https://github.com/dolphindb/Tutorials_EN/blob/master/multi_machine_cluster_deploy.md) for details. For simplicity, we also use databases in the local file system in some examples. 
 
 #### 2.1 Import data as an in-memory table
 
-To import text files into DolphinDB as an in-memory table, use session method **loadText**. It returns a DolphinDB table object in Python, which corresponds to an in-memory table on the DolphinDB server. The DolphinDB table object in Python has a method **toDF** to convert it to a pandas DataFrame.
+To import text files into DolphinDB as an in-memory table, use session method `loadText`. It returns a DolphinDB table object in Python, which corresponds to an in-memory table on the DolphinDB server. The DolphinDB table object in Python has a method `toDF` to convert it to a pandas DataFrame.
 
-Please note that to use method **loadText** to load a text file as an in-memory table, data size must be smaller than available memory.
+Please note that to use method `loadText` to load a text file as an in-memory table, table size must be smaller than available memory.
 
 ```
 WORK_DIR = "C:/DolphinDB/Data"
@@ -73,9 +73,7 @@ TICKER        date       VOL        PRC        BID       ASK
 13135   NFLX  2016.12.30   4455012  123.80000  123.80000  123.8300
 
 ```
-
-The default delimiter for function **loadText** is comma ",". Other delimiters can also be specified. For example, to import a tabular text file:
-
+The default delimiter for function `loadText` is comma ",". We can also use other delimiters. For example, to import a tabular text file:
 ```
 t1=s.loadText(WORK_DIR+"/t1.tsv", '\t')
 ```
@@ -86,14 +84,14 @@ To load data files that are larger than available memory into DolphinDB, we can 
 
 #### 2.2.1 Create a partitioned database
 
-After we create a partitioned database, we cannot modify its partitioning scheme. To make sure the examples below do not use a pre-defined database "valuedb", check if it exists. If it exists, drop it.
+After we create a partitioned database, we cannot modify its partitioning scheme. To make sure the examples below do not use a pre-defined database "valuedb", check if it exists. If it exists, delete it.
 
 ```
 if s.existsDatabase(WORK_DIR+"/valuedb"):
     s.dropDatabase(WORK_DIR+"/valuedb")
 ```
 
-Now create a value-based partitioned database "valuedb" with a session method **database**. As "example.csv" only has data for 3 stocks, we use a VALUE partition with stock ticker as the partitioning column. The parameter **partitions** indicates the partition scheme.
+Now create a value-based partitioned database "valuedb" with a session method `database`. As "example.csv" only has data for 3 stocks, we use a VALUE partition with stock ticker as the partitioning column. The parameter "partitions" indicates the partition scheme.
 
 ```
 # 'db' indicates the database handle name on the DolphinDB server.
@@ -101,7 +99,7 @@ s.database('db', partitionType=ddb.VALUE, partitions=["AMZN","NFLX","NVDA"], dbP
 # this is equivalent to executing 'db=database(=WORK_DIR+"/valuedb", VALUE, ["AMZN","NFLX", "NVDA"])' on DolphinDB server.
 ```
 
-To create a partitioned database in DFS, just make the database path start with "dfs://". To run the following example, we need to configure a DFS cluster. Please refer to the tutorial multi_machine_cluster_deploy.md.
+To create a partitioned database in DFS, just make the database path start with "dfs://". Before we execute the following script, we need to configure a DFS cluster. Please refer to the tutorial [multi_machine_cluster_deploy.md](https://github.com/dolphindb/Tutorials_EN/blob/master/multi_machine_cluster_deploy.md)
 
 ```
 s.database('db', partitionType=ddb.VALUE, partitions=["AMZN","NFLX", "NVDA"], dbPath="dfs://valuedb")
@@ -111,11 +109,11 @@ In addition to VALUE partition, DolphinDB also supports SEQ, RANGE, LIST, COMBO,
 
 #### 2.2.2 Create a partitioned table and append data to the table
 
-After a partitioned database is created successfully, we can import text files to a partitioned table in the partitioned database with function **loadTextEx**. If the partitioned table does not exist, **loadTextEx** creates it and appends the imported data to it. Otherwise, the function appends the imported data to the partitioned table.
+After a partitioned database is created successfully, we can import text files to a partitioned table in the partitioned database with function `loadTextEx`. If the partitioned table does not exist, `loadTextEx` creates it and appends the imported data to it. Otherwise, the function appends the imported data to the partitioned table.
 
-In function **loadTextEx**, parameter **dbPath** is the database path; **tableName** is the partitioned table name; **partitionColumns** is the partitioning columns; **filePath** is the absolute path of the text file; **delimiter** is the delimiter of the text file (comma by default).
+In function `loadTextEx`, parameter "dbPath" is the database path; "tableName" is the partitioned table name; "partitionColumns" is the partitioning columns; "filePath" is the absolute path of the text file; "delimiter" is the delimiter of the text file (comma by default).
 
-In the following example, function **loadTextEx** creates a partitioned table **trade** on the DolphinDB server and then appends the data from "example.csv" to the table. 
+In the following example, function `loadTextEx` creates a partitioned table "trade" on the DolphinDB server and then appends the data from "example.csv" to the table. 
 
 ```
 if s.existsDatabase(WORK_DIR+"/valuedb"):
@@ -167,11 +165,11 @@ To refer to the table later:
 
 #### 2.3 Import data as an in-memory partitioned table
 
-#### 2.3.1 **loadTextEx**
+#### 2.3.1 `loadTextEx`
 
 We can import data as an in-memory partitioned table. Operations on an in-memory partitioned table are faster than those on a nonpartitioned in-memory table as the former utilizes parallel computing.
 
-We can use function **loadTextEx** to create an in-memory partitioned database with an empty string for the parameter **dbPath**.
+We can use function `loadTextEx` to create an in-memory partitioned database with an empty string for the parameter "dbPath".
 
 ```
 s.database('db', partitionType=ddb.VALUE, partitions=["AMZN","NFLX","NVDA"], dbPath="")
@@ -180,9 +178,9 @@ s.database('db', partitionType=ddb.VALUE, partitions=["AMZN","NFLX","NVDA"], dbP
 trade=s.loadTextEx(dbPath="db", partitionColumns=["TICKER"], tableName='trade', filePath=WORK_DIR + "/example.csv")
 ```
 
-#### 2.3.2 **ploadText**
+#### 2.3.2 `ploadText`
 
-Function **ploadText** loads a text file in parallel to generate an in-memory partitioned table. It runs much faster than **loadText**.
+Function `ploadText` loads a text file in parallel to generate an in-memory partitioned table. It runs much faster than `loadText`.
 
 ```
 trade=s.ploadText(WORK_DIR+"/example.csv")
@@ -195,13 +193,11 @@ print(trade.rows)
 
 #### 2.4 Upload data from Python to DolphinDB server
 
-#### 2.4.1 With function **upload**
+#### 2.4.1 With function `upload`
 
-We can upload a Python object to the DolphinDB server with function **upload**. The input of function **upload** is a Python dictionary object. For this dictionary object, the key is the variable name on DolphinDB server and the value is the Python object.
+We can upload a Python object to the DolphinDB server with function `upload`. The input of function `upload` is a Python dictionary object. For this dictionary object, the key is the variable name in DolphinDB and the value is the Python object.
 
 ```
-import pandas as pd
-import numpy as np
 df = pd.DataFrame({'id': np.int32([1, 2, 3, 4, 3]), 'value':  np.double([7.8, 4.6, 5.1, 9.6, 0.1]), 'x': np.int32([5, 4, 3, 2, 1])})
 s.upload({'t1': df})
 print(s.run("t1.value.avg()"))
@@ -210,9 +206,9 @@ print(s.run("t1.value.avg()"))
 5.44
 ```
 
-#### 2.4.2 With function **table**
+#### 2.4.2 With function `table`
 
-A DolphinDB table object can be created on the DolphinDB server with the **table** method of a session. The input of the **table** method can be a dictionary, a DataFrame, or a table name on the DolphinDB server. 
+A DolphinDB table object can be created with the `table` method of a session. The input of the `table` method can be a dictionary, a DataFrame, or a table name on the DolphinDB server. 
 
 ```
 # save the table to DolphinDB server as table "test"
@@ -224,21 +220,62 @@ dt = s.table(data={'id': [1, 2, 2, 3],
 print(s.loadTable("test").toDF())
 
 # output
-   id  ticker   price
-0   1   AAPL    22.0
-1   2   AMZN     3.5
-2   2   AMZN    21.0
-3   3      A    26.0
+   id  price   sym
+0   1   22.0  AAPL
+1   2    3.5  AMZN
+2   2   21.0  AMZN
+3   3   26.0     A
 
 ```
 
+#### 2.4.3 Data type conversion
+
+When we upload data to DolphinDB server, certain basic Python types such as bool, int64 and float64 are automatically converted into corresponding DolphinDB types BOOL, INT, DOUBLE. Temporal data types, however, need special treatment. DolphinDB provides 9 temporal data types: DATE, MONTH, TIME, MINUTE, SECOND, DATETIME, TIMESTAMP, NANOTIME and NANOTIMESTAMP. The temporal data type datetime64 in Python is converted into DolphinDB temporal data type NANOTIMESTAMP. To convert datetime64 into other DolphinDB temporal data types, please use `from_time`, `from_date` or `from_datetime` function. For more details, please refer to the following table.
+
+```
+# import DolphinDB data type package 
+from dolphindb.type_util import *
+```
+
+|DolphinDB Temporal Data Type|Example|Result|
+|--------|---------------|--------------|
+|DATE|Date.from_date(date(2012,12,20))|2012.12.20|
+|MONTH|Month.from_date(date(2012,12,26))|2012.12M|
+|TIME|Time.from_time(time(12,30,30,8))|12:30:30.008|
+|MINUTE|Minute.from_time(time(12,30))|12:30m|
+|SECOND|Second.from_time(time(12,30,30))|12:30:30|
+|DATETIME|Datetime.from_datetime(datetime(2012,12,30,15,12,30))|2012.12.30 15:12:30|
+|TIMESTAMP|Timestamp.from_datetime(datetime(2012,12,30,15,12,30,8))|2012.12.30 15:12:30.008|
+|NANOTIME|NanoTime.from_time(time(13,30,10,706))|13:30:10.000706000|
+|NANOTIMESTAMP|NanoTimestamp.from_datetime(datetime(2012,12,24,13,30,10,80706))|2012.12.24 13:30:10.080706000|
+
+As np.NaN is of float type in Python, when np.NaN is uploaded to DolphinDB server it will be converted into FLOAT. Python API provides special Null corresponding to DolphinDB data types. The following table shows how to create DolphinDB Null in Python:
+
+|DolphinDB Data Type|Corresponding Null in Python|
+|-------|--------|
+|BOOL|boolNan|
+|CHAR|byteBan|
+|SHORT|shortNan|
+|INT|intNan|
+|DATE|Date.null()|
+|MONTH|Month.null()|
+|TIME|Time.null()|
+|SECOND|Second.null()|
+|DATETIME|Datetime.null()|
+|TIMESTAMP|Timestamp.null()|
+|NANOTIME|NanoTime.null()|
+|NANOTIMESTAMP|NanoTimestamp.null()|
+
+Please note that, Python data type and DolphinDB data type can't in the same column of dictionary or dataframe. For example, 'date':[date(2012,12,30),Date.from_date(date(2012,12,31)),Date.null()]. It will raise exception since 'date' contains Python datetime64 and DolphinDB DATE.
+
+
 #### 3 Load DolphinDB database tables
 
-#### 3.1 **loadTable**
+#### 3.1 `loadTable`
 
-To load a table from a database, use function **loadTable**. Parameter **tableName** indicates the partitioned table name; **dbPath** is the database location. If **dbPath** is not specified, **loadTable** will load a DolphinDB table in memory whose name is specified in argument **tableName**.
+To load a table from a database, use function `loadTable`. Parameter "tableName" indicates the partitioned table name; "dbPath" is the database location. If "dbPath" is not specified, `loadTable` will load a DolphinDB table in memory whose name is specified in argument "tableName".
 
-For a partitioned table: if parameter **memoryMode**=True, load all the data (or selected partitions if parameter **partitions** is specified) of the table into DolphinDB server memory as a partitioned table; if **memoryMode**=false, only load its metadata into DolphinDB server memory. 
+For a partitioned table: if memoryMode=True and parameter "partition" is unspecified, load all data of the table into DolphinDB server memory as a partitioned table; if memoryMode=True and parameter "partition" is specified, load only the specified partitions of the table into DolphinDB server memory as a partitioned table; if memoryMode=false, only load the metadata of the table into DolphinDB server memory.
 
 #### 3.1.1 Load an entire table
 
@@ -273,8 +310,6 @@ print(trade.rows)
 4941
 ```
 
-#### 3.1.3 Load a partitioned table as in-memory table
-
 ```
 trade = s.loadTable(tableName="trade",dbPath=WORK_DIR+"/valuedb", partitions=["NFLX","NVDA"], memoryMode=True)
 print(trade.rows)
@@ -283,9 +318,9 @@ print(trade.rows)
 8195
 ```
 
-#### 3.2. **loadTableBySQL**
+#### 3.2. `loadTableBySQL`
 
-Method **loadTableBySQL** imports data from an on-disk partitioned table into a in-memory partitioned table through a SQL query.
+Method `loadTableBySQL` imports only the rows of an on-disk partitioned table that satisfy the filtering conditions in a SQL query as an in-memory partitioned table.
 
 ```
 import os
@@ -302,6 +337,63 @@ print(trade.rows)
 
 ```
 
+#### 3.3 Data Type Conversion
+
+When we load data from DolphinDB, DolphinDB types BOOL and INT are converted into Python types bool and int64; CHAR, SHORT, INT and LONG are converted into int64. To convert integer into charater, use chr(). DOUBLE and FLOAT are converted into float64; SYMBOL and STRING are converted into object. Temporal data types are converted into datetime64. For example, 2012.06M is converted into 2012-06-01, 13:30m is converted into 1970-01-01 13:30:00.
+
+|DolphinDB Data Type|Python Data Type|
+|-------------|----------|
+|BOOL|bool|
+|CHAR, SHORT, INT, LONG|int64|
+|DOUBLE, FLOAT|float64|
+|SYMBOL, STRING|object|
+|DATE, MONTH, TIME, MINUTE, SECOND, DATETIME, TIMESTAMP, NANOTIME, NANOTIMESTAMP|datetime64|
+
+```
+//DolphinDB script：
+db=database(WORK_DIR+"/testPython")
+t1 = table(10000:0,`cid`cbool`cchar`cshort`cint`clong`cdate`cmonth`ctime`cminute`csecond`cdatetime`ctimestamp`cnanotime`cnanotimestamp`cfloat`cdouble`csymbol`cstring,[INT,BOOL,CHAR,SHORT,INT,LONG,DATE,MONTH,TIME,MINUTE,SECOND,DATETIME,TIMESTAMP,NANOTIME,NANOTIMESTAMP,FLOAT,DOUBLE,SYMBOL,STRING])
+insert into t1 values (1,true,'a',122h,21,22l,2012.06.12,2012.06M,13:10:10.008,13:30m,13:30:10,2012.06.13 13:30:10,2012.06.13 13:30:10.008,13:30:10.008007006,2012.06.13 13:30:10.008007006,2.1f,2.1,"ABC","abc")
+insert into t1 values (2,,,,,,,,,,,,,,,,,"","")
+insert into t1 values (3,bool(),char(),short(),int(),long(),date(),month(),time(),minute(),second(),datetime(),timestamp(),nanotime(),nanotimestamp(),float(),double(),"",string())
+saveTable(db,t1,`t1)
+```
+
+```
+t=s.loadTable(WORK_DIR+"/testPython",tableName="t1")
+print(t.toDF())
+```
+
+
+|  |cid |cbool |cchar |cshort |cint |clong |cdate |cmonth |ctime |cminute |csecond |cdatetime |ctimestamp|cnanotime |cnanotimestamp |cfloat |cdouble |csymbol |cstring |
+|--|----|------|------|-------|-----|------|------|-------|------|--------|--------|----------|----------|----------|---------------|-------|--------|--------|--------|
+|0 |1 |True |97 |122 |21 |22 |2012-06-12 |2012-06-01 |1970-01-01 13:10:10.008 |1970-01-01 13:30:00 |1970-01-01 13:30:10 |2012-06-13 13:30:10 |2012-06-13 13:30:10.000008 |1970-01-01 13:30:10.008007006 |2012-06-13 13:30:10.008007006 |2.1 |2.1 |ABC |abc |
+|1 |2 |nan  |nan|nan |nan|nan|NaT        |NaT        |NaT                     |NaT                 |NaT                 |NaT                 |NaT                        |NaT                          |NaT                           |nan |nan |    |    |
+|2 |3 |nan  |nan|nan |nan|nan| NaT       |NaT        |NaT                     |NaT                 |NaT                 |NaT                 |NaT                        |NaT                          |NaT                           |nan |nan |    |    |
+
+```
+t.toDF().dtypes
+
+cbool                       bool
+cchar                      int64
+cshort                     int64
+cint                       int64
+clong                      int64
+cdate             datetime64[ns]
+cmonth            datetime64[ns]
+ctime             datetime64[ns]
+cminute           datetime64[ns]
+csecond           datetime64[ns]
+cdatetime         datetime64[ns]
+ctimestamp        datetime64[ns]
+cnanotime         datetime64[ns]
+cnanotimestamp    datetime64[ns]
+cfloat                   float64
+cdouble                  float64
+csymbol                   object
+cstring                   object
+dtype: object
+```
 
 #### 4 Databases and Tables
 
@@ -309,16 +401,15 @@ print(trade.rows)
 
 #### 4.1.1 Create a database
 
-To create a partitioned database, use session method **database**.
+To create a partitioned database, use session method `database`.
 
 ```
 s.database('db', partitionType=ddb.VALUE, partitions=["AMZN","NFLX", "NVDA"], dbPath=WORK_DIR+"/valuedb")
 ```
 
-
 #### 4.1.2 Delete a database
 
-To delete a database, use session method **dropDatabase**. The following statement will drop a database if it exists.
+To delete a database, use session method `dropDatabase`. The following statement will drop a database if it exists.
 
 ```
 if s.existsDatabase(WORK_DIR+"/valuedb"):
@@ -327,7 +418,7 @@ if s.existsDatabase(WORK_DIR+"/valuedb"):
 
 #### 4.1.3 Drop a DFS database partition
 
-To drop a DFS database partition, use session method **dropPartition**.
+To drop a DFS database partition, use session method `dropPartition`.
 
 ```
 if s.existsDatabase("dfs://valuedb"):
@@ -359,7 +450,7 @@ Please see section 3.1.
 
 #### 4.2.2 Append to a table
 
-The following example appends to a partitioned table on disk. The appending changes the table on disk. To use the appended table, we need to load the table after appending. 
+The following example appends to a partitioned table on disk. To use the appended table, we need to reload the table after appending. 
 
 ```
 trade = s.loadTable(tableName="trade",dbPath=WORK_DIR+"/valuedb")
@@ -397,7 +488,7 @@ print(t1.rows)
 
 #### 4.3 Update a table
 
-Function **update** can only be used on in-memory tables and must be followed by function **execute**. 
+Function `update` can only be used on in-memory tables and must be followed by function `execute`. 
 
 ```
 trade = s.loadTable(tableName="trade", dbPath=WORK_DIR+"/valuedb", memoryMode=True)
@@ -424,7 +515,7 @@ print(t1.toDF())
 
 #### 4.4 Delete records from a table
 
-Function **delete** must be followed by function **execute** to delete records from a table.
+Function `delete` must be followed by function `execute` to delete records from a table.
 
 ```
 trade = s.loadTable(tableName="trade", dbPath=WORK_DIR+"/valuedb", memoryMode=True)
@@ -460,7 +551,7 @@ s.dropTable(WORK_DIR + "/valuedb", "trade")
 
 DolphinDB's table class supports method chaining to generate SQL statements.
 
-#### 5.1 **select**
+#### 5.1 `select`
 
 #### 5.1.1 A list of column names as input
 
@@ -479,7 +570,7 @@ print(trade.select(['ticker','date','bid','ask','prc','vol']).toDF())
 
 ```
 
-We can use the **showSQL** method to display the SQL statement.
+We can use the `showSQL` method to display the SQL statement.
 
 ```
 print(trade.select(['ticker','date','bid','ask','prc','vol']).where("date=2012.09.06").where("vol<10000000").showSQL())
@@ -519,9 +610,9 @@ trade.top(5).toDF()
 
 ```
 
-#### 5.3 **where**
+#### 5.3 `where`
 
-We can use **where** method to filter the selection.
+We can use `where` method to filter the selection.
 
 #### 5.3.1 method chaining
 
@@ -548,7 +639,7 @@ print(t1.rows)
 
 ```
 
-We can use the **showSQL** method to display the SQL statement.
+We can use the `showSQL` method to display the SQL statement.
 
 ```
 print(trade.select(['date','bid','ask','prc','vol']).where('TICKER=`AMZN').where('bid!=NULL').where('ask!=NULL').where('vol>10000000').sort('vol desc').showSQL())
@@ -560,7 +651,7 @@ select date,bid,ask,prc,vol from Tff260d29 where TICKER=`AMZN and bid!=NULL and 
 
 #### 5.3.2 Use string as input
 
-We can pass a list of field names as a string to **select** method and conditions as string to **where** method.
+We can pass a list of field names as a string to `select` method and conditions as string to `where` method.
 
 ```
 trade = s.loadTable(tableName="trade",dbPath=WORK_DIR+"/valuedb")
@@ -580,13 +671,13 @@ print(trade.select("ticker, date, vol").where("bid!=NULL, ask!=NULL, vol>5000000
 
 ```
 
-#### 5.4 **groupby**
+#### 5.4 `groupby`
 
-Method **groupby** must be followed by an aggregate function such as **count**, **sum**, **avg**, **std**, etc.
+Method `groupby` must be followed by an aggregate function such as `count`, `sum`, `avg`, `std`, etc.
 
 ```
 trade = s.loadTable(tableName="trade",dbPath=WORK_DIR+"/valuedb")
-print(trade.select('count(*)').groupby(['ticker']).sort(bys=['ticker desc']).toDF())
+print(trade.select('ticker').groupby(['ticker']).count().sort(bys=['ticker desc']).toDF())
 
 # output
   ticker  count_ticker
@@ -596,7 +687,7 @@ print(trade.select('count(*)').groupby(['ticker']).sort(bys=['ticker desc']).toD
 
 ```
 
-Calculate the sum of columns "vol" and "prc" in "ticker" groups:
+Calculate the sum of column "vol" and the sum of column "prc" in each "ticker" group:
 
 ```
 trade = s.loadTable(tableName="trade",dbPath=WORK_DIR+"/valuedb")
@@ -610,7 +701,7 @@ print(trade.select(['vol','prc']).groupby(['ticker']).sum().toDF())
 2   NVDA  46879603806  127139.51092
 ```
 
-**groupby** can be used with with **having**:
+`groupby` can be used with `having`:
 
 ```
 trade = s.loadTable(tableName="trade",dbPath=WORK_DIR+"/valuedb")
@@ -630,9 +721,9 @@ print(trade.select('count(ask)').groupby(['vol']).having('count(ask)>1').toDF())
 
 ```
 
-#### 5.5 **contextby**
+#### 5.5 `contextby`
 
-**contextby** is similar to **groupby** except that for each group, **groupby** returns a scalar but **contextby** returns a vector of the same size as the group.
+`contextby` is similar to `groupby` except that for each group, `groupby` returns a scalar whereas `contextby` returns a vector of the same size as the group.
 
 ```
 df= s.loadTable(tableName="trade",dbPath=WORK_DIR+"/valuedb").contextby('ticker').top(3).toDF()
@@ -651,7 +742,7 @@ print(df)
 
 ```
 ```
-df= s.loadTable(tableName="trade",dbPath=WORK_DIR+"/valuedb").select("TICKER, month(date) as month, cumsum(VOL)").contextby("TICKER,month(date)").toDF()
+df= s.loadTable(tableName="trade",dbPath=WORK_DIR+"/valuedb").select("TICKER, month(date) as month, cumsum(VOL)").contextBy("TICKER,month(date)").toDF()
 print(df)
 
     TICKER     month  cumsum_VOL
@@ -667,7 +758,7 @@ print(df)
 
 ```
 ```
-df= s.loadTable(tableName="trade",dbPath=WORK_DIR+"/valuedb").select("TICKER, month(date) as month, sum(VOL)").contextby("TICKER,month(date)").toDF()
+df= s.loadTable(tableName="trade",dbPath=WORK_DIR+"/valuedb").select("TICKER, month(date) as month, sum(VOL").contextBy("TICKER,month(date)").toDF()
 print(df)
 
  TICKER     month    sum_VOL
@@ -704,11 +795,11 @@ print(df)
 
 #### 5.6 Table join
 
-DolphinDB table class has method **merge** for inner, left, and outer join; method **merge_asof** for asof join; method **merge_window** for window join.
+DolphinDB table class has method `merge` for inner, left, and outer join; method `merge_asof` for asof join; method `merge_window` for window join.
 
-#### 5.6.1 **merge**
+#### 5.6.1 `merge`
 
-Specify joining columns with parameter **on** if joining column names are identical in both tables; use parameters **left_on** and **right_on** when joining column names are different. The optional parameter **how** indicates table join type. The default table join mode is inner join. 
+Specify joining columns with parameter "on" if joining column names are identical in both tables; use parameters "left_on" and "right_on" when joining column names are different. The optional parameter "how" indicates table join type. The default table join mode is inner join. 
 
 ```
 trade = s.loadTable(dbPath=WORK_DIR+"/valuedb", tableName="trade")
@@ -722,7 +813,7 @@ print(trade.merge(t1,on=["TICKER","date"]).toDF())
 2   AMZN  2015.12.31  3749860  675.89001  675.85999  675.94000   695
 ```
 
-We need to specify arguments **left_on** and **right_on** when joining column names are different. 
+We need to specify arguments "left_on" and "right_on" when joining column names are different. 
 
 ```
 trade = s.loadTable(dbPath=WORK_DIR+"/valuedb", tableName="trade")
@@ -736,7 +827,7 @@ print(trade.merge(t1,left_on=["TICKER","date"], right_on=["TICKER1","date1"]).to
 2   AMZN  2015.12.31  3749860  675.89001  675.85999  675.94000   695
 ```
 
-To conduct left join, set parameter **how** to "left". 
+To conduct left join, set how="left". 
 
 ```
 trade = s.loadTable(dbPath=WORK_DIR+"/valuedb", tableName="trade")
@@ -754,7 +845,7 @@ print(trade.merge(t1,how="left", on=["TICKER","date"]).where('TICKER=`AMZN').whe
 
 ```
 
-To conduct outer join, set parameter **how** to "outer". A partitioned table can only be outer joined with a partitioned table. An in-memory table can only be outer joined with an in-memory table.
+To conduct outer join, set how="outer". A partitioned table can only be outer joined with a partitioned table, and an in-memory table can only be outer joined with an in-memory table.
 
 ```
 t1 = s.table(data={'TICKER': ['AMZN', 'AMZN', 'NFLX'], 'date': ['2015.12.29', '2015.12.30', '2015.12.31'], 'open': [674, 685, 942]})
@@ -776,13 +867,13 @@ print(t1.merge(t2, how="outer", on=["TICKER","date"]).toDF())
 
 ```
 
-#### 5.6.2 **merge_asof**
+#### 5.6.2 `merge_asof`
 
-The asof join function is used in non-synchronous join. It is similar to the left join function witht the following differences:
+The asof join function is a type of non-synchronous join. It is similar to the left join function witht the following differences:
 1. The data type of the last matching column is usually temporal. For a row in the left table with time t, if there is not a match of left join in the right table, the row in the right table that corresponds to the most recent time before time t is taken, if all the other matching columns are matched; if there are more than one matching record in the right table, the last record is taken. 
 2. If there is only 1 joining column, the asof join function assumes the right table is sorted on the joining column. If there are multiple joining columns, the asof join function assumes the right table is sorted on the last joining column within each group defined by the other joining columns. The right table does not need to be sorted by the other joining columns. If these conditions are not met, we may see unexpected results. The left table does not need to be sorted. 
 
-For **merge_asof** and **merge_window**, we use data files trades.csv and quotes.csv, which are AAPL and FB trades and quotes data taken from NYSE website. 
+For the examples in this and the next section, we use trades.csv and quotes.csv which have AAPL and FB trades and quotes data on 10/24/2016 taken from NYSE website. 
 
 ```
 WORK_DIR = "C:/DolphinDB/Data"
@@ -840,11 +931,11 @@ print(trades.merge_asof(quotes, on=["Symbol","Time"]).select("sum(Trade_Volume*a
 1     FB  2.722923
 
 ```
-#### 5.6.3 **merge_window**
+#### 5.6.3 `merge_window`
 
-**merge_window** (window join) is a generalization of asof join. With a window defined by parameters **leftBound** (w1) and **rightBound** (w2), for each row in the left table with the value of the last joining column equal to t, find the rows in the right table with the value of the last joining column between (t+w1) and (t+w2) conditional on all other joining columns are matched, then apply **aggFunctions** to the selected rows in the right table. 
+`merge_window` (window join) is a generalization of asof join. With a window defined by parameters "leftBound" (w1) and "rightBound" (w2), for each row in the left table with the value of the last joining column equal to t, find the rows in the right table with the value of the last joining column between (t+w1) and (t+w2) conditional on all other joining columns are matched, then apply "aggFunctions" to the selected rows in the right table. 
 
-The only difference between window join and prevailing window join is that if the right table doesn't contain a matching value for t+w1 (the left boundary of the window), prevailing window join will fill it with the last value before t+w1 (conditional on all other joining columns are matched), and apply **aggFunctions**. To use prevailing window join, set the parameter **prevailing** to be True. 
+The only difference between window join and prevailing window join is that if the right table doesn't contain a matching value for t+w1 (the left boundary of the window), prevailing window join will fill it with the last value before t+w1 (conditional on all other joining columns are matched), and apply "aggFunctions". To use prevailing window join, set prevailing=True. 
 
 ```
 print(trades.merge_window(quotes, -5000000000, 0, aggFunctions=["avg(Bid_Price)","avg(Offer_Price)"], on=["Symbol","Time"]).where("Time>=15:59:59").top(10).toDF())
@@ -892,9 +983,9 @@ print(s.loadTable(tableName="tradingCost").toDF())
 
 ```
 
-#### 5.7 **executeAs**
+#### 5.7 `executeAs`
 
-Function **executeAs** saves query result as a table on DolphinDB server. 
+Function `executeAs` saves query result as a table on DolphinDB server. 
 
 ```
 trade = s.loadTable(dbPath=WORK_DIR+"/valuedb", tableName="trade")
@@ -910,7 +1001,7 @@ t1=s.loadTable(tableName="AMZN")
 
 #### 6 Regression
 
-Method **ols** conducts ordinary least squares regression. It returns a dictionary with regression results.
+Method `ols` conducts ordinary least squares regression. It returns a dictionary with regression results.
 
 ```
 trade = s.loadTable(tableName="trade",dbPath=WORK_DIR + "/valuedb", memoryMode=True)
@@ -948,7 +1039,7 @@ print(z["Coefficient"].beta[1])
 0.6053065019659698
 ```
 
-The following example conducts regression on a partitioned database. Note that the ratio operator between 2 integer columns in DolphinDB is "\", which happens to be the escape character in Python, so we need to use "VOL\\SHROUT" in function **select**.
+The following example conducts regression on a partitioned database. Note that the ratio operator between 2 integer columns in DolphinDB is "\", which happens to be the escape character in Python, so we need to use "VOL\\SHROUT" in function `select`.
 
 ```
 result = s.loadTable(tableName="US",dbPath="dfs://US").select("select VOL\\SHROUT as turnover, abs(RET) as absRet, (ASK-BID)/(BID+ASK)*2 as spread, log(SHROUT*(BID+ASK)/2) as logMV").where("VOL>0").ols("turnover", ["absRet","logMV", "spread"], True)
@@ -961,9 +1052,9 @@ print(result["ANOVA"])
 
 ```
 
-#### 7 **run**
+#### 7 `run`
 
-A session object has a method **run** that can execute any DolphinDB script. If the script returns an object in DolphinDB, method **run** converts the object to a corresponding object in Python.  
+A session object has a method `run` that can execute any DolphinDB script. If the script returns an object in DolphinDB, method `run` converts the object to a corresponding object in Python.  
 
 ```
 # Load table
@@ -978,9 +1069,7 @@ print(t)
 
 #### 8.1 Stock momentum strategy
 
-In this section we give an example of a backtest on a stock momentum strategy. The momentum strategy is one of the best-known quantitative long short equity strategies. It has been studied in numerous academic and sell-side publications since Jegadeesh and Titman (1993). Investors in the momentum strategy believe among individual stocks, past winners will outperform past losers. The most commonly used momentum factor is stocks' past 12 months returns skipping the most recent month. In academic research, the momentum strategy is usually rebalanced once a month and the holding period is also one month. In this example, we rebalance 1/21 of our portfolio positions every day and hold the new tranche for 21 days. For simplicity, transaction costs are not considered.
-
-In the following example, the data are located on a DFS table. 
+In this section we give an example of a backtest on a stock momentum strategy. The momentum strategy is one of the best-known quantitative long short equity strategies. It has been studied in numerous academic and sell-side publications since Jegadeesh and Titman (1993). Investors in the momentum strategy believe among individual stocks, past winners will outperform past losers. The most commonly used momentum factor is stocks' past 12 months returns skipping the most recent month. In academic research, the momentum strategy is usually rebalanced once a month and the holding period is also one month. In this example, we rebalance 1/5 of our portfolio positions every day and hold the new tranche for 5 days. For simplicity, transaction costs are not considered.
 
 **Create server session**
 
@@ -991,7 +1080,7 @@ s.connect("localhost",8921, "admin", "123456")
 
 ```
 
-**Step 1:** Load data, clean the data, and construct the momentum signal (past 12 months return skipping the most recent month) for each firm. Undefine the table "USstocks" to release the large amount of memory it occupies. Note that **executeAs** must be used in order to save the intermediate results on DolphinDB server. Dataset "US" contains US stock price data from 1990 to 2016.
+**Step 1:** Load data, clean the data, and construct the momentum signal (past 12 months return skipping the most recent month) for each firm. Undefine the table "USstocks" to release the large amount of memory it occupies. Note that `executeAs` must be used to save the intermediate results on DolphinDB server. Dataset "US" contains US stock price data from 1990 to 2016.
 
 ```
 US = s.loadTable(dbPath="dfs://US", tableName="US")
@@ -1028,7 +1117,7 @@ def formPortfolio(startDate, endDate, tradables, holdingDays, groups, WtScheme):
 tradables=genTradeTables(priceData.tableName())
 startDate="1996.01.01"
 endDate="2017.01.01"
-holdingDays=21
+holdingDays=5
 groups=10
 ports=formPortfolio(startDate=startDate,endDate=endDate,tradables=tradables,holdingDays=holdingDays,groups=groups,WtScheme=2)
 dailyRtn=priceData.select("date, PERMNO, RET as dailyRet").where("date between "+startDate+":"+endDate).executeAs("dailyRtn")
@@ -1064,22 +1153,7 @@ stockPnL = calcStockPnL(ports=ports, dailyRtn=dailyRtn, holdingDays=holdingDays,
 ```
 portPnl = stockPnL.select("pnl").groupby("date").sum().sort(bys=["date"]).executeAs("portPnl")
 
-
 print(portPnl.toDF())
-
-      date   sum_pnl
-0     1996.01.03 -0.001723
-1     1996.01.04 -0.002033
-2     1996.01.05 -0.000283
-3     1996.01.08  0.000076
-4     1996.01.09 -0.007517
-5     1996.01.10  0.000964
-...
-5283  2016.12.27  0.005143
-5284  2016.12.28 -0.001795
-5285  2016.12.29  0.006746
-5286  2016.12.30 -0.009754
-
 ```
 
 #### 8.2 Time series operations

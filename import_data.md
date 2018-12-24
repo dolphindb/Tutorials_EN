@@ -33,9 +33,9 @@ We use file [candle_201801.csv](https://github.com/dolphindb/Tutorials_CN/blob/m
 #### 2.1. `loadText` 
 
 `loadText` has 3 parameters:
- - `filename` is the input file name.
- - `delimiter[optional]` is the column separator. The default value is "," for csv files.
- - `schema[optional]` is a table that specifies the data type of each column of the imported table. For example:
+ - "filename" is the input file name.
+ - "delimiter"(optional) is the column separator. The default value is "," for csv files.
+ - "schema"(optional) is a table that specifies the data type of each column of the imported table. For example:
 
 name|type
 ---|---
@@ -52,10 +52,10 @@ tmpTB = loadText(dataFilePath)
 ```
 
 When loading a text file, the system determines the data type of each column based on a random sample of rows. This convenient feature may not always accurately determine the data types of all columns.
-For example, the volume column is recognized as INT type, but we would like it to be LONG type. In this case, we need to modify the `schema` table. We can use following script:
+For example, the volume column is recognized as INT type, but we would like it to be LONG type. In this case, we need to modify the "schema" table. We can use following script:
 ```
 nameCol = `symbol`exchange`cycle`tradingDay`date`time`open`high`low`close`volume`turnover`unixTime
-typeCol = `SYMBOL`SYMBOL`INT`DATE`DATE`INT`DOUBLE`DOUBLE`DOUBLE`DOUBLE`INT`DOUBLE`LONG
+typeCol = [SYMBOL,SYMBOL,INT,DATE,DATE,INT,DOUBLE,DOUBLE,DOUBLE,DOUBLE,INT,DOUBLE,LONG]
 schemaTb = table(nameCol as name,typeCol as type)
 ```
 
@@ -69,7 +69,7 @@ tt=loadText(dataFilePath,,schemaTb)
 ```
 #### 2.2. `ploadText`
 
-Function `ploadText` can quickly load large files. It is designed to utilize multiple CPU cores to load files in parallel. The degree of parallelism depends on the number of CPU cores in the server and the configuration of `localExecutors` of the nodes.
+Function `ploadText` can quickly load large files. It is designed to utilize multiple CPU cores to load files in parallel. The degree of parallelism depends on the number of CPU cores in the server and configuration parameter "localExecutors" of the nodes.
 
 First, we generate a 4GB CSV file with the script below:
 ```
@@ -85,7 +85,7 @@ First, we generate a 4GB CSV file with the script below:
 	t.saveText(filePath)
 ```
 
-The file is loaded by `loadText` and `ploadText` on a data noe with 4-core 8-hyperthreaded CPU.
+The file is loaded by `loadText` and `ploadText` on a data node with a 4-core 8-hyperthreaded CPU.
 ```
 timer loadText(filePath);
 //Time elapsed: 39728.393 ms
@@ -97,7 +97,7 @@ The result shows that `ploadText` is about 4 times as fast as `loadText`.
 
 #### 2.3. `loadTextEx`
 
-Function `loadText` imports the entire text file into memory. With a very large data file, server memory may become a bottleneck. For this, DolphinDB provides function `loadTextEx`(http://www.dolphindb.com/cn/help/index.html?loadText.html). As it loads a partition into memory, it saves the partition to disk. In this way it greatly reduces memory requirements. 
+Function `loadText` imports the entire text file into memory. With a very large data file, server memory may become a bottleneck. For this, DolphinDB provides function `loadTextEx`(http://www.dolphindb.com/cn/help/index.html?loadTextEx.html). As it loads a partition into memory, it saves the partition to disk. In this way it greatly reduces memory requirements. 
 
 First create a distributed table:
 ```
@@ -252,7 +252,7 @@ Each CSV file has the same structure:
 
 Before importing data, we should plan how to partition the data. We need to determine the partitioning columns and the granularity of the partitions.
 
-Columns that are commonly used in WHERE, GROUP BY, or CONTEXT BY are good candidates for partitioning columns. As most of the queries on financial data involve trading days and stock symbols, we can use `tradingDay` and `symbol` to form a COMPO partition. 
+Columns that are commonly used in WHERE, GROUP BY, or CONTEXT BY are good candidates as partitioning columns. As most of the queries on financial data involve trading days and stock symbols, we can use `tradingDay` and `symbol` to form a COMPO partition. 
 
 The time span of the data is 2008-2017, and we can use a value partition based on the year of the data. To leave room for new data, we can set the time span to 2008-2030.
 
@@ -302,7 +302,7 @@ First, the data format of a column in the CSV file might be different from that 
 ```
 datetimeParse(format(time,"000000000"),"HHmmssSSS")
 ```
-We need to import a large number of small files of about 5MB. A single-threaded loop operation takes a long time to finish. In order to fully utilize the cluster resources, we can divide the import task into multiple subtasks. Each subtask imports a year's data. The task queues sent to each node are executed in parallel. This process is implemented in the following two steps:
+We need to import a large number of small files of about 5MB. A single-threaded loop operation takes a long time to finish. In order to fully utilize the cluster resources, we can divide the import task into multiple subtasks. Each subtask imports a year's data. The task queues sent to the nodes are executed in parallel. This process is implemented in the following two steps:
 
 First, define a function to import all the files in the specified annual directory:
 ```
@@ -315,7 +315,7 @@ def loadCsvFromYearPath(path, dbPath, tableName){
 	}
 }
 ```
-Next, the function defined above is used with the `submitJob`(https://www.dolphindb.com/help/submitJob.html) function and the `rpc`(https://www.dolphindb.com/help/rpc.html) function. The tasks are submited to each node in the cluster to execute:
+Next, the function defined above is used with `submitJob`(https://www.dolphindb.com/help/submitJob.html) function and `rpc`(https://www.dolphindb.com/help/rpc.html) function. The tasks are submited to each node in the cluster to execute:
 ```
 nodesAlias="NODE" + string(1..4)
 years= files(rootDir)[`filename]

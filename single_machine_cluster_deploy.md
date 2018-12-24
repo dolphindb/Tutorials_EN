@@ -30,7 +30,7 @@ To start a cluster, we must configure the controller node and the agent node. Th
 
 Please make sure the number of nodes and the number cores per node do not exceed the limits set in the license file. Otherwise the cluster will not start properly. To check the limits please execute license() in DolphinDB single node mode. 
 
-Go to the **server** subdirectory to create the config, data, and log subdirectories. Users can also specify these subdirectories to other locations they see fit.
+Go to the "server" subdirectory to create config, data, and log subdirectories. Users can also specify these subdirectories to other locations they see fit.
 
 ```
 cd /DolphinDB/server/
@@ -40,7 +40,7 @@ mkdir /DolphinDB/server/log
 ```
 
 #### 3.1.1 Configuration File of the Controller
-In "config" directory, create the configuration file of the controller (**controller.cfg**). As an example, we can specify the following commonly used parameters in **controller.cfg**. Only **localSite** is mandatory. All other parameters are optional.
+In the "config" directory, create the configuration file of the controller (controller.cfg). As an example, we can specify the following commonly used parameters in controller.cfg. Only the parameter "localSite" is mandatory. All other parameters are optional.
 
 ```
 localSite=localhost:8920:ctl8920
@@ -68,7 +68,7 @@ dfsReplicaReliabilityLevel=0
 
 ##### 3.1.2 Cluster Nodes File
 
-In "config" directory, create the file **cluster.nodes** to store information about agent nodes and data nodes. This file has two columns: **localSite** and **mode**. **localSite** contains the node IP address, port number and node alias, separated by a colon ":". Node aliases are case sensitive and must be unique in a cluster. **mode** specifies the node type. This tutorial uses 1 agent node and 4 data nodes.
+In "config" directory, create the file cluster.nodes to store information about agent nodes and data nodes. This file has two columns: "localSite" and "mode". The parameter "localSite" contains the node IP address, port number and node alias, separated by a colon ":". Node aliases are case sensitive and must be unique in a cluster. The parameter "mode" specifies the node type. This tutorial uses 1 agent node and 4 data nodes.
 
 
 ```
@@ -81,7 +81,7 @@ localhost:8924:DFS_NODE4,datanode
 ```
 #### 3.1.3 Data Nodes Configuration File
 
-In "config" directory, create the configuration file for the data nodes (**cluster.cfg**). The configuration parameters in this file apply to each data node in the cluster.
+In "config" directory, create the configuration file for the data nodes (cluster.cfg). The configuration parameters in this file apply to each data node in the cluster.
 
 ```
 maxConnections=128
@@ -93,7 +93,7 @@ webWorkerNum=2
 
 #### 3.2 Agent Configuration
 
-In "config" directory, create the configuration file of the agent (**agent.cfg**). The following is an example of **agent.cfg**. Of the configuration parameters in **agent.cfg**, only **LocalSite** and **controllerSite** are mandatory. All others are optional.
+In "config" directory, create the configuration file of the agent (agent.cfg). The following is an example of agent.cfg. Of the configuration parameters in agent.cfg, Only "LocalSite" and "controllerSite" are mandatory in agent.cfg. All others are optional.
 ```
 workerNum=3
 localExecutors=2
@@ -102,20 +102,20 @@ localSite=localhost:8910:agent
 controllerSite=localhost:8920:ctl8920
 ```
 
-Parameter **localSite** in **controller.cfg** should have the same value as parameter **controllerSite** of **agent.cfg** for all agents, as agent nodes looks for the controller at the addresses specified by parameter **controllerSite** in **agent.cfg**. If **localSite** in **controller.cfg** is changed (even if just an alias change), **controllerSite** in **agent.cfg** of all agents must be changed accordingly.
+Parameter "localSite" in controller.cfg should have the same value as parameter "controllerSite" of agent.cfg for all agents, as agent nodes looks for the controller at the address specified by parameter "controllerSite" in agent.cfg. If "localSite" in controller.cfg is changed (even if just an alias change), "controllerSite" in agent.cfg of all agents must be changed accordingly.
 
 
 #### 3.3. Start DolphinDB Cluster
 
 #### 3.3.1 Start Agent
 
-Run the command line described below in the directory where the DolphinDB executable is located. If you haven't changed the directory of the DolphinDB executable, it is located in "server" directory. The file **agent.log** is located in "log" subdirectory. If the agent fails to start properly, open this log file to find more information about the error.
+Run the command line described below in the directory where the DolphinDB executable is located. If you haven't changed the directory of the DolphinDB executable, it is located in "server" directory. The file agent.log is located in "log" subdirectory. If the agent fails to start properly, open this log file to find more information about the error.
 
 #### Start in background mode (Linux)
 ```
 nohup ./dolphindb -console 0 -mode agent -home data -config config/agent.cfg -logFile log/agent.log &
 ```
-In Linux, we recommend starting in the background mode with Linux command **nohup** (header) and **&** (tail). Even if the terminal is disconnected, DolphinDB will keep running. "-console" is set to 1 by default. To run in the background mode, we need to set it to 0 ("-console 0"). Otherwise, the system will quit after running for a while. 
+In Linux, we recommend starting in the background mode with Linux command `nohup` (header) and `&` (tail). Even if the terminal is disconnected, DolphinDB will keep running. "-console" is set to 1 by default. To run in the background mode, we need to set it to 0 ("-console 0"). Otherwise, the system will quit after running for a while. 
 
 "-mode agent" means that the node is started as an agent; "-home" specifies the data and the metadata storage path; "-config" specifies the configuration file path; "-logFile" specifies the log file path.
 
@@ -132,7 +132,7 @@ dolphindb.exe -mode agent -home data -config config/agent.cfg -logFile log/agent
 
 #### 3.3.2 Start Controller
 
-Run the following command line in the directory where the DolphinDB executable is located. If you haven't changed the directory of the DolphinDB executable, it is located in "server" directory. The file **controller.log** is located in the log subdirectory. If the controller fails to start properly, open this log file to find more information about the error.
+Run the following command line in the directory where the DolphinDB executable is located. If you haven't changed the directory of the DolphinDB executable, it is located in "server" directory. The file controller.log is located in the log subdirectory. If the controller fails to start properly, open this log file to find more information about the error.
 
 "-clusterConfig" specifies the cluster node configuration file path; "-nodesFile" specifies the file that has information about cluster nodes, such as node type, IP address, port number, and node alias.
 
@@ -153,7 +153,7 @@ dolphindb.exe -mode controller -home data -config config/controller.cfg -cluster
 
 #### 3.3.3 How to stop controller or agent nodes
 
-If the node was started in background mode, we need to use the Linux system **kill** command. Assume the Linux system user name is "ec2-user":
+If the node was started in background mode, we need to use the Linux system `kill` command. Assume the Linux system user name is "ec2-user":
 
 ```
 ps aux | grep dolphindb  | grep -v grep | grep ec2-user|  awk '{print $2}' | xargs kill -TERM
@@ -197,7 +197,7 @@ After logging in, you can change the password of "admin", create users and other
 
 #### 3.3.6 Start data nodes
 
-Select all nodes, click on the "execute" button and confirm. It may take 30 second to 1 minute for all the nodes to successfully start. Click on the "refresh" button to check the status of the nodes. When you see the **State** column is full of green check marks, this mean all the nodes have been successfully started. 
+Select all nodes, click on the "execute" button and confirm. It may take 30 second to 1 minute for all the nodes to successfully start. Click on the "refresh" button to check the status of the nodes. When you see the "State" column is full of green check marks, this mean all the nodes have been successfully started. 
 
 ![](images/cluster_web_start_node.JPG)
 
@@ -207,12 +207,10 @@ If a node fails to start, please check the log file of the node in "log" directo
 
 If you see an error message "Failed to bind the socket on XXXX" in the log file where XXXX is the port number of a data node to be started, this could mean that the port number is occupied by another application. If so, just close that application and try again. It could also mean the port is not yet released by the Linux kernel if you just closed the data node with this port number. For this case, just wait around 30 seconds and restart the nodes. 
 
-
 Alternatively, we can start the data nodes with DolphinDB script on the controller node:
 ```
 startDataNode(["DFS_NODE1", "DFS_NODE2","DFS_NODE3","DFS_NODE4"])
 ```
-
 
 ### 4. Web-based cluster management
 
@@ -224,21 +222,21 @@ The bottom left panel shows all the agents, and the main panel displays the cont
 
 #### 4.1. Controller node configuration
 
-Clicking on the button **Controller Config** will open up a control interface, where **localExectors**, **maxConnections**, **maxMemSize**, **webWorkerNum** and **workerNum** were specified when we created **controller.cfg** in 3.1.1. These configuration parameters can be modified, and will take effect after the controller node is restarted.
+Clicking on the button "Controller Config" will open up a control interface, where "localExectors", "maxConnections", "maxMemSize", "webWorkerNum" and "workerNum" were specified when we created controller.cfg in 3.1.1. These configuration parameters can be modified, and will take effect after the controller node is restarted.
 
 ![](images/cluster_web_controller_config.JPG)
 
 #### 4.2. Add/delete data nodes
 
-Click on the button **Nodes Setup** to enter the cluster nodes configuration interface. The figure below shows the parameters in **cluster.nodes** that we created in 3.1.2. We can add or delete data nodes here. The new configuration will take effect after the entire cluster is restarted. The steps to restart the cluster include: (1) close all data nodes (2) close the controller, (3) start the controller, and (4) start the data nodes. Deleting a data node may result in loss of data that were saved on the node. 
+Click on the button "Nodes Setup" to enter the cluster nodes configuration interface. The figure below shows the parameters in cluster.nodes that we created in 3.1.2. We can add or delete data nodes here. The new configuration will take effect after the entire cluster is restarted. The steps to restart the cluster include: (1) close all data nodes (2) close the controller, (3) start the controller, and (4) start the data nodes. Deleting a data node may result in loss of data that were saved on the node. 
 
 ![](images/cluster_web_nodes_setup.JPG)
 
-If the new data node is on a new physical server, we must configure and start an agent node as in 3.2 on the new physical server, revise **cluster.nodes** with the information about the new agent node and new data node, and restart the controller node. 
+If the new data node is on a new physical server, we must configure and start an agent node as in 3.2 on the new physical server, revise cluster.nodes with the information about the new agent node and new data node, and restart the controller node. 
 
 #### 4.3. Modify data node configuration
 
-Click on the button **Nodes Config** to configure the data nodes. This figure below displays parameters we specified in **cluster.cfg** in 3.1.3. We can also add other parameters to be configured here. They will take effect after all the data nodes are restarted.
+Click on the button "Nodes Config" to configure the data nodes. This figure below displays parameters we specified in cluster.cfg in 3.1.3. We can also add other parameters to be configured here. They will take effect after all the data nodes are restarted.
 
 ![](images/cluster_web_nodes_config.JPG)
 
