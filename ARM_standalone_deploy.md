@@ -30,12 +30,12 @@ If the user has obtained the Enterprise Edition license, please use it to replac
 
 #### 3. Run DolphinDB Server
 
-Go to folder /DolphinDB/server/ and run the executable file dolphindb_arm32. In a 64-bit system run dolphindb_arm64. For simplicity we will use dolphindb_arm32 for the executable file in this document. 
+Go to folder /DolphinDB/server/ and run the executable file dolphindb 
 
-Before running the executable, please change the 文件权限:
+Before running the executable, please change its access permissions  :
 
 ```
-chmod 777 dolphindb_arm32
+chmod 777 dolphindb
 ```
 
 Then we can change configuration parameters in the file dolphindb.cfg:
@@ -56,15 +56,15 @@ regularArrayMemoryLimit=64
 
 	We recommend setting parameter 'maxLogSize' based on your RAM size (in terms of MB). When the log file reaches this size it will be archived. The default value is 1024MB and the minimum permissible value is 100MB. To set it to 100MB:
 ```
-maxLogSize=1
+maxLogSize=100
 ```
 Linux console mode: 
 ```
-./dolphindb_arm32
+./dolphindb
 ```
 Linux background mode: 
 ```
-nohup ./dolphindb_arm32 -console 0 &
+nohup ./dolphindb -console 0 &
 ```
 In Linux, we recommend starting in the background mode with Linux command **nohup** (header) and **&** (tail). Even if the terminal is disconnected, DolphinDB will keep running. "-console" is set to 1 by default. To run in the background mode, we need to set it to 0 ("-console 0"). Otherwise, the system will quit after running for a while. 
 
