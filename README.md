@@ -8,6 +8,8 @@
 #### [Partitioned Databases Design and Manipulation](https://github.com/dolphindb/Tutorials_EN/blob/master/database.md)
 #### [Import Data to DolphinDB](https://github.com/dolphindb/Tutorials_EN/blob/master/import_data.md)
 #### [Partitioned In-Memory Tables Loading and Manipulation](https://github.com/dolphindb/Tutorials_EN/blob/master/partitioned_in_memory_table.md)
+#### [DolphinDB Programming Guide](https://github.com/dolphindb/Tutorials_EN/blob/master/DolphinDB%20Programming%20Guide.md)
+
 #### [Security and User Access Control](https://github.com/dolphindb/Tutorials_EN/blob/master/ACL_and_Security.md)
 #### [Python API for DolphinDB](https://github.com/dolphindb/Tutorials_EN/blob/master/python_api.md)
 #### [Streaming](https://github.com/dolphindb/Tutorials_EN/blob/master/streaming_tutorial.md)
