@@ -5,9 +5,9 @@
 #### [Cluster Deployment on Single Server](https://github.com/dolphindb/Tutorials_EN/blob/master/single_machine_cluster_deploy.md)
 #### [Cluster Deployment on Multiple Servers](https://github.com/dolphindb/Tutorials_EN/blob/master/multi_machine_cluster_deploy.md)
 #### [Scale out DolphinDB Clusters](https://github.com/dolphindb/Tutorials_EN/blob/master/cluster_scaleout.md)
-#### [Partitioned Databases Design and Manipulation](https://github.com/dolphindb/Tutorials_EN/blob/master/database.md)
+#### [Partitioned Databases](https://github.com/dolphindb/Tutorials_EN/blob/master/database.md)
 #### [Import Data to DolphinDB](https://github.com/dolphindb/Tutorials_EN/blob/master/import_data.md)
-#### [Partitioned In-Memory Tables Loading and Manipulation](https://github.com/dolphindb/Tutorials_EN/blob/master/partitioned_in_memory_table.md)
+#### [Partitioned In-Memory Tables](https://github.com/dolphindb/Tutorials_EN/blob/master/partitioned_in_memory_table.md)
 #### [DolphinDB Programming Guide](https://github.com/dolphindb/Tutorials_EN/blob/master/DolphinDB_Programming_Guide.md)
 
 #### [Security and User Access Control](https://github.com/dolphindb/Tutorials_EN/blob/master/ACL_and_Security.md)
