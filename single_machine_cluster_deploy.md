@@ -43,7 +43,7 @@ mkdir /DolphinDB/server/log
 In the "config" directory, create the configuration file of the controller (controller.cfg). As an example, we can specify the following commonly used parameters in controller.cfg. Only the parameter "localSite" is mandatory. All other parameters are optional.
 
 ```
-localSite=localhost:8920:ctl8920
+localSite=192.168.1.103:8920:ctl8920
 localExecutors=3
 maxConnections=128
 maxMemSize=16
@@ -73,11 +73,11 @@ In "config" directory, create the file cluster.nodes to store information about 
 
 ```
 localSite,mode
-localhost:8910:agent,agent
-localhost:8921:DFS_NODE1,datanode
-localhost:8922:DFS_NODE2,datanode
-localhost:8923:DFS_NODE3,datanode
-localhost:8924:DFS_NODE4,datanode
+192.168.1.103:8910:agent,agent
+192.168.1.103:8921:DFS_NODE1,datanode
+192.168.1.103:8922:DFS_NODE2,datanode
+192.168.1.103:8923:DFS_NODE3,datanode
+192.168.1.103:8924:DFS_NODE4,datanode
 ```
 #### 3.1.3 Data Nodes Configuration File
 
@@ -98,8 +98,8 @@ In "config" directory, create the configuration file of the agent (agent.cfg). T
 workerNum=3
 localExecutors=2
 maxMemSize=4
-localSite=localhost:8910:agent
-controllerSite=localhost:8920:ctl8920
+localSite=192.168.1.103:8910:agent
+controllerSite=192.168.1.103:8920:ctl8920
 ```
 
 Parameter "localSite" in controller.cfg should have the same value as parameter "controllerSite" of agent.cfg for all agents, as agent nodes looks for the controller at the address specified by parameter "controllerSite" in agent.cfg. If "localSite" in controller.cfg is changed (even if just an alias change), "controllerSite" in agent.cfg of all agents must be changed accordingly.
@@ -172,7 +172,7 @@ After both the controller and the agent node are started, we can start or stop d
 
 
 ```
- localhost:8920
+192.168.1.103:8920
 ```
 ![](images/cluster_web.JPG)
 
@@ -211,6 +211,16 @@ Alternatively, we can start the data nodes with DolphinDB script on the controll
 ```
 startDataNode(["DFS_NODE1", "DFS_NODE2","DFS_NODE3","DFS_NODE4"])
 ```
+
+#### 3.3.7 Possible reasons why nodes cannot start
+
+1. If there is an error message "Failed to bind the socket on XXXX" in the log file where XXXX is the port number of a node to be started, maybe this port is occupied by another process. To start the node, close that process or reassign a port number to the node. It's also possible that the node was just closed and the Linux kernel has not released this port number. If this is the case, wait for 30 second and restart the node. 
+
+2. Incorrect IP address, port number or node alias in configuration files. 
+
+3. The port is not open in firewall.
+
+4. If the cluster is deployed on cloud or k8s, we need to add a configuration parameter lanCluster=0 in agent.cfg and cluster.cfg.
 
 ### 4. Web-based cluster management
 
