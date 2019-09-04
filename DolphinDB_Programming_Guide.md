@@ -4,7 +4,235 @@ To develop big data applications, in addition to a distributed database that can
 
 In this tutorial, we will explain how to program in hybrid paradigm in DolphinDB.
 
-## 1. Imperative Programming
+## 1. Vector Programming
+
+Vector programming is the most basic programming paradigm in DolphinDB. Most of the functions in DolphinDB can use vectors as input parameters. There are 2 types of functions depending on the data form of the result: an aggregate function returns a scalar; a vector function returns a vector of the same length as input vectors.
+
+Vector programming has 3 main advantages: (1) concise script; (2) significant reduction in the cost of interpreting the scripting language; (3) can optimize numerous algorithms. As time-series data can be represented with a vector, time-series analysis is particularly suitable for vector programming.
+
+The following example sums two huge vectors. Imperative programming with 'for' statements takes more than 100 times longer to execute than vector programming.
+
+``` txt
+n = 10000000
+a = rand(1.0, n)
+b = rand(1.0, n)
+
+//'for' statement in imperative programming:
+c = array(DOUBLE, n)
+for(i in 0 : n)
+    c[i] = a[i] + b[i]
+
+//vector programming:
+c = a + b
+```
+
+Vector programming is essentially batch processing of homogeneous data. With it, the instructions can be optimized with vectorization in compiling, and numerous algorithms can be optimized. For instance, to calculate moving average with n rows of data and a window size of k, the runtime complexity is O(nk) without batch computing. When we move to a new window, however, only one data point changes. To get the new average, we only need to adjust for this data point. Therefore, the runtime complexity of batch computing is O(n).
+
+DolphinDB has optimized most of the moving window fuctions with runtime in the order of O(n). These functions include: `mmax`, `mmin`, `mimax`, `mimin`, `mavg`, `msum`, `mcount`, `mstd`, `mvar`, `mrank`, `mcorr`, `mcovar`, `mbeta` and `mmed`. The following example shows that optimized `mavg` function significantly improves the performance of moving average calculation.
+
+``` TXT
+n = 10000000
+a = rand(1.0, n)
+window = 60
+//compute each window respectively with `avg` function:
+timer moving(avg, a, window)
+
+Time elapsed: 4039.23 ms
+
+//batch computing with `mavg` function:
+timer mavg(a, window)
+
+Time elapsed: 12.968 ms
+```
+Vector programming also has its limitations. First, not all operations can be conducted with vectorized computing. In machine learning and statistical analysis, there are numerious occasions where we can only process data through iteration sentence by sentence instead of vectorization. To improve system performance in these situations, DolphinDB is developing just-in-time (JIT) compilation, which dynamically compiles script to machine code.
+
+Second, languages like MATLAB and R usually load an entire vector into a contiguous memory block. Sometimes large segments of contiguous memory may not be found due to the memory fragmentation problem. DolphinDB introduces big array to handle this problem. Big array can represent a vector with segmented memory blocks. Whether the system uses big array is dynamically determined and transparent to users. Usually, compared with contiguous memory, the performance loss is 1%~5% for scanning a big array and 20%~30% for random access. DolphinDB sacrifices acceptable performance for improved system availability in return.
+
+## 2. SQL Programming
+
+SQL statements in DolphinDB support the standard SQL features and offer extensions for time-series data analysis.
+
+### 2.1 Integration of SQL and Programming Languages
+
+In DolphinDB, the scripting language is fully integrated with SQL statements. 
+
+* SQL query can be assigned directly to a variable or as a function parameter.
+* SQL query statements can quote variables or functions. If a SQL query involves a distributed table, the variables and functions in the SQL query can be automatically serialized to the corresponding nodes.
+* SQL statements can be dynamically generated script.
+* Database table is a data form. Other data forms include scalar, vector, matrix, set, and dictionary. Database table can be transformed into other data forms.
+
+``` TXT
+//generate a table of employee wages
+emp_wage = table(take(1..10, 100) as id, take(2017.10M + 1..10, 100).sort() as month, take(5000 5500 6000 6500, 100) as wage)
+
+//compute the average wage for each employee. The employee list is stored in the array 'empIds'.
+empIds = 3 4 6 7 9
+select avg(wage) from emp_wage where id in empIds group by id
+id avg_wage
+-- --------
+3  5500
+4  6000
+6  6000
+7  5500
+9  5500
+
+//display average wage and corresponding employee's name. Get employee name from the dictionary 'empName'.
+empName = dict(1..10, `Alice`Bob`Jerry`Jessica`Mike`Tim`Henry`Anna`Kevin`Jones)
+select empName[first(id)] as name, avg(wage) from emp_wage where id in empIds group by id
+id name    avg_wage
+-- ------- --------
+3  Jerry   5500
+4  Jessica 6000
+6  Tim     6000
+7  Henry   5500
+9  Kevin   5500
+```
+
+In the examples above, SQL queries quote a vector and a dictionary directly. By integrating the programming language and SQL queries, the system uses hash tables to solve a problem that would have required subqueries and table joins. It makes the script more concise and easier to understand. More importantly, it improves the performance.
+
+DolphinDB introduces a SQL keyword 'exec'. Compared with 'select', the result returned by 'exec' can be a matrix, vector or scalar. The following example uses 'exec' and 'pivot by' to return a matrix.
+
+```TXT
+exec first(wage) from emp_wage pivot by month, id
+
+         1    2    3    4    5    6    7    8    9    10
+         ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+2017.11M|5000 5500 6000 6500 5000 5500 6000 6500 5000 5500
+2017.12M|6000 6500 5000 5500 6000 6500 5000 5500 6000 6500
+2018.01M|5000 5500 6000 6500 5000 5500 6000 6500 5000 5500
+2018.02M|6000 6500 5000 5500 6000 6500 5000 5500 6000 6500
+2018.03M|5000 5500 6000 6500 5000 5500 6000 6500 5000 5500
+2018.04M|6000 6500 5000 5500 6000 6500 5000 5500 6000 6500
+2018.05M|5000 5500 6000 6500 5000 5500 6000 6500 5000 5500
+2018.06M|6000 6500 5000 5500 6000 6500 5000 5500 6000 6500
+2018.07M|5000 5500 6000 6500 5000 5500 6000 6500 5000 5500
+2018.08M|6000 6500 5000 5500 6000 6500 5000 5500 6000 6500
+```
+
+### 2.2 Support for Panel Data
+
+Some calculations with panel data return the same number of rows as the input data, such as converting stock prices into stock returns and calculating moving window statistics. For these tasks SQL server and PostGreSQL use window functions. DolphinDB offers 'context by' clause in SQL statements. Compared with window functions, 'context by' clause has the following advantages:
+
+* Can be used with not only 'select' statements but also 'update' statements.
+* Window functions can only group existing fields, while 'context by' can also group calculated fields.
+* Window functions can only use a limited number of functions, whereas 'context by' clause has no limits on what functions can be used. Besides, 'context by' can use arbitrary expressions, such as a combination of multiple functions.
+* 'context by' can be used with 'having' clause to filter rows within each group.
+
+In the following example, we use 'context by' to calculate daily stock returns and ranks. 
+
+```TXT
+//calculate daily stock returns assuming data for each stock are already ordered.
+update trades set ret = ratios(price) - 1.0 context by sym
+
+//calculate the daily rank（in descending order of stock return）of each stock within each day.
+select date, symbol,  ret, rank(ret, false) + 1 as rank from trades where isValid(ret) context by date
+
+//select top 10 stocks each day
+select date, symbol, ret from trades where isValid(ret) context by date having rank(ret, false) < 10
+```
+
+A paper [101 Formulaic Alphas](http://www.followingthetrend.com/?mdocs-file=3424) introduced 101 quant factors used by WorldQuant, one of Wall Street's top quantitative hedge funds. A quant hedge fund calculated these factors with C#. One of the most complicated factor (No.98) needs hundreds of lines of code in C# and takes about 30 minutes to calculate with data for 3,000 stocks in 10 years. In contrast, the same calcuation in DolphinDB only needs 4 lines of code and takes only 2 seconds, an almost 3 orders of magnitude improvement in performance.
+
+```TXT
+//Implementation of No.98 alpha factor. 'stock' is the input table.
+def alpha98(stock){
+    t = select code, valueDate, adv5, adv15, open, vwap from stock order by valueDate
+    update t set rank_open = rank(open), rank_adv15 = rank(adv15) context by valueDate
+    update t set decay7 = mavg(mcorr(vwap, msum(adv5, 26), 5), 1..7), decay8 = mavg(mrank(9 - mimin(mcorr(rank_open, rank_adv15, 21), 9), true, 7), 1..8) context by code
+    return select code, valueDate, rank(decay7)-rank(decay8) as A98 from t context by valueDate
+}
+```
+
+### 2.3 Support for Time Series Data
+
+DolphinDB uses columnar data storage and vector programming, which are very friendly for time-series data analysis.
+
+* DolphinDB supports temporal data types with various precisions up to nanosecond. High-frequency data can be conveniently converted into low-frequency data such as second-level, minute-level and hour-level with SQL statements. It can also be converted into data for intervals with specified length with function `bar` and SQL clause 'group by'.
+
+* DolphinDB offers convenient time-series functions, such as lead, lag, moving window, cumulative window and so on. More importantly, these functions are all optimized with performance 1 to 2 orders of magnitude better than other systems.
+
+* DolphinDB designs 2 ways of nonsynchronous table joins: asof join and window join.
+
+The following example calculates the average salary of a group of people for 3 months before a certain point in time with function `wj`. For more details about function `wj`, please refer to [User Manual, Chapter 8](http://www.dolphindb.com/help/)
+
+```TXT
+p = table(1 2 3 as id, 2018.06M 2018.07M 2018.07M as month)
+s = table(1 2 1 2 1 2 as id, 2018.04M + 0 0 1 1 2 2 as month, 4500 5000 6000 5000 6000 4500 as wage)
+select * from wj(p, s, -3:-1,<avg(wage)>,`id`month)
+
+id month    avg_wage
+-- -------- -----------
+1  2018.06M 5250
+2  2018.07M 4833.333333
+3  2018.07M
+
+```
+
+A typical application of window join in quant finance is to calculate transaction costs with a 'trades' table and a 'quotes' table.
+
+```TXT
+//table 'trades'
+sym  date       time         price  qty
+---- ---------- ------------ ------ ---
+IBM  2018.06.01 10:01:01.005 143.19 100
+MSFT 2018.06.01 10:01:04.006 107.94 200
+...
+
+//table 'quotes'
+sym  date       time         bid    ask    bidSize askSize
+---- ---------- ------------ ------ ------ ------- -------
+IBM  2018.06.01 10:01:01.006 143.18 143.21 400     200
+MSFT 2018.06.01 10:01:04.010 107.92 107.97 800     100
+...
+
+dateRange = 2018.05.01 : 2018.08.01
+
+//select the last quote before each transaction with asof join, and use the average of bid and ask as the benchmark for transaction costs.
+select sum(abs(price - (bid+ask)/2.0)*qty)/sum(price*qty) as cost from aj(trades, quotes, `date`sym`time) where date between dataRange group by sym
+
+//select all the quotes in the 10 ms before each transaction with window join, and calculate the average mid price as the benchmark for transaction costs.
+select sum(abs(price - mid)*qty)/sum(price*qty) as cost from pwj(trades, quotes, -10:0, <avg((bid + ask)/2.0) as mid>,`date`sym`time) where date between dataRange group by sym
+```
+
+### 2.4 Other Extensions of SQL
+
+DolphinDB offers many other SQL extensions. For examples:
+
+* User-defined functions can be used in SQL on the local node or distributed environment without compiling, packaging or deploying.
+* As shown in 5.4, SQL is fully integrated with the distributed computing framework in DolphinDB, making in-database analytics more convenient and efficient.
+* DolphinDB supports composite column, which can output multiple return values of complex analysis functions into one row of a table.
+
+When using composite columns in SQL statements, the function must output a key-value pair or an array. Otherwise you can convert the result into one of these two types with a user-defined function. For details please refer to [User Manual](http://www.dolphindb.com/help/).
+
+```TXT
+factor1=3.2 1.2 5.9 6.9 11.1 9.6 1.4 7.3 2.0 0.1 6.1 2.9 6.3 8.4 5.6
+factor2=1.7 1.3 4.2 6.8 9.2 1.3 1.4 7.8 7.9 9.9 9.3 4.6 7.8 2.4 8.7
+t=table(take(1 2 3, 15).sort() as id, 1..15 as y, factor1, factor2)
+
+//run `ols` for each id: y = alpha + beta1 * factor1 + beta2 * factor2, and output parameters alpha, beta1 and beta2.
+select ols(y, [factor1,factor2], true, 0) as `alpha`beta1`beta2 from t group by id
+
+id alpha     beta1     beta2
+-- --------- --------- ---------
+1  1.063991  -0.258685 0.732795
+2  6.886877  -0.148325 0.303584
+3  11.833867 0.272352  -0.065526
+
+//output R2 with a user-defined function.
+def myols(y,x){
+    r=ols(y,x,true,2)
+    return r.Coefficient.beta join r.RegressionStat.statistics[0]
+}
+select myols(y,[factor1,factor2]) as `alpha`beta1`beta2`R2 from t group by id
+
+id alpha     beta1     beta2     R2
+-- --------- --------- --------- --------
+1  1.063991  -0.258685 0.732795  0.946056
+2  6.886877  -0.148325 0.303584  0.992413
+3  11.833867 0.272352  -0.065526 0.144837
+```
+
+## 3. Imperative Programming
 
 Like most scripting languages (e.g. Python, JavaScript) and various strongly-typed, compiled languages (e.g. C++, C, Java), DolphinDB supports imperative programming, which means script can be executed sentence by sentence. DolphinDB currently supports 18 types of statements, including the most commonly used assignment statements, branch statements (e.g. 'if..else') and loop statements (e.g. 'for', 'do..while'). For more details, please refer to [User Manual, Chapter 5](http://www.dolphindb.com/help/).
 
@@ -62,55 +290,11 @@ else{
 
 With large amounts of data, control statements (e.g. 'for', 'if..else') are very inefficient. We recommend using vector programming, functional programming and SQL programmming to process large amounts of data. 
 
-## 2. Vector Programming
-
-Vector programming is the most basic programming paradigm in DolphinDB. Most of the functions in DolphinDB can use vectors as input parameters. There are 2 types of functions depending on the data form of the result: an aggregated function returns a scalar; a vector function returns a vector of the same length as input vectors.
-
-Vector programming has 3 main advantages: (1) concise script; (2) significant reduction in the cost of interpreting the scripting language; (3) can optimize numerous algorithms. As time-series data can be represented with a vector, time-series analysis is particularly suitable for vector programming.
-
-The following example sums two huge vectors. Imperative programming with 'for' statements takes more than 100 times longer to execute than vector programming.
-
-``` txt
-n = 10000000
-a = rand(1.0, n)
-b = rand(1.0, n)
-
-//'for' statement in imperative programming:
-c = array(DOUBLE, n)
-for(i in 0 : n)
-    c[i] = a[i] + b[i]
-
-//vector programming:
-c = a + b
-```
-
-Vector programming is essentially batch processing of homogeneous data. With it, the instructions can be optimized with vectorization in compiling, and numerous algorithms can be optimized. For instance, to calculate moving average with n rows of data and a window size of k, the runtime complexity is O(nk) without batch computing. When we move to a new window, however, only one data point changes. To get the new average, we only need to adjust for this data point. Therefore, the runtime complexity of batch computing is O(n).
-
-DolphinDB has optimized most of the moving window fuctions with runtime in the order of O(n). These functions include: `mmax`, `mmin`, `mimax`, `mimin`, `mavg`, `msum`, `mcount`, `mstd`, `mvar`, `mrank`, `mcorr`, `mcovar`, `mbeta` and `mmed`. The following example shows that optimized `mavg` function significantly improves the performance of moving average calculation.
-
-``` TXT
-n = 10000000
-a = rand(1.0, n)
-window = 60
-//compute each window respectively with `avg` function:
-timer moving(avg, a, window)
-
-Time elapsed: 4039.23 ms
-
-//batch computing with `mavg` function:
-timer mavg(a, window)
-
-Time elapsed: 12.968 ms
-```
-Vector programming also has its limitations. First, not all operations can be conducted with vectorized computing. In machine learning and statistical analysis, there are numerious occasions where we can only process data through iteration sentence by sentence instead of vectorization. To improve system performance in these situations, DolphinDB is developing just-in-time (JIT) compilation, which dynamically compiles script to machine code.
-
-Second, languages like MATLAB and R usually load an entire vector into a contiguous memory block. Sometimes large segments of contiguous memory may not be found due to the memory fragmentation problem. DolphinDB introduces big array to handle this problem. Big array can represent a vector with segmented memory blocks. Whether the system uses big array is dynamically determined and transparent to users. Usually, compared with contiguous memory, the performance loss is 1%~5% for scanning a big array and 20%~30% for random access. DolphinDB sacrifices acceptable performance for improved system availability in return.
-
-## 3. Functional Programming
+## 4. Functional Programming
 
 DolphinDB supports functional programming including: (1) pure function; (2) user defined function (udf); (3) lambda function; (4) higher order function; (5) partial application; (6) closure. For more details, please refer to [User Manual, Chapter 7](http://www.dolphindb.com/help/).
 
-### 3.1 User Defined Function & Lambda Function
+### 4.1 User Defined Function & Lambda Function
 
  A user-defined function can be created with or without function name (usually lamdba function). DolphinDB is different from Python in that only function parameters and local variables can be referred inside a function. This greatly improves the software quality with slight reduction in the flexibility of syntactic sugar.
 
@@ -127,7 +311,7 @@ getWorkDays(2018.07.01 2018.08.01 2018.09.01 2018.10.01)
 
 In the example above, we defined a lambda function getWorkDays(). The function accepts an array of dates and returns weekdays.
 
-### 3.2 Higher Order Function
+### 4.2 Higher Order Function
 
 In this section we focus on higher-order functions and partial applications. A higher-order function accepts another function as a parameter. In DolphinDB, higher-order functions are mainly used as template functions. Usually the first parameter is another function. For example, object A has m elements and object B has n elements. To calculate pairwise correlation of the elements in A and B, we need to use function `corr` on all possible pairs of elements in A and elements in B, and arrange the results in an m*n matrix. In DolphinDB, the aforementioned steps can be simplified with a high-order function `cross`: cross(corr, A, B). DolphinDB provides many such template functions including `all`, `any`, `each`, `loop`, `eachLeft`, `eachRight`, `eachPre`, `eachPost`, `accumulate`, `reduce`, `groupby`, `contextby`, `pivot`, `cross`, `moving`, `rolling`, etc.
 
@@ -159,7 +343,7 @@ IBM |0.005822  0.034159  -0.039278 1         -0.049922
 MSFT|0.084104  -0.117279 -0.025165 -0.049922 1
 ```
 
-### 3.3 Partial Application
+### 4.3 Partial Application
 
 Partial application fixes part or all of the parameters of a function to produce a new function with fewer parameters. In DolphinDB, function calls use () and partial applications use {}. For example, the `ratios` function is a partial application with the higher order function `eachPre`: `eachPre{ratio}`.
 
@@ -198,190 +382,6 @@ msgHandler = cumavg{0.0 0.0}
 each(msgHandler, 1 2 3 4 5)
 
 [1,1.5,2,2.5,3]
-```
-
-## 4. SQL Programming
-
-SQL statements in DolphinDB support the standard SQL features and offer extensions for time-series data analysis.
-
-### 4.1 Integration of SQL and Programming Languages
-
-In DolphinDB, the scripting language is fully integrated with SQL statements. 
-
-* SQL query can be assigned directly to a variable or as a function parameter.
-* SQL query statements can quote variables or functions. If a SQL query involves a distributed table, the variables and functions in the SQL query can be automatically serialized to the corresponding nodes.
-* SQL statements can be dynamically generated script.
-* Database table is a data form. Other data forms include scalar, vector, matrix, set, and dictionary. Database table can be transformed into other data forms.
-
-``` TXT
-//generate a table of employee wages
-emp_wage = table(take(1..10, 100) as id, take(2017.10M + 1..10, 100).sort() as month, take(5000 5500 6000 6500, 100) as wage)
-
-//compute the average wage for each employee. The employee list is stored in the array 'empIds'.
-empIds = 3 4 6 7 9
-select avg(wage) from emp_wage where id in empIds group by id
-id avg_wage
--- --------
-3  5500
-4  6000
-6  6000
-7  5500
-9  5500
-
-//display average wage and corresponding employee's name. Get employee name from the dictionary 'empName'.
-empName = dict(1..10, `Alice`Bob`Jerry`Jessica`Mike`Tim`Henry`Anna`Kevin`Jones)
-select empName[first(id)] as name, avg(wage) from emp_wage where id in empIds group by id
-id name    avg_wage
--- ------- --------
-3  Jerry   5500
-4  Jessica 6000
-6  Tim     6000
-7  Henry   5500
-9  Kevin   5500
-```
-
-In the examples above, SQL queries quote a vector and a dictionary directly. By integrating the programming language and SQL queries, the system uses hash tables to solve a problem that would have required subqueries and table joins. It makes the script more concise and easier to understand. More importantly, it improves the performance.
-
-DolphinDB introduces a SQL keyword 'exec'. Compared with 'select', the result returned by 'exec' can be a matrix, vector or scalar. The following example uses 'exec' and 'pivot by' to return a matrix.
-
-```TXT
-exec first(wage) from emp_wage pivot by month, id
-
-         1    2    3    4    5    6    7    8    9    10
-         ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
-2017.11M|5000 5500 6000 6500 5000 5500 6000 6500 5000 5500
-2017.12M|6000 6500 5000 5500 6000 6500 5000 5500 6000 6500
-2018.01M|5000 5500 6000 6500 5000 5500 6000 6500 5000 5500
-2018.02M|6000 6500 5000 5500 6000 6500 5000 5500 6000 6500
-2018.03M|5000 5500 6000 6500 5000 5500 6000 6500 5000 5500
-2018.04M|6000 6500 5000 5500 6000 6500 5000 5500 6000 6500
-2018.05M|5000 5500 6000 6500 5000 5500 6000 6500 5000 5500
-2018.06M|6000 6500 5000 5500 6000 6500 5000 5500 6000 6500
-2018.07M|5000 5500 6000 6500 5000 5500 6000 6500 5000 5500
-2018.08M|6000 6500 5000 5500 6000 6500 5000 5500 6000 6500
-```
-
-### 4.2 Support for Panel Data
-
-Some calculations with panel data return the same number of rows as the input data, such as converting stock prices into stock returns and calculating moving window statistics. For these tasks SQL server and PostGreSQL use window functions. DolphinDB offers 'context by' clause in SQL statements. Compared with window functions, 'context by' clause has the following advantages:
-
-* Can be used with not only 'select' statements but also 'update' statements.
-* Window functions can only group existing fields, while 'context by' can also group calculated fields.
-* Window functions can only use a limited number of functions, whereas 'context by' clause has no limits on what functions can be used. Besides, 'context by' can use arbitrary expressions, such as a combination of multiple functions.
-* 'context by' can be used with 'having' clause to filter rows within each group.
-
-In the following example, we use 'context by' to calculate daily stock returns and ranks. 
-
-```TXT
-//calculate daily stock returns assuming data for each stock are already ordered.
-update trades set ret = ratios(price) - 1.0 context by sym
-
-//calculate the daily rank（in descending order of stock return）of each stock within each day.
-select date, symbol,  ret, rank(ret, false) + 1 as rank from trades where isValid(ret) context by date
-
-//select top 10 stocks each day
-select date, symbol, ret from trades where isValid(ret) context by date having rank(ret, false) < 10
-```
-
-A paper [101 Formulaic Alphas](http://www.followingthetrend.com/?mdocs-file=3424) introduced 101 quant factors used by WorldQuant, one of Wall Street's top quantitative hedge funds. A quant hedge fund calculated these factors with C#. One of the most complicated factor (No.98) needs hundreds of lines of code in C# and takes about 30 minutes to calculate with data for 3,000 stocks in 10 years. In contrast, the same calcuation in DolphinDB only needs 4 lines of code and takes only 2 seconds, an almost 3 orders of magnitude improvement in performance.
-
-```TXT
-//Implementation of No.98 alpha factor. 'stock' is the input table.
-def alpha98(stock){
-    t = select code, valueDate, adv5, adv15, open, vwap from stock order by valueDate
-    update t set rank_open = rank(open), rank_adv15 = rank(adv15) context by valueDate
-    update t set decay7 = mavg(mcorr(vwap, msum(adv5, 26), 5), 1..7), decay8 = mavg(mrank(9 - mimin(mcorr(rank_open, rank_adv15, 21), 9), true, 7), 1..8) context by code
-    return select code, valueDate, rank(decay7)-rank(decay8) as A98 from t context by valueDate
-}
-```
-
-### 4.3 Support for Time Series Data
-
-DolphinDB uses columnar data storage and vector programming, which are very friendly for time-series data analysis.
-
-* DolphinDB supports temporal data types with various precisions up to nanosecond. High-frequency data can be conveniently converted into low-frequency data such as second-level, minute-level and hour-level with SQL statements. It can also be converted into data for intervals with specified length with function `bar` and SQL clause 'group by'.
-
-* DolphinDB offers convenient time-series functions, such as lead, lag, moving window, cumulative window and so on. More importantly, these functions are all optimized with performance 1 to 2 orders of magnitude better than other systems.
-
-* DolphinDB designs 2 ways of nonsynchronous table joins: asof join and window join.
-
-The following example calculates the average salary of a group of people for 3 months before a certain point in time with function `wj`. For more details about function `wj`, please refer to [User Manual, Chapter 8](http://www.dolphindb.com/help/)
-
-```TXT
-p = table(1 2 3 as id, 2018.06M 2018.07M 2018.07M as month)
-s = table(1 2 1 2 1 2 as id, 2018.04M + 0 0 1 1 2 2 as month, 4500 5000 6000 5000 6000 4500 as wage)
-select * from wj(p, s, -3:-1,<avg(wage)>,`id`month)
-
-id month    avg_wage
--- -------- -----------
-1  2018.06M 5250
-2  2018.07M 4833.333333
-3  2018.07M
-
-```
-
-A typical application of window join in quant finance is to calculate transaction costs with a 'trades' table and a 'quotes' table.
-
-```TXT
-//table 'trades'
-sym  date       time         price  qty
----- ---------- ------------ ------ ---
-IBM  2018.06.01 10:01:01.005 143.19 100
-MSFT 2018.06.01 10:01:04.006 107.94 200
-...
-
-//table 'quotes'
-sym  date       time         bid    ask    bidSize askSize
----- ---------- ------------ ------ ------ ------- -------
-IBM  2018.06.01 10:01:01.006 143.18 143.21 400     200
-MSFT 2018.06.01 10:01:04.010 107.92 107.97 800     100
-...
-
-dateRange = 2018.05.01 : 2018.08.01
-
-//select the last quote before each transaction with asof join, and use the average of bid and ask as the benchmark for transaction costs.
-select sum(abs(price - (bid+ask)/2.0)*qty)/sum(price*qty) as cost from aj(trades, quotes, `date`sym`time) where date between dataRange group by sym
-
-//select all the quotes in the 10 ms before each transaction with window join, and calculate the average mid price as the benchmark for transaction costs.
-select sum(abs(price - mid)*qty)/sum(price*qty) as cost from pwj(trades, quotes, -10:0, <avg((bid + ask)/2.0) as mid>,`date`sym`time) where date between dataRange group by sym
-```
-
-### 4.4 Other Extensions of SQL
-
-DolphinDB offers many other SQL extensions. For examples:
-
-* User-defined functions can be used in SQL on the local node or distributed environment without compiling, packaging or deploying.
-* As shown in 5.4, SQL is fully integrated with the distributed computing framework in DolphinDB, making in-database analytics more convenient and efficient.
-* DolphinDB supports composite column, which can output multiple return values of complex analysis functions into one row of a table.
-
-When using composite columns in SQL statements, the function must output a key-value pair or an array. Otherwise you can convert the result into one of these two types with a user-defined function. For details please refer to [User Manual](http://www.dolphindb.com/help/).
-
-```TXT
-factor1=3.2 1.2 5.9 6.9 11.1 9.6 1.4 7.3 2.0 0.1 6.1 2.9 6.3 8.4 5.6
-factor2=1.7 1.3 4.2 6.8 9.2 1.3 1.4 7.8 7.9 9.9 9.3 4.6 7.8 2.4 8.7
-t=table(take(1 2 3, 15).sort() as id, 1..15 as y, factor1, factor2)
-
-//run `ols` for each id: y = alpha + beta1 * factor1 + beta2 * factor2, and output parameters alpha, beta1 and beta2.
-select ols(y, [factor1,factor2], true, 0) as `alpha`beta1`beta2 from t group by id
-
-id alpha     beta1     beta2
--- --------- --------- ---------
-1  1.063991  -0.258685 0.732795
-2  6.886877  -0.148325 0.303584
-3  11.833867 0.272352  -0.065526
-
-//output R2 with a user-defined function.
-def myols(y,x){
-    r=ols(y,x,true,2)
-    return r.Coefficient.beta join r.RegressionStat.statistics[0]
-}
-select myols(y,[factor1,factor2]) as `alpha`beta1`beta2`R2 from t group by id
-
-id alpha     beta1     beta2     R2
--- --------- --------- --------- --------
-1  1.063991  -0.258685 0.732795  0.946056
-2  6.886877  -0.148325 0.303584  0.992413
-3  11.833867 0.272352  -0.065526 0.144837
 ```
 
 ## 5. RPC Programming
