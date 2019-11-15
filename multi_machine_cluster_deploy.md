@@ -260,6 +260,13 @@ Alternatively, we can start the data nodes with DolphinDB script on the controll
 ```
 startDataNode(["P1-NODE1", "P2-NODE1","P3-NODE1","P5-NODE1"])
 ```
+### 3.3.7 Common reasons why nodes cannot start
+
+1. **Port is occupied**. If you find in the log file an error message "Failed to bind the socket on XXXX" where XXXX is the port number on the node to be started, it means this port may be occupied by another program. Close the other program or reassign a port number and then restart the node. It may also be that this node has just been closed and the Linux kernel has not released this port number. Just wait about 30 seconds and then restart the node. 
+2. **Port is blocked by firewall**. Some ports may be blocked by the firewall. To use these ports, we need to open them in the firewall.
+3. **Incorrect IP address, port number or node alias in the configuration files.**
+4. **UDP ports might not have been openned.** DolphinDB uses UDP broadcast to send heartbeats. 
+5. To deploy in the cloud or k8s, we may need to add 'lanCluster=0' in 'agent.cfg' and 'cluster.cfg'. If all cloud nodes are located in the same LAN, we don't need to add 'lanCluster=0'. In AWS, however, the nodes are not in the same LAN, so we need to add 'lanCluster=0'.  
 
 ### 4. Web-based cluster management
 

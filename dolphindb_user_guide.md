@@ -1,6 +1,6 @@
 ## DolphinDB User Guide
 
-DolphinDB User Guide includes：dolphindb server package, DolphinDB GUI, web-based cluster manager, Java/Python/C# API and various plugins.
+DolphinDB User Guide includes dolphindb server package, DolphinDB GUI, web-based cluster manager, Java/Python/C# API and various plugins.
 
 ### Install DolphinDB
 
@@ -59,5 +59,5 @@ Solution: contact support@dolphindb.com and update the license file.
 Cause: need to refresh nodes status. 
 Solution: click on the "refresh" button. If the log file has error message  "Failed to bind the socket on XXXX" in the log file where XXXX is the port number of a data node to be started, this could mean that the port number is occupied by another application. If so, just close that application and try again. It could also mean the port is not yet released by the Linux kernel if you just closed the data node with this port number. For this case, just wait around 30 seconds and restart the nodes.
 
-For any problem in using DolphinDB, please check the log file for more information. There is a log file on each of the data nodes and on the controller node. The default folder of the log file is the home directory. Feel free to contact support@dolphindb.com. 
+For any problem in using DolphinDB database, please first check the log file for more information. There is a log file on each of the data nodes and on the controller node. The default folder of the log file is the home directory. You can post your questions on www.stackoverflow.com or contact us at support@dolphindb.com. 
 

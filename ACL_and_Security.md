@@ -1,4 +1,4 @@
-# DolphinDB User Access Control and Security
+# DolphinDB Database User Access Control and Security
 
 Main functionalities:  
 * Can conveniently grant/deny access privileges to groups of users
@@ -13,7 +13,7 @@ Main functionalities:
 
 #### 1.1 Users and Groups
 
-A user can belong to 0, 1, or multiple groups; a group can have 1 or multiple users.
+A user can belong to 0, 1 or multiple groups; a group can have 1 or multiple users.
 
 A user's access privileges are determined by her own access privileges and the privileges of the groups that she belongs to.
 

@@ -21,7 +21,7 @@ This tutorial will cover the following topics about streaming:
 
 ### 1. Flowchart and related concepts
 
-Streaming in DolphinDB is based on the publish-subscribe model. Streaming data is injected into and published by a streaming table. A data node or a third-party application can subscribe to and consume the streaming data through DolphinDB script or API.
+Streaming in DolphinDB is based on the publish-subscribe model. Streaming data is ingested into and published by a streaming table. A data node or a third-party application can subscribe to and consume the streaming data through DolphinDB script or API.
 
 ![image](images/DolphinDB_Streaming_Framework.jpg)
 
@@ -32,7 +32,7 @@ The figure above is the DolphinDB streaming flowchart. After injecting real-time
 
 #### 1.1 Streaming table
 
-Streaming table is a type of in-memory table that stores streaming data and supports concurrent reading and writing. Publishing a message is equivalent to inserting a record into a streaming table. SQL statements can be used on streaming tables.
+Streaming table is a special type of in-memory table to store and publish streaming data. Streaming table supports concurrent read and write. We can append to streaming tables, but cannot delete or modify the records of streaming tables. Publishing a message is equivalent to inserting a record into a streaming table. SQL statements can be used on streaming tables.
 
 #### 1.2 Publish-subscribe
 
@@ -47,26 +47,26 @@ The real-time aggregation engine refers to a module dedicated to real-time calcu
 To enable the streaming module, the following configuration parameters need to be specified.
 
 Configuration parameters required for the publisher node:
-```
-maxPubConnections: the maximum number of connections of a publisher node. If maxPubConnections>0，the node is a publisher node. The default value is 0.
-persisitenceDir: the folder path where the shared streaming table is saved. This parameter must be specified to save the streaming table.
-persistenceWorkerNum: the number of worker threads responsible for saving the streaming table in asynchronous mode. The default value is 0.
-maxPersistenceQueueDepth: the maximum depth (number of records) of the message queue when the streaming table is saved in asynchronous mode. The default value is 10,000,000.
-maxMsgNumPerBlock: the maximum number of records in a message block. The default value is 1024.
-maxPubQueueDepthPerSite: the maximum depth (number of records) of the message queue at a publisher node. The default value is 10,000,000.
-```
+
+- maxPubConnections: the maximum number of subscriber nodes that the publisher can connect to. If maxPubConnections>0，the node is a publisher node. The default value is 0.
+- persisitenceDir: the folder path where the shared streaming table is saved. This parameter must be specified to save the streaming table.
+- persistenceWorkerNum: the number of worker threads responsible for saving the streaming table in asynchronous mode. The default value is 0.
+- maxPersistenceQueueDepth: the maximum depth (number of records) of the message queue when the streaming table is saved in asynchronous mode. The default value is 10,000,000.
+- maxMsgNumPerBlock: the maximum number of records in a message block. The default value is 1024.
+- maxPubQueueDepthPerSite: the maximum depth (number of records) of the message queue at the publisher node. The default value is 10,000,000.
+
 
 Configuration parameters required for the subscriber nodes:
-```
-subPort: subcription port number. It is required for a subscriber node. The default value is 0.
-subExecutors: the number of message processing threads in a subscriber node. The default value is 0, which indicates that the parsing message thread also processes the message.
-maxSubConnections: the maximum number of subscription connections a data node can have. The default value is 64.
-subExecutorPooling: a Boolean value indicating whether the streaming threads are in pooling mode. The default value is false.
-maxSubQueueDepth: the maximum depth (number of records) of the message queue at a subscriber node. The default value is 10,000,000.
-```
+
+- subPort: subcription port number. It is required for a subscriber node. The default value is 0.
+- subExecutors: the number of message processing threads in the subscriber node. The default value is 0, which indicates that the parsing message thread also processes the message.
+- maxSubConnections: the maximum number of publishers that the subscriber node can connec to. The default value is 64.
+- subExecutorPooling: a Boolean value indicating whether the streaming threads are in pooling mode. The default value is false.
+- maxSubQueueDepth: the maximum depth (number of records) of the message queue at the subscriber node. The default value is 10,000,000.
+
 #### 2.1 Publish streaming data
 
-Use function `streamTable` to define a streaming table. Writing data to it means publishing data. Since a streaming table is probably accessed by multiple sessions, the streaming table must be shared with command `share`. Streaming tables that are not shared cannot publish data.
+Use function `streamTable` to define a streaming table. Writing data to it means publishing data. Since for any publisher there are usually multiple subscribers in different sessions, a streaming table must be shared with command `share` before it can publish streaming data. Streaming tables that are not shared cannot publish streaming data.
 
 Define and share the streaming table "pubTable":
 ```
@@ -227,11 +227,11 @@ When both the publisher and the subscriber nodes are relatively stable with rout
 
 #### 2.3 Automatic reconnection
 
-To enable automatic reconnection after network disconnection, the streaming data must be persisted on the publisher. Please refer to section 2.6 for enabling persistence. When parameter 'reconnect' is set to true, the subscriber will record the offset of the streaming data. When the network connection is interrupted, the subscriber will automatically re-subscribe from the offset. If the subscriber crashes or the publisher does not persist the streaming data, the subscriber cannot automatically reconnect. 
+To enable automatic reconnection after network disruption, the streaming table must be persisted on the publisher. Please refer to section 2.6 for enabling persistence. When parameter 'reconnect' is set to true, the subscriber will record the offset of the streaming data. When the network connection is interrupted, the subscriber will automatically re-subscribe from the offset. If the subscriber crashes or the streaming table is not persisted on the publisher, the subscriber cannot automatically reconnect.
 
 #### 2.4 Filtering of streaming data
 
-Data can be filtered at the publisher and only the data that meets given conditions are published. Use `setStreamTableFilterColumn` to specify the filtering column of the streaming table. Only the rows with values of the filtering column in the vector specified by the parameter 'filter' are published to the subscriber. Currently a streaming table can have only one filtering column. In the following example, the streaming table 'trades' on the publisher only publishes data for 'IBM' and 'GOOG':
+Streaming data can be filtered at the publisher to significantly reduce network traffic. Use command `setStreamTableFilterColumn` on the streaming table to specify the filtering column, then specify a vector for parameter 'filter' in function `subscribeTable`. Only the rows with filtering column values in vector 'filter' are published to the subscriber. As of now a streaming table can have only one filtering column. In the following example, the streaming table 'trades' on the publisher only publishes data for 'IBM' and 'GOOG' to the subscriber:
 
 ```
 share streamTable(10000:0,`time`symbol`price, [TIMESTAMP,SYMBOL,INT]) as trades
@@ -244,7 +244,7 @@ subscribeTable(, `trades,`trades_slave,,append!{trades_slave},true,,,,,filter)
 ```
 #### 2.5 Unsubscribe
 
-Each subscription is uniquely identified with a subscription topic. If an existing subscription has the same topic as a new subscription, the new subscription will fail. To make a new subscription with the same subscription topic as an existing subscription, we need to cancel the existing subscription with command `unsubscribeTable`. 
+Each subscription is uniquely identified with a subscription topic. If a new subscription has the same topic as an existing subscription, the new subscription cannot be established. To make a new subscription with the same subscription topic as an existing subscription, we need to cancel the existing subscription with command `unsubscribeTable`. 
 
 Unsubscribe from a local table:
 ```
@@ -260,8 +260,8 @@ undef("pubStreamTable", SHARED)
 ```
 #### 2.6 Streaming data persistence
 
-By default, the streaming table keeps all data in memory. Streaming data can be persisted to disk for the following 3 reasons:
-1. Avoid out-of-memory problems.
+By default, the streaming table keeps all streaming data in memory. Streaming data can be persisted to disk for the following 3 reasons:
+1. Mitigate out-of-memory problems.
 2. Backup streaming data. When a node reboots, the persisted data can be automatically loaded into the streaming table.
 3. Resubscribe from any position. 
 

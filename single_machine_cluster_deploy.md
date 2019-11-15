@@ -1,6 +1,6 @@
 # DolphinDB Cluster Deployment on Single Server
 
-A DolphinDB cluster consists of 3 types of nodes: data node, agent, and controller. 
+A DolphinDB cluster consists of 3 types of nodes: data node, agent and controller. 
   *  Data are stored and queries (and more complex computations) are executed on the data nodes. 
   *  An agent node executes the commands issued by the controller to start or close local data nodes. 
   *  The controller collects heartbeats of agents and data nodes, and monitors the status of each node. It provides the web interface for cluster management.

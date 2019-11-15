@@ -12,7 +12,7 @@ Supported ARM CPU: CORTEXA15, CORTEXA9, ARMV7, ARMV8, CORTEXA53, CORTEXA57, CORT
 
 The cross compiler used in DolphinDB ARM is arm-linux-gnueabihf4.9 for 32-bit systems and aarch64-linux-gnu_4.9.3 for 64-bit systems. 
 
-#### 1. Download DolphinDB
+#### 1. Download DolphinDB Database
 
 Download DolphinDB for ARM from [DolphinDB](http://www.dolphindb.com/downloads.html) website and extract it to a directory. For example, extract it to the following directory:
 
@@ -68,12 +68,12 @@ nohup ./dolphindb -console 0 &
 ```
 In Linux, we recommend starting in the background mode with Linux command **nohup** (header) and **&** (tail). Even if the terminal is disconnected, DolphinDB will keep running. "-console" is set to 1 by default. To run in the background mode, we need to set it to 0 ("-console 0"). Otherwise, the system will quit after running for a while. 
 
-#### 4. Connect to DolphinDB Server From Web
+#### 4. Connect to DolphinDB Server from Web
 
 Go to your browser (currently supporting Chrome and Firefox) and enter localhost:8848 in the address bar to open DolphinDB notebook. If you have started DolphinDB server with another port number, change 8848 to the port number you have used.
 
 
-#### 5. Run DolphinDB Script From Web
+#### 5. Run DolphinDB Script from Web
 
 Run the following DolphinDB script in the editor window of DolphinDB notebook. The figure below shows the output. Please note that if there is no execution on the web for 10 minutes, the session will be automatically closed to release resources on the server. We recommend users to work on DolphinDB GUI where all sessions remain open until terminated by users. 
 

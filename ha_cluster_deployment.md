@@ -4,7 +4,7 @@
 
 DolphinDB provides high availability for data nodes, controller nodes and API clients. It ensures that the database can continue to work when one or more database nodes become unavailable due to network interruption or node crash. 
 
-DolphinDB uses a multi-replica mechanism where copies of the same data chunk are stored on different data nodes. Even if one or more data nodes in the cluster is unavailable, the database continues to work as long as at least one copy is still available in the cluster.
+Multiple copies of the same data chunk can be stored on different data nodes. Even if one or more data nodes is unavailable, the database continues to work as long as at least one copy is still available in the cluster.
 
 Metadata is stored on controller nodes in DolphinDB. To ensure high availability of metadata, DolphinDB adopts Raft protocol and forms a Raft group with multiple controller nodes. If less than half of the controller nodes are unavailable, the cluster can continue to work. 
 
@@ -50,7 +50,7 @@ On the web interface of DolphinDB cluster manager, click on "DFS Explorer" to se
 
 ## 3. High availability of controller nodes
 
-Metadata is stored at controller nodes. If metadata is corrupted, the database cannot be accessed even if all data nodes work fine. We can deploy multiple controller nodes in a cluster to ensure that metadata service is uninterrupted if one or more controller nodes become unavailable. All controller nodes in a cluster form a Raft group. One controller node is the leader and the rest controller nodes are the followers. Metadata on the leader and on the followers maintains strong consistency. Data nodes can only interact with the leader. If the leader is not available, a new leader is immediately elected to provide the metadata service. The Raft group can tolerate less than half of the controller nodes become unavailable. For examples, a cluster with 3 controller nodes can tolerate 1 unavailable controller node; a cluster with 5 controller nodes can tolerate 2 unavailable controller nodes. To enable high availability for controller nodes, the number of controller nodes is at least 3, and we must set 'dfsReplicationFactor' to be greater than 1. 
+Metadata is stored at controller nodes. If metadata is corrupted, the database cannot be accessed even if all data nodes work fine. We can deploy multiple controller nodes in a cluster to ensure that metadata service is uninterrupted if one or more controller nodes become unavailable. All controller nodes in a cluster form a Raft group. One controller node is the leader and the rest controller nodes are the followers. Metadata on the leader and on the followers maintains strong consistency. Data nodes can only interact with the leader. If the leader is not available, a new leader is immediately elected to provide the metadata service. The Raft group can tolerate less than half of the controller nodes become unavailable. For examples, a cluster with 3 controller nodes can tolerate 1 unavailable controller node; a cluster with 5 controller nodes can tolerate 2 unavailable controller nodes. To enable high availability for controller nodes, the number of controller nodes is at least 3, and we must set the configuration parameter 'dfsReplicationFactor' to be greater than 1. 
 
 The following example explains how to enable high availability of controller nodes for an existing cluster. Assume the controller node is on machine P1. Now we add a controller nodes on P2 and another controller node on P3. Their intranet IP addresses are: 
 
@@ -162,7 +162,7 @@ Enter the IP address and port number on the web browser to open the web interfac
 
 ## 4. APIs' support of high availability 
 
-DolphinDB Java and Python APIs also support high availability. When the data node an API is connecting with becomes unavailable, the API will attempt to reconnect to the data node. If the reconnecting attempt fails, the API will automatically connect to another data node that is available. Data node switching is transparent to the user. He or she is not aware that the connecting data node has been switched. 
+DolphinDB Java, Python, C++ and C# APIs support high availability. When the data node an API is connecting with becomes unavailable, the API will attempt to reconnect to the data node. If the reconnecting attempt fails, the API will automatically connect to another data node that is available. Data node switching is transparent to the user. He or she is not aware that the connecting data node has been switched. 
 
 The method `connect` for these APIs:
 
@@ -228,4 +228,4 @@ Then refresh the cluster manager web interface, we can see that the new data nod
 
 ## 6. Summary
 
-By offering high availability for data nodes, controller nodes and API clients, DolphinDB can meet the needs of 24X7 hours availability for systems in IoT, finance and other areas. 
+By offering high availability for data nodes, controller nodes and API clients, DolphinDB database can meet the needs of 24X7 hours availability for systems in IoT, finance and other areas. 
