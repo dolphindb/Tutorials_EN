@@ -1,10 +1,6 @@
 # How to scale out a DolphinDB cluster
 
-## 1. Introduction
-
-This tutorial introduces how to scale out a DolphinDB cluster in order to increase its storage capacity and computing power. 
-
-## 2. About DolphinDB Cluster
+## 1. About DolphinDB Cluster
 
 A DolphinDB cluster consists of 3 types of nodes: controller, agent and data node.
 - A controller manages the metadata of a cluster and provides the web cluster management interface. 
@@ -23,7 +19,7 @@ Follow the following steps to add a new physical machine to a cluster:
 
 To expand the storage space of an existing data node, we can modify the node configuration file to add a path to parameter 'volumes'.
 
-## 3. Add Data Nodes
+## 2. Add Data Nodes
 
 In the example below, we will add a new physical server to a cluster and deploy a data node on it.
 
@@ -74,7 +70,7 @@ We can browse the data in the DFS Explorer of the cluster web interface.
 
 ![image](https://github.com/dolphindb/Tutorials_CN/blob/master/images/scaleout/scale_dfs_exp1.PNG?raw=true)
 
-> * For more details about cluster configuration, please refer to [DolphinDB Cluster Deployment on Multiple Servers] (https://github.com/dolphindb/Tutorials_CN/blob/master/multi_machine_cluster_deploy.md)*
+> * For more details about cluster configuration, please refer to [DolphinDB Cluster Deployment on Multiple Servers](https://github.com/dolphindb/Tutorials_CN/blob/master/multi_machine_cluster_deploy.md)
 
 The IP address of the new machine:
 ```
@@ -85,9 +81,9 @@ The IP address, port number and the unique alias name of the data node in the cl
 172.18.0.14:8804:datanode4
 ```
 
-### 3.1 Configure the New Agent
+### 2.1 Configure the New Agent
 
-Agent node is deployed in the /home/<DolphinDBRoot> directory. Copy the files in the directory on any server to the /home/<DolphinDBRoot> directory of the new machine, and modify /home/<DolphinDBRoot>/config/agent.cfg as follows:
+Agent node is deployed in the directory `/home/<DolphinDBRoot>`. Copy the files in the directory on any server to the directory `/home/<DolphinDBRoot>` of the new machine, and modify /home/<DolphinDBRoot>/config/agent.cfg as follows:
 
 ```
 //specify the IP address and port number of the new agent node
@@ -99,7 +95,7 @@ controllerSite=172.18.0.10:8990:ctl8990
 Mode=agent
 ```
 
-### 3.2 Configure Controller
+### 2.2 Configure Controller
 
 Modify the file cluster.nodes to include the new agent node and data node:
 
@@ -117,7 +113,7 @@ localSite,mode
 172.18.0.14:8804:node4,datanode
 ```
 
-#### 3.3 Restart the cluster
+#### 2.3 Restart the cluster
 
 Restart the entire cluster, including the controller node and all data nodes.
 
@@ -135,59 +131,45 @@ Restart the entire cluster, including the controller node and all data nodes.
 
 By now we have successfully added a new server and a new data node to the cluster.
 
-### 3.4 Verification
+### 2.4 Verification
 
 Let's verify that the new data node is enabled in the cluster by writing some data to the cluster.
 ```
 Tb = database("dfs://scaleout_test_db").loadTable("scaleoutTB")
 Tb.append!(table(1001..1500 as id,rand(`A`B`C,500) as name))
 ```
-Looking at the dfs explorer, you can see that the data has been distributed to the new node4 node.
+In the DFS Explorer, you should see that the data has been populated to the new data node.
 
 ![image](https://github.com/dolphindb/Tutorials_CN/blob/master/images/scaleout/scale_dfs_exp2.PNG?raw=true)
 
-### 3.5. Data distribution mechanism after extending data nodes
 
-In a cluster of popular MPP architecture, adding new nodes will cause resharding as the hash values change. It usually takes a long time to perform resharding on big amount of data.
+## 3. Add Hard Disks to a Data Node
 
-The data storage of DolphinDB is based on the underlying distributed file system, and the data copy is managed by metadata. Therefore, after the node is expanded, the original data does not need to be resharding, and the newly added data is saved to the new node according to the distribution policy. 
+The storage capacity of existing data nodes might become insufficient. The following example explains how to add a hard disk to node3.
 
-Of course, data distribution can be made more evenly distributed, and DolphinDB is developing such a tool.
+The storage paths can be specified with the configuration parameter 'volumes'. The default storage path is `<HomeDir>/<Data Node Alias>/storage`.
 
-## 4. Extended storage
+> If you add a disk from the default path, you must explicitly set the original default path when specifying the parameter 'volumes'. Otherwise, the metadata will be lost in the default path.
 
-Due to insufficient disk space on the server where node3 is located, a disk has been expanded with the path /dev/disk2, which is included in the storage of node3.
-
-### 4.1 Steps
-
-The node storage of DolphinDB can be configured through the volumes attribute in the configuration file. In the case above, if there is no configuration, 
-the default storage path will be <HomeDir>/<Data Node Alias>/Storage. In this case, it is under /home/server/data/node3/storage.
-
-> If you add a disk from the default path, you must explicitly set the original default path when setting the volumes property.
-Otherwise, the metadata will be lost in the default path.
-
-The default volume attribute is as follows. You need to add it to the configuration file if it doesn't exist there.
+The default value for parameter 'volumes' is as follows. You need to add it to the configuration file if it doesn't exist there.
 
 cluster.cfg
 ```
 node3.volumes=/home/server/data/node3/storage 
 ```
 
-To add the new disk path /dev/disk2/node3 to the node3 node, just separate the new path with a comma after the above configuration.
+To add the new disk path /dev/disk2/node3 to node3, just add the path to the line above after a comma.
 
 cluster.cfg
 ```
 node3.volumes=/home/server/data/node3/storage,/dev/disk2/node3
 ```
 
-After modifying the configuration file, execute loadClusterNodesConfigs() on the controller to reload the node configuration. If the steps above are completed on the cluster management web interface, the overload process will be completed automatically without manual execution. After the configuration is complete, there is no need to restart the controller. Just restart node3 on the web interface so that the new configuration can take effect.
+After modifying the configuration file, execute `loadClusterNodesConfigs()` on the controller to reload the configuration parameters. If the steps above are completed on the cluster management web interface, configuration parameters are automatically reloaded, and we don't need to execute `loadClusterNodesConfigs()`. After the configuration is completed, there is no need to restart the controller. Just restart node3 on the web interface so that the new configuration can take effect.
 
->
-If you would like the new storage to take effect immediately without restarting node3, you can add variables by executing addVolumes("/dev/disk2/node3") on node3. However, the effect of this function will not be persisted.
+> If you would like the new storage to take effect immediately without restarting node3, you can execute `addVolumes("/dev/disk2/node3")` on node3. However, this will not be effective any more after the cluster restarts.
 
-### 4.2 Verfication
-
-After the configuration is complete, write data to the cluster as in the following statement to see if the data is written to the new disk.
+After the configuration is completed, execute the following script to write data to the cluster and check if data is written to the new disk.
 ```
 tb = database("dfs://scaleout_test_db").loadTable("scaleoutTB")
 tb.append!(table(1501..2000 as id,rand(`A`B`C,500) as name))
