@@ -11,8 +11,8 @@ Importing text files in DolphinDB is very flexible and is also very fast. Compar
 
 This tutorial covers the folowing topics:
 
-- [1.Automatic identification of schema](#1-Automatic identification of schema)
-- [2.Specify schema](#2-Specify schema)
+- [1. Automatic identification of schema](#1-Automatic identification of schema)
+- [2. Specify schema](#2-Specify schema)
     - [2.1 Get text file schema](#21-Get text file schema)
     - [2.2 Specify column names and types](#22-Specify column names and types)
     - [2.3 Specify the format of temporal types](#23-Specify the format of temporal types)
