@@ -11,23 +11,23 @@ Importing text files in DolphinDB is very flexible and is also very fast. Compar
 
 This tutorial covers the folowing topics:
 
-- [1. Automatic identification of schema](#1- Automatic identification of schema)
-- [2. Specify schema](#2-Specify schema)
-    - [2.1 Get text file schema](#21-Get text file schema)
-    - [2.2 Specify column names and types](#22-Specify column names and types)
-    - [2.3 Specify the format of temporal types](#23-Specify the format of temporal types)
-    - [2.4 Import selected columns](#24-Import selected columns)
-    - [2.5 Skip lines](#25-Skip lines)
-- [3. Import data in parallel](#3-Import data in parallel)
-    - [3.1 Import a single file in parallel](#31-Single file multi-threaded loading)
-    - [3.2 Import multiple files in parallel](#32-Multi-File Parallel Import)
-- [4. Data preprocessing before importing text files](#4-Data preprocessing before importing text files)
-- [5. Custom data import with Map-Reduce](#5-Custom data import with Map-Reduce)
-- [6. Other considerations](#6-Other considerations)
-    - [6.1 Encoding of strings](#61-Encoding of strings)
-    - [6.2 Parsing Numeric Types](#62-Parsing Numeric Types)
-    - [6.3 Automatically remove double quotation marks](#63-Automatically remove double quotation marks)
-- [Appendix](#Appendix)
+- [1. Automatic identification of schema](#1-automatic-identification-of-schema)
+- [2. Specify schema](#2-specify-schema)
+    - [2.1 Get text file schema](#21-get-text-file-schema)
+    - [2.2 Specify column names and types](#22-specify-column-names-and-types)
+    - [2.3 Specify the format of temporal types](#23-specify-the-format-of-temporal-types)
+    - [2.4 Import selected columns](#24-import selected columns)
+    - [2.5 Skip lines](#25-skip lines)
+- [3. Import data in parallel](#3-import data in parallel)
+    - [3.1 Import a single file in parallel](#31-import-a-single-file-in-parallel)
+    - [3.2 Import multiple files in parallel](#32-import-multiple-files-in-parallel)
+- [4. Data preprocessing before importing text files](#4-data-preprocessing-before-importing-text-files)
+- [5. Custom data import with Map-Reduce](#5-custom-data-import-with-map-reduce)
+- [6. Other considerations](#6-other-considerations)
+    - [6.1 Encoding of strings](#61-encoding-of-strings)
+    - [6.2 Parsing Numeric Types](#62-parsing-numeric-types)
+    - [6.3 Automatically remove double quotation marks](#63-automatically-remove-double-quotation-marks)
+- [Appendix](#appendix)
 
 ## 1. Automatic identification of schema
 
@@ -143,7 +143,7 @@ tmpTB = loadText(filename = dataFilePath, schema = schemaTB);
 
 We can use the same method to modify column names.
 
-> Please note that if automatically inferred date or time related data types do not meet expectations, please refer to [section 2.3](#23-Specify the format of temporal types).
+> Please note that if automatically inferred date or time related data types do not meet expectations, please refer to [section 2.3](#23-specify-the-format-of-temporal-types).
 
 ### 2.3 Specify the format of temporal types
 
@@ -701,7 +701,7 @@ id num
 ```
 
 
-appendix
+Appendix
 -
 
 The text file used in the examples in this tutorial: [candle_201801.csv](https://github.com/dolphindb/Tutorials_CN/blob/master/data/candle_201801.csv).

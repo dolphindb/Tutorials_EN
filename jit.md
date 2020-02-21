@@ -1,4 +1,4 @@
-# JIT in DolphinDB
+# DolphinDB Tutorial: Just-in-time (JIT) Compilation
 
 Starting from version 1.01, DolphinDB supports JIT. 
 
