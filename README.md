@@ -11,7 +11,7 @@
     - [Partitioned Databases](https://github.com/dolphindb/Tutorials_EN/blob/master/database.md)
     - [Import Data](https://github.com/dolphindb/Tutorials_EN/blob/master/import_data.md)
     - [Partitioned In-Memory Tables](https://github.com/dolphindb/Tutorials_EN/blob/master/partitioned_in_memory_table.md)
-    - [Importing Text Files](https://github.com/dolphindb/Tutorials_EN/blob/master/import_csv.md)
+    - [Import Text Files](https://github.com/dolphindb/Tutorials_EN/blob/master/import_csv.md)
 - Programing Language
     - [DolphinDB Programming Guide](https://github.com/dolphindb/Tutorials_EN/blob/master/DolphinDB_Programming_Guide.md)
     - [Calculate OHLC bars in DolphinDB](https://github.com/dolphindb/Tutorials_EN/blob/master/OHLC.md)
