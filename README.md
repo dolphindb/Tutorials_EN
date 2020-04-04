@@ -29,5 +29,5 @@
     - [Json API](https://github.com/dolphindb/api-json/blob/master/README.md)
     - [Grafana Data Source Plugin](https://github.com/dolphindb/grafana-datasource/blob/master/README.md)
 - Modules
-    - [Tehnical Analysis](https://github.com/dolphindb/Tutorials_EN/blob/master/ta.md)
+    - [Technical Analysis Indicator Library](https://github.com/dolphindb/Tutorials_EN/blob/master/ta.md)
  
