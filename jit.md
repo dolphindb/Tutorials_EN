@@ -546,6 +546,80 @@ timer(10) stoploss_no_JIT(ret, threshold)           //   14622 ms
 timer(10) stoploss_vectorization(ret, threshold)    //     152 ms
 ```
 
+### 5.4 Cost of inventory shares
+
+If we frequently add and trim the position of a stock, we need to calculate the average cost of inventory shares in order to calculate realized profit-and-loss for each sell order. Assuming we never have a short position in the stock, after the first (purchase) transaction, the transaction price is the cost of the inventory shares. After a subsequent purchase transaction, the average holding cost is a weighted average of the previous average holding cost and the latest transaction price. After a sell, the average holding cost remains unchanged. If we sell all positions, then the calculation of holding costs starts over. This is a typical path dependence problem and cannot be solved by vectorization.
+
+In the following example, column "price" in table "trades" is the transaction price, and column "amount" is the number of shares that are bought (positive) or sold (negative). 
+
+Calculate cost of inventory shares without JIT:
+```
+def holdingCost_no_JIT(price, amount){
+	holding = 0.0
+	cost = 0.0
+	avgPrice = 0.0
+	n = size(price)
+	avgPrices = array(DOUBLE, n, n, 0)
+	for (i in 0:n){
+		holding += amount[i]
+		if (amount[i] > 0){
+			cost += amount[i] * price[i]
+			avgPrice = cost/holding
+		} 
+		else{
+			cost += amount[i] * avgPrice
+		}
+	    avgPrices[i] = avgPrice
+	}
+	return avgPrices
+}
+```
+Calculate cost of inventory shares with JIT:
+```
+@jit
+def holdingCost_JIT(price, amount){
+	holding = 0.0
+	cost = 0.0
+	avgPrice = 0.0
+	n = size(price)
+	avgPrices = array(DOUBLE, n, n, 0)
+	for (i in 0..n){
+		holding += amount[i]
+		if (amount[i] > 0){
+			cost += amount[i] * price[i]
+			avgPrice = cost/holding
+		} 
+		else{
+			cost += amount[i] * avgPrice
+		}
+		avgPrices[i]=avgPrice
+	}
+	return avgPrices
+}
+```
+Performance comparison:
+```
+n=1000000
+id = 1..n
+price = take(101..109,n)
+amount =take(1 2 3 -2 -1 -3 4 -1 -2 2 -1,n)
+trades = table(id, price, amount)
+
+timer (10)
+t = select *, iif(amount < 0, amount*(avgPrice - price), 0) as profit 
+from (
+  select *, holdingCost_no_JIT(price, amount) as avgPrice
+  from trades
+)    // 29,509ms
+
+timer (10)
+select *, iif(amount < 0, amount*(avgPrice - price), 0) as profit 
+from (
+  select *, holdingCost_JIT(price, amount) as avgPrice
+  from trades
+)     // 148 ms
+```
+With 1 million rows of data in this example, the JIT version and the non-JIT version are executed 10 times on the same machine. The JIT version takes 148 ms and the non-JIT version takes 29509 ms. The JIT version is about 200 times faster than the non-JIT version.
 
 ## 6 Future work
 
