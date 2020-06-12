@@ -18,6 +18,7 @@
     - [DolphinDB Tutorial: Just-in-time (JIT) Compilation](https://github.com/dolphindb/Tutorials_EN/blob/master/jit.md)
 - Streaming
     - [Streaming](https://github.com/dolphindb/Tutorials_EN/blob/master/streaming_tutorial.md)
+    - [Stream Aggregator](https://github.com/dolphindb/Tutorials_EN/blob/master/stream_aggregator.md)
 - System Management
     - [Security and User Access Control](https://github.com/dolphindb/Tutorials_EN/blob/master/ACL_and_Security.md)
 - API
