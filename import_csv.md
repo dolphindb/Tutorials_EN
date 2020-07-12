@@ -35,7 +35,7 @@ In most other systems, users need to specify column names and data types when im
 
 If none of the columns in the first line of the file starts with a number, the system considers the first line to be the file header with column names. DolphinDB will take a small number of rows as a sample and automatically infer the data type of each column. As only a subset of data are used to infer data types, the data types of some columns may be incorrectly identified. For most text files, however, users don't need to manually specify column names and their data types when importing these files.
 
-> Please note: DolphinDB supports automatic identification of most [data types provided by DolphinDB](https://www.dolphindb.com/help/DataType.html), but currently does not support automatic identification of UUID and IPADDR types. They will be supported in a later version.
+> Note: The versions prior to 1.20.0 do not support importing UUID, IPADDR or INT128 types. To import these data types， please make sure to use version 1.20.0 or later. 
 
 The following example shows how to use function [`loadText`](https://www.dolphindb.com/help/loadText.html) to import a text file as an in-memory table. About the text file used in the examples, please refer to [Appendix](#Appendix).
 
