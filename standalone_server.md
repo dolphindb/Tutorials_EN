@@ -76,7 +76,7 @@ pt.append!(t);
 pt=loadTable("dfs://valuedb","pt")
 select top 100 * from pt
 ```
-![the result](https://2xdb.net/dolphindb/tutorials_cn/raw/master/images/single_notebook.jpg)
+![the result](/../../../tutorials_cn/raw/master/images/single_notebook.jpg)
 
 To use DolphinDB to work with huge volumes of data, we need to use partitioned database in DolphinDB. Regarding partitioned database please refer to [DolphinDB Partitioned Database Tutorial](https://github.com/dolphindb/Tutorials_EN/blob/master/database.md).
 
