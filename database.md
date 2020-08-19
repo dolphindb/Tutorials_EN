@@ -13,7 +13,7 @@ Partitioned databases can significantly reduce latency and improve throughput.
 
 MPP (Massive Parallel Processing) databases are widely adopted in popular systems such as Greenplum, Amazon Reshift, etc. In MPP a leader node connects to all client applications. DolphinDB adolpts a peer-to-peer structure in database and doesn't have a leader node. Each client application can connect to any compute node. Therefore DolphinDB doesn't have performance bottlenecks at the leader node. 
 
-MPP databases usually split data across nodes with hashed sharding first (horizontal partitioning), then within each node conduct further partitioning (vertical partitioning). In DolphinDB, the partitioning logic and partition storage are independent of each other. The distributed file system (DFS) determines the storage locations of the partitions. Partitioning storage is optimized across the entire cluster. Compared with MPP databases, DolphinDB provides more fine-grained partitions. Data are more evenly distributed across partitions to better utilize cluster resources. 
+MPP databases usually split data across nodes with hashed sharding first (horizontal partitioning), then within each node conduct further partitioning (vertical partitioning). In DolphinDB, the partitioning logic and partition storage are independent of each other. The distributed file system (DFS) determines the storage locations of the partitions. Partitioning storage is optimized across the entire cluster. Compared with MPP databases, DolphinDB provides more fine-grained partitions. Data is more evenly distributed across partitions to better utilize cluster resources. 
 
 As the distributed file system provides excellent partition management, fault tolerance, replica management and transaction management, a single table in DolphinDB can support millions of partitions. DolphinDB supports data storage and fast queries on datasets up to PBs. With DFS, database storage is independent of data nodes, making it extremely convenient to scale out the clusters. 
 
@@ -21,13 +21,12 @@ As the distributed file system provides excellent partition management, fault to
 
 #### 3. Partition Domains
 
-DolphinDB supports sequential, range, hash, value, list, and composite partitions. 
-  *  Sequential domain can load large text files into memory faster than importing directly from text files. It can only be used in the local file system, not in the distributed file system. 
+DolphinDB supports range, hash, value, list and composite partitions. 
   *  Range partitions use ranges to form partitions. Each range is defined by 2 adjacent elements of a partition scheme vector. It is the most commonly used partition type.
   *  Hash partitions use a hash function on a partitioning column. Hash partition is a convenient way to generate a given number of partitions. 
   *  In a value domain, each element of the partition scheme vector corresponds to a partition. 
   *  A list domain partitions data according to a list. It is more flexible than a range domain.
-  *  The composite domain is suitable for situations where multiple columns are frequently used in SQL **where** or **group by** clauses on large tables. In a composite domain, we can have 2 or 3 partitioning columns. Each column can be of range, value, or list domain. For example, we can use a value domain on trading days, and a range domain on stock symbols. The order of the partitioning columns is irrelevant. 
+  *  The composite domain is suitable for situations where multiple columns are frequently used in SQL **where** or **group by** clauses on large tables. A composite domain can have 2 or 3 partitioning columns. Each column can be of range, hash, value or list domain. For example, we can use a value domain on trading days, and a range domain on stock symbols. The order of the partitioning columns is irrelevant. 
 
 When we create a new distributed database, we need to specify parameters "partitionType" and "partitionScheme". When we reopen an existing distributed database, we only need to specify "directory". We cannot overwrite an existing distributed database with a different "partitionType" or "partitionScheme". 
 
@@ -35,50 +34,11 @@ When we use aggregate functions on a partitioned table, we can achieve optimal p
 
 The following examples are executed on local drives in Windows. To run in Linux servers or DFS clusters, just change the directory of the databases accordingly. 
 
-
-#### 3.1 SEQ Domain
-
-In a sequential domain (SEQ), the partitions are based on the order of rows in the input data file. The sequential domain can only be used in the local file system, not in the distributed file system. 
-
-In the following example, 8 sub folders are created under the folder "C:/DolphinDB/data/seqdb". Each of them corresponds to a partition of the input data file. 
-
-```
-n=1000000
-ID=rand(100, n)
-dates=2017.08.07..2017.08.11
-date=rand(dates, n)
-x=rand(10.0, n)
-t=table(ID, date, x)
-saveText(t, "C:/DolphinDB/Data/t.txt")
-
-db = database("C:/DolphinDB/Data/seqdb", SEQ, 8)   
-pt = loadTextEx(db, `pt, , "C:/DolphinDB/Data/t.txt");
-```
-![](images/database/seq.png)
-
-#### 3.2 RANGE Domain
+#### 3.1 RANGE Domain
 
 In a range domain (RANGE), partitions are determined by ranges whose boundaries are two adjacent elements of the partition scheme vector. The starting value is inclusive and the ending value is exclusive.
 
 In the example below, database db has 2 partitions: [0,5) and [5,10). Table t is saved as a partitioned table pt with the partitioning column of ID in database db. 
-
-```
-n=1000000
-ID=rand(10, n)
-x=rand(1.0, n)
-t=table(ID, x)
-db=database("C:/DolphinDB/Data/rangedb", RANGE,  0 5 10)
-
-pt = db.createPartitionedTable(t, `pt, `ID)
-pt.append!(t)
-
-pt=loadTable(db,`pt)
-select count(x) from pt;
-```
-
-![](images/database/range.png)
-
-To create DFS databases, just change the local database folder path to DFS path.
 
 ```
 n=1000000
@@ -92,7 +52,11 @@ pt.append!(t);
 pt=loadTable(db,`pt)
 select count(x) from pt;
 ```
-#### 3.3 HASH Domain
+
+![](images/database/range.png)
+
+
+#### 3.2 HASH Domain
 
 In a hash domain (HASH), partitions are determined by a hash function on the partitioning column. Hash partition is a convenient way to generate a given number of partitions. However, there might be significant differences between the partition sizes if the distribution of the partitioning column values is skewed. To locate observations on a continuous range in the partitioning column, it is more efficient to use range partitions or value partitions than hash partitions.     
 
@@ -103,7 +67,7 @@ n=1000000
 ID=rand(10, n)
 x=rand(1.0, n)
 t=table(ID, x)
-db=database("C:/DolphinDB/Data/hashdb", HASH,  [INT, 2])
+db=database("dfs://hashdb", HASH,  [INT, 2])
 
 pt = db.createPartitionedTable(t, `pt, `ID)
 pt.append!(t)
@@ -112,7 +76,7 @@ pt=loadTable(db,`pt)
 select count(x) from pt
 ```
 
-#### 3.4  VALUE Domain
+#### 3.3  VALUE Domain
 
 In a value domain (VALUE), each element of the partition scheme vector corresponds to a partition. 
 ```
@@ -121,7 +85,7 @@ month=take(2000.01M..2016.12M, n)
 x=rand(1.0, n)
 t=table(month, x)
 
-db=database("C:/DolphinDB/Data/valuedb", VALUE, 2000.01M..2016.12M)
+db=database("dfs://valuedb", VALUE, 2000.01M..2016.12M)
 pt = db.createPartitionedTable(t, `pt, `month)
 pt.append!(t)
 
@@ -134,7 +98,7 @@ The example above defines a database db with 204 partitions. Each of these parti
 
 The partition scheme of a value domain can be appended with new values after it is created. Please check function `addValuePartitions` in user manual for details. 
 
-#### 3.5 LIST Domain
+#### 3.4 LIST Domain
 
 In a list domain, each element of a vector represents a partition. The different between a list domain and a value domain is that all the elements in a value domain partition scheme are scalars, whereas each element in a list domain partition scheme may be a vector.
 
@@ -144,7 +108,7 @@ ticker = rand(`MSFT`GOOG`FB`ORCL`IBM,n);
 x=rand(1.0, n)
 t=table(ticker, x)
 
-db=database("C:/DolphinDB/Data/listdb", LIST, [`IBM`ORCL`MSFT, `GOOG`FB])
+db=database("dfs://listdb", LIST, [`IBM`ORCL`MSFT, `GOOG`FB])
 pt = db.createPartitionedTable(t, `pt, `ticker)
 pt.append!(t)
 
@@ -156,7 +120,7 @@ The database above has 2 partitions. The first partition contains 3 tickers and 
 
 ![](images/database/list.png)
 
-#### 3.6 COMPO Domain
+#### 3.5 COMPO Domain
 
 A composite domain (COMPO) can have 2 or 3 partitioning columns. Each partitioning column can be of range, value, or list domain. The order of the partitioning columns is irrelevant.
 
@@ -171,7 +135,7 @@ t=table(ID, date, x)
 
 dbDate = database(, VALUE, 2017.08.07..2017.08.11)
 dbID=database(, RANGE, 0 50 100)
-db = database("C:/DolphinDB/Data/compoDB", COMPO, [dbDate, dbID])
+db = database("dfs://compoDB", COMPO, [dbDate, dbID])
 pt = db.createPartitionedTable(t, `pt, `date`ID)
 pt.append!(t)
 
@@ -202,7 +166,7 @@ db=database("dfs://rangedb1", RANGE,  0.0 5.0 10.0);
 The data type DOUBLE can't be used for a partition column.
 ```
 
-Although DolphinDB supports TIME, SECOND, and DATETIME for partitioning columns, please avoid using them for value partitions. Otherwise each partition may be too small. It is very time consuming to create and query millions of small partitions.
+Although DolphinDB supports TIME, SECOND and DATETIME for partitioning columns, please avoid using them for value partitions. Otherwise each partition may be too small. It is very time consuming to create and query millions of small partitions.
 
 The partitioning columns should be relevant in most database transactions, especially database updates. For example, many tasks on financial databases involve stock symbols and dates. Therefore stock symbols and dates are natural candidates as partitioning columns. As will be discussed in section 5.2, DolphinDB doesn't allow multiple threads or processes to write to the same partition simultaneously when updating the database. Considering we may need to update data of a date or of a stock, if we use other partitioning columns such as trading hour, multiple writers may write to the same partition simultaneously and cause problems. 
 
@@ -232,7 +196,7 @@ The distribution of trading activities of stocks is highly skewed. Some stocks a
 
 #### 4.4 How to partition data evenly
 
-Significant differences among partition sizes may cause load imbalance. Some nodes may have heavy workloads while other nodes idle. If a task is divided into multiple subtasks, it returns the final result only after the last subtask is finished. As each subtask works on a different partition, if data are not distributed evenly among partitions, it may increase the execution time.
+Significant differences among partition sizes may cause load imbalance. Some nodes may have heavy workloads while other nodes idle. If a task is divided into multiple subtasks, it returns the final result only after the last subtask is finished. As each subtask works on a different partition, if data is not distributed evenly among partitions, it may increase the execution time.
 
 A useful tool for partitioning data evenly is function `cutPoints(X, N, [freq])`, where X is a vector; N means the number of buckets the elements of X will be grouped into; the optional argument freq is a vector of the same length as X indicating the frequency of each element in X. It returns a vector with (N+1) elements such that the elements of X are evenly distributed within each of the N buckets indicated by the vector. It can be used to generate the partition scheme of a range domain in a distributed database. 
 
@@ -260,7 +224,7 @@ When using temporal variables as a partition column, the data type of the partit
 
 #### 4.6 Partition colocation
 
-It may be time consuming to join multiple tables in a distributed database, as the partitions that need to be joined with may be located on different nodes and therefore data need to be copied and moved across nodes. To solve this problem, DolphinDB ensures that the same partitions of all the tables in the same distributed database are stored at the same node. This makes it highly efficient to join these tables. DolphinDB does not support joining tables from different partitioned databases.
+It may be time consuming to join multiple tables in a distributed database, as the partitions that need to be joined with may be located on different nodes and therefore data need to be copied and moved across nodes. DolphinDB ensures that the same partitions of all the tables in the same distributed database are stored at the same node. This makes it highly efficient to join these tables. DolphinDB does not support joining tables from different partitioned databases.
 
 ```
 dateDomain = database("", VALUE, 2018.05.01..2018.07.01)
@@ -277,15 +241,15 @@ In the examples above, the distributed tables quotes and trades are located in t
 
 #### 5. Import data into distributed databases
 
-DolphinDB is an OLAP database system. It is designed for fast storage and query/computing of massive structured data and for high performance data processing with the in-memory database and streaming functionalities. It is not an OLTP system for frequently updated data. When appending new data to a database on disk in DolphinDB, compressed data are inserted at the end of partitions or files in batches, similar to Hadoop HDFS. We cannot, however, update or delete rows with specific conditions. To modify existing rows, we have to replace the entire partitions that contain these rows. 
+DolphinDB is an OLAP database system. It is designed for fast storage and query/computing of massive structured data and for high performance data processing with the in-memory database and streaming functionalities. It is not an OLTP system for frequent updates. When appending new data to a database on disk in DolphinDB, compressed data is inserted at the end of partitions or files in batches, similar to Hadoop HDFS. To update or delete existing rows, entire partitions that contain these rows need to be deleted first and then rewritten. 
 
 #### 5.1 Replicas
 
-DolphinDB can make multiple replicas for each partition. The number of replicas is 2 by default, and can be changed by setting the configuration parameter "dfsReplicationFactor". 
+We can make multiple replicas for each partition in DolphinDB. The number of replicas is 2 by default and can be changed by setting the configuration parameter "dfsReplicationFactor". 
 
 There are 2 purposes of replicas: 
-(1) Fault tolerance: if a node is down, the system can use a replica for ongoing projects.
-(2) Load balance: with a large number of concurrent users, replicas can improve system throughput and decrease latency. 
+(1) Fault tolerance: If a node is down, the system can use a replica for ongoing projects.
+(2) Load balance: With a large number of concurrent users, replicas can improve system throughput and decrease latency. 
 
 DolphinDB adopts two-phase commit protocol to ensure strong consistency of all replicas of the same partition on different nodes when writing data into the database. 
 
@@ -293,7 +257,7 @@ The configuration parameter "dfsReplicaReliabilityLevel" in the controller confi
 
 #### 5.2 Transactions
 
-The DFS table engine in DolphinDB supports transactions, i.e., it gaurantees ACID (atomicity, consistency, isolation, and durability). The DFS table engine uses MVCC for transactions and supports snapshot isolation. With snapshot isolation, reading and writing do not block each other, therefore read operations in a data warehouse is optimized. 
+The DFS table engine in DolphinDB supports transactions, i.e., it gaurantees ACID (atomicity, consistency, isolation and durability). The DFS table engine uses MVCC for transactions and supports snapshot isolation. With snapshot isolation, reading and writing do not block each other, therefore read operations in a data warehouse is optimized. 
 
 To optimize the performance of queries and computing tasks in the data warehouse, DolphinDB has the following restrictions on transactions:
 + A transaction cannot involve both read operations and write operations. 
@@ -301,9 +265,9 @@ To optimize the performance of queries and computing tasks in the data warehouse
 
 #### 5.3 Parallel data writing
 
-In DolphinDB, a single table can have millions of partitions. This facilitates fast parallel data loading. Parallel data loading is especially important when huge amount of data are imported into DolphinDB, or when real-time data are persisted to the data warehouse with low latency.
+In DolphinDB, a single table can have millions of partitions. This facilitates fast parallel data loading. Parallel data loading is especially important when huge amount of data is imported into DolphinDB, or when real-time data is persisted to the data warehouse with low latency.
 
-The following example loads stock quotes data to database stockDB in parallel. The data are stored in csv files, with each file representing a different day. The database stockDB uses a composite partition on date and stock symbol. For each file, create a jobID prefix with the file name, and use function `submitJob` to execute function `loadTextEx` to load data into database stockDB. Use command `pnodeRun` to execute the loading task at each data node of the cluster. 
+The following example loads stock quotes data to database stockDB in parallel. The data is stored in csv files, with each file representing a different day. The database stockDB uses a composite partition on date and stock symbol. For each file, create a jobID prefix with the file name, and use function `submitJob` to execute function `loadTextEx` to load data into database stockDB. Use command `pnodeRun` to execute the loading task at each data node of the cluster. 
 
 ```
 dateDomain = database("", VALUE, 2018.05.01..2018.07.01)
@@ -413,7 +377,7 @@ conn.run("saveQuotes", args);
 
 #### 6. Queries on partitioned tables
 
-The execution of most distributed queries does not need all partitions of a distributed table. It could save a significant amount of time if the system can narrow down relevant partitions before loading and processing data. 
+Most distributed queries do not involve all partitions of a distributed table. It could save a significant amount of time if the system can narrow down relevant partitions before loading and processing data. 
 
 DolphinDB conducts partition pruning based on relational operators (<, <=, =, ==, >, >=, in, between) and logical operators (or, and) with the partitioning column(s).
 
@@ -455,7 +419,6 @@ select * from pt where y<5 and date between 1990.08.01:1990.08.31;
 The system narrows down the relevant partitions to [1990.07.01, 1990.09.01). Please note that in this step, the system ignores the condition of y<5. After loading the relevant partition, the system will use the condition of y<5 to further filter the data.
 
 The following queries cannot narrow down the relevant partitions. If used on a huge partitioned table, they will take a long time to finish. For this reason these queries should be avoided. 
-
 ```
 select * from pt where date+10>1990.08.01;
 
@@ -470,4 +433,3 @@ select * from pt where date<announcementDate-3;
 
 select * from pt where y<5 or date between 1990.08.01:1990.08.31;
 ```
-
