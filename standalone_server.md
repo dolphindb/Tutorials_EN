@@ -120,6 +120,8 @@ pt=loadTable("dfs://valuedb","pt")
 select top 100 * from pt
 ```
 Click the ![execute](images/execute.JPG) button in the toolbar to execute the script. The following figure shows the result of the operation:
+
+
 ![运行结果](images/single_GUI.PNG)
 
 By default, database files are stored under the directory of /server/local8848. To change the directory, please specify the configuration parameter 'volumes'. 
