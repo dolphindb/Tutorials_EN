@@ -1,16 +1,16 @@
-# DolphinDB Streaming Tutorial
+# Tutorial: Stream for DolphinDB
 
-The advantages of DolphinDB streaming system over other streaming systems are:
+The advantages of Stream for DolphinDB over other streaming analytics systems are:
 - High throughput and low latency
-- One-stop solution that is integrated with time-series database and data warehouse
+- One-stop solution that is seamlessly integrated with time-series database and data warehouse
 - Natural support of stream-table duality and SQL statements
 
-DolphinDB streaming system provides numerous convenient features, such as:
-- Built-in time-series and cross-sectional aggregators
+Stream for DolphinDB provides numerous convenient features, such as:
+- Built-in time-series, cross-sectional and anomaly detection aggregators
 - High frequency data replay
 - Streaming data filtering
 
-This tutorial will cover the following topics about streaming:
+This tutorial will cover the following topics:
 - Flowchart and related concepts
 - Core functionalities
 - Replay
@@ -21,26 +21,26 @@ This tutorial will cover the following topics about streaming:
 
 ### 1. Flowchart and related concepts
 
-Streaming in DolphinDB is based on the publish-subscribe model. Streaming data is ingested into and published by a streaming table. A data node or a third-party application can subscribe to and consume the streaming data through DolphinDB script or API.
+Stream for DolphinDB is based on the publish-subscribe model. Streaming data is ingested into and published by a stream table. A data node or a third-party application can subscribe to and consume the streaming data through DolphinDB script or API.
 
 ![image](images/DolphinDB_Streaming_Framework.jpg)
 
-The figure above is the DolphinDB streaming flowchart. After injecting real-time data into a streaming table on a publisher node, the data can be subscribed by various types of objects:
+The figure above is the DolphinDB streaming flowchart. Real-time data is ingested into a stream table on a publisher node. The streaming data can be subscribed by various types of objects:
 - Streaming data can be subscribed and saved by the data warehouse for further analysis and reporting.
-- Streaming data can be subscribed by an aggregation engine to perform aggregate calculations and to output the results to another streaming table. The aggregation results can be displayed in real time in a platform such as Grafana and can also serve as a data source for event processing by another subscription.
+- Streaming data can be subscribed by an aggregation engine to perform calculations and to output the results to another stream table. The aggregation results can be displayed in real time in a platform such as Grafana and can also serve as a data source for event processing by another subscription.
 - Streaming data can be subscribed by an API. For example, a third-party Java application can subscribe to streaming data with Java API.
 
-#### 1.1 Streaming table
+#### 1.1 Stream table
 
-Streaming table is a special type of in-memory table to store and publish streaming data. Streaming table supports concurrent read and write. We can append to streaming tables, but cannot delete or modify the records of streaming tables. Publishing a message is equivalent to inserting a record into a streaming table. SQL statements can be used on streaming tables.
+Stream table is a special type of in-memory table to store and publish streaming data. Stream table supports concurrent read and write. We can append to stream tables, but cannot delete or modify the records of stream tables. Publishing a message is equivalent to inserting a record into a stream table. SQL statements can be used on stream tables.
 
 #### 1.2 Publish-subscribe
 
-Streaming in DolphinDB uses the classic publish-subscribe model. When new data is written to a streaming table, the publisher notifies all subscribers to process the new streaming data. A data node uses function `subscribeTable` to subscribe to the streaming data.
+Stream for DolphinDB uses the classic publish-subscribe model. When new data is written to a stream table, the publisher notifies all subscribers to process the new data. A data node uses function `subscribeTable` to subscribe to the streaming data.
 
 #### 1.3 Real-time aggregation engine
 
-The real-time aggregation engine refers to a module dedicated to real-time calculation and analysis of streaming data. DolphinDB provides functions `createTimeSeriesAggregator` and `createCrossSectionalAggregator` for continuous real-time calculation with streaming data. They continuously output the results to the specified table. 
+The real-time aggregation engine refers to a module dedicated to real-time calculation and analysis of streaming data. DolphinDB provides functions `createTimeSeriesAggregator` and `createCrossSectionalAggregator` for continuous real-time calculation with streaming data. The results are continuously output to the specified tables. 
 
 ### 2. Core functionalities
 
@@ -49,9 +49,9 @@ To enable the streaming module, the following configuration parameters need to b
 Configuration parameters required for the publisher node:
 
 - maxPubConnections: the maximum number of subscriber nodes that the publisher can connect to. If maxPubConnections>0，the node is a publisher node. The default value is 0.
-- persisitenceDir: the folder path where the shared streaming table is saved. This parameter must be specified to save the streaming table.
-- persistenceWorkerNum: the number of worker threads responsible for saving the streaming table in asynchronous mode. The default value is 0.
-- maxPersistenceQueueDepth: the maximum depth (number of records) of the message queue when the streaming table is saved in asynchronous mode. The default value is 10,000,000.
+- persisitenceDir: the folder path where the shared stream table is saved. This parameter must be specified to save the stream table.
+- persistenceWorkerNum: the number of worker threads responsible for saving the stream table in asynchronous mode. The default value is 0.
+- maxPersistenceQueueDepth: the maximum depth (number of records) of the message queue when the stream table is saved in asynchronous mode. The default value is 10,000,000.
 - maxMsgNumPerBlock: the maximum number of records in a message block. The default value is 1024.
 - maxPubQueueDepthPerSite: the maximum depth (number of records) of the message queue at the publisher node. The default value is 10,000,000.
 
@@ -66,9 +66,9 @@ Configuration parameters required for the subscriber nodes:
 
 #### 2.1 Publish streaming data
 
-Use function `streamTable` to define a streaming table. Writing data to it means publishing data. Since for any publisher there are usually multiple subscribers in different sessions, a streaming table must be shared with command `share` before it can publish streaming data. Streaming tables that are not shared cannot publish streaming data.
+Use function `streamTable` to define a stream table. Writing data to it means publishing data. Since for any publisher there are usually multiple subscribers in multiple sessions, a stream table must be shared with command `share` before it can publish streaming data. Stream tables that are not shared cannot publish streaming data.
 
-Define and share the streaming table "pubTable":
+Define and share the stream table "pubTable":
 ```
 share streamTable(10000:0,`timestamp`temperature, [TIMESTAMP,DOUBLE]) as pubTable
 ```
@@ -79,12 +79,11 @@ Use function [`subscribeTable`](https://www.dolphindb.com/help/subscribeTable.ht
 
 Syntax of function `subscribeTable`:
 ```
-subscribeTable([server],tableName,[actionName],[offset=-1],handler,[msgAsTable=false],[batchSize=0],[throttle=1],[hash=-1],[reconnect=false], [filter], [persistOffset=false])
+subscribeTable([server],tableName,[actionName],[offset=-1],handler,[msgAsTable=false],[batchSize=0],[throttle=1],[hash=-1],[reconnect=false],[filter],[persistOffset=false])
 ```
-
 Only parameters 'tableName' and 'handler' are required. All other parameters are optional.
 
-- server: a string indicating the alias or the remote connection handle of a server where the streaming table is located. If it is unspecified or an empty string (""), it means the local instance.
+- server: a string indicating the alias or the remote connection handle of a server where the stream table is located. If it is unspecified or an empty string (""), it means the local instance.
 
 There are 3 possibilities regarding the locations of the publisher and the subscriber: 
 
@@ -101,7 +100,7 @@ subscribeTable("NODE2", "pubTable", "actionName", 0, subTable, true)
 pubNodeHandler=xdb("192.168.1.13",8891)
 subscribeTable(pubNodeHandler, "pubTable", "actionName", 0, subTable, true)
 ```
-- tableName: a string indicating the shared streaming table name.
+- tableName: a string indicating the shared stream table name.
 ```
 share streamTable(10000:0,`ts`temp, [TIMESTAMP,DOUBLE]) as subTable
 subscribeTable(, "pubTable", "actionName", 0, subTable, true)
@@ -112,7 +111,7 @@ share streamTable(10000:0,`ts`temp, [TIMESTAMP,DOUBLE]) as subTable
 topic1 = subscribeTable(, "pubTable", "actionName_realtimeAnalytics", 0, subTable, true)
 topic2 = subscribeTable(, "pubTable", "actionName_saveToDataWarehouse", 0, subTable, true)
 ```
-Function `subscribeTable` returns the subscription topic. It is the combination of the alias of the node where the streaming table is located, the name of the streaming table, and the subscription task name (if 'actionName' is specified), separated by forward slash "/". If the local node alias is NODE1, the two topics returned by the example above are as follows:
+Function `subscribeTable` returns the subscription topic. It is the combination of the alias of the node where the stream table is located, the stream table name, and the subscription task name (if 'actionName' is specified), separated by forward slash "/". If the local node alias is NODE1, the two topics returned by the example above are as follows:
 
 topic1:
 ```
@@ -122,9 +121,9 @@ topic2:
 ```
 NODE1/pubTable/actionName_saveToDataWarehouse
 ```
-- offset: an integer indicating the position of the first message where the subscription begins. A message is a row of the streaming table. The offset is relative to the first row of the streaming table when it is created. If offset is unspecified, or -1, or above the number of rows of the streaming table, the subscription starts with the next new message. If offset=-2, the system will get the persisted offset on disk and start subscription from there. If some rows were cleared from memory due to cache size limit, they are still considered in determining where the subscription starts.
+- offset: an integer indicating the position of the first message where the subscription begins. A message is a row of the stream table. The offset is relative to the first row of the stream table when it is created. If offset is unspecified, or -1, or above the number of rows of the stream table, the subscription starts with the next new message. If offset=-2, the system will get the persisted offset on disk and start subscription from there. If some rows were cleared from memory due to cache size limit, they are still considered in determining where the subscription starts.
 
-The following example illustrates the role of 'offset'. We write 100 rows of data to 'pubTable' and create 3 subscriptions topics:
+The following example illustrates the role of 'offset'. We write 100 rows to 'pubTable' and create 3 subscription topics:
 ```
 share streamTable(10000:0,`timestamp`temperature, [TIMESTAMP,DOUBLE]) as pubTable
 share streamTable(10000:0,`ts`temp, [TIMESTAMP,DOUBLE]) as subTable1
@@ -137,9 +136,9 @@ topic1 = subscribeTable(, "pubTable", "actionName1", 102, subTable1, true)
 topic1 = subscribeTable(, "pubTable", "actionName2", -1, subTable2, true)
 topic1 = subscribeTable(, "pubTable", "actionName3", 50, subTable3, true)
 ```
-subTable1 and subTable2 are empty and subTable3 has 50 rows. When 'offset' is negative or exceeds the number of rows in the streaming table, the subscription will start from the current row, and the subscription returns nothing until new data enters the streaming table.
+subTable1 and subTable2 are empty and subTable3 has 50 rows. When 'offset' is negative or exceeds the number of rows in the stream table, the subscription will start from the current row, and the subscription returns nothing until new data enters the stream table.
 
-- handler: a unary function or a table. It is used to process the subscribed data. The function only has one parameter which is the subscribed data, which can be a table (the subscribed table) or a tuple of the subscribed table columns. Quite often we need to insert the subscribed data into a table. For this purpose handler can also be a table, and the subscribed data will be inserted into the handler table directly.
+- handler: a unary function or a table. It is used to process the subscribed data. The function only has one parameter which is the subscribed data. The subscribed data can be a table (the subscribed table) or a tuple of the subscribed table columns. Quite often we need to insert the subscribed data into a table. For this purpose 'handler' can also be a table, and the subscribed data will be inserted into the handler table directly.
 
 The following example shows two uses of 'handler'. SubTable1 directly writes the subscribed data to the target table; subTable2 filters and writes the data with the user-defined function `myHandler`.
 ```
@@ -158,7 +157,7 @@ vtimestamp = 1..10
 vtemp = 2.0 2.2 2.3 2.4 2.5 2.6 2.7 0.13 0.23 2.9
 tableInsert(pubTable,vtimestamp,vtemp)
 ```
-The result show that 10 messages are written to pubTable, subTable1 receives all of them, subTable2 receives 9 messages as the row with vtemp=0.13 is filtered by `myhandler`.
+The result shows that 10 messages are written to pubTable. SubTable1 receives all of them whereas subTable2 receives 9 messages as the row with vtemp=0.13 is filtered by `myhandler`.
 
 - msgAsTable: a Boolean value indicating whether the subscribed data is a table. The default value is false, which means that the subscribed data is a tuple of columns.
 
@@ -182,7 +181,7 @@ vtemp = 2.0 2.2 2.3 2.4 2.5 2.6 2.7 0.13 0.23 2.9
 tableInsert(pubTable,vtimestamp,vtemp)
 ```
 
-- batchSize：an integer indicating the number of messages to trigger batch processing. If it is positive, the handler does not process incoming messages until their number reaches batchSize. If it is unspecified or non-positive, the handler processes the incoming messages as soon as they come in.
+- batchSize: an integer indicating the number of messages to trigger batch processing. If it is positive, the handler does not process incoming messages until their number reaches 'batchSize'. If it is unspecified or non-positive, the handler processes the incoming messages as soon as they come in.
 
 In the following example, 'batchSize' is set to 11. 
 ```
@@ -201,7 +200,7 @@ print size(subTable1)
 insert into pubTable values(11,3.1)
 print size(subTable1)
 ```
-Now 1 more message is written to pubTable. We can see from the result the subscribing table subTable1 has 11 records now. 
+Now 1 more message is written to pubTable. Now the subscribing table subTable1 has 11 records. 
 
 - throttle: an integer indicating the maximum waiting time (in seconds) before the handler processes the incoming messages. The default value is 1. This optional parameter has no effect if 'batchSize' is not specified. 
 
@@ -215,23 +214,23 @@ Now 1 more message is written to pubTable. We can see from the result the subscr
 
 (2) If the publisher node crashes, the subscriber node will keep attempting to resubscribe after the publisher node restarts.
 
-If the publisher node adopts data persistence mode for the streaming table, the publisher will first load persisted data into memory after restarting. The subscriber won't be able to successfully resubscribe until the publisher reaches the row of data where the subscription was interrupted. If the publisher node does not adopt data persistence mode for the streaming table, the automatic resubscription will fail.
+If the publisher node adopts data persistence mode for the stream table, the publisher will first load persisted data into memory after restarting. The subscriber won't be able to successfully resubscribe until the publisher reaches the row of data where the subscription was interrupted. If the publisher node does not adopt data persistence mode for the stream table, the automatic resubscription will fail.
 
 (3) If the subscriber node crashes, even after the subscriber node restarts, it won't automatically resubscribe. For this case we need to execute function `subscribeTable` again.
 
 When both the publisher and the subscriber nodes are relatively stable with routine tasks, such as in IoT applications, we recommend setting reconnect=true. On the other hand, if the subscriber node is tasked with complicated queries with large amounts of data, we recommend setting reconnect=false.
 
-- filter: a vector of selected values in the filtering column. Only the messages with specified filtering column values are subscribed. The filtering column is set with function [setStreamTableFilterColumn](https://www.dolphindb.com/help/setSystem1.html).
+- filter: a vector of values in the filtering column. Only the messages with specified filtering column values are subscribed. The filtering column is set with function [`setStreamTableFilterColumn`](https://www.dolphindb.com/help/setSystem1.html).
 
 - persistOffset: a Boolean value indicating whether to persist the offset of the last processed message in the current subscription. It is used for resubscription and can be obtained with function `getTopicProcessedOffset`. The default value is false. 
 
 #### 2.3 Automatic reconnection
 
-To enable automatic reconnection after network disruption, the streaming table must be persisted on the publisher. Please refer to section 2.6 for enabling persistence. When parameter 'reconnect' is set to true, the subscriber will record the offset of the streaming data. When the network connection is interrupted, the subscriber will automatically re-subscribe from the offset. If the subscriber crashes or the streaming table is not persisted on the publisher, the subscriber cannot automatically reconnect.
+To enable automatic reconnection after network disruption, the stream table must be persisted on the publisher. Please refer to section 2.6 for enabling persistence. When parameter 'reconnect' is set to true, the subscriber will record the offset of the streaming data. When the network connection is interrupted, the subscriber will automatically resubscribe from the offset. If the subscriber crashes or the stream table is not persisted on the publisher, the subscriber cannot automatically reconnect.
 
 #### 2.4 Filtering of streaming data
 
-Streaming data can be filtered at the publisher to significantly reduce network traffic. Use command `setStreamTableFilterColumn` on the streaming table to specify the filtering column, then specify a vector for parameter 'filter' in function `subscribeTable`. Only the rows with filtering column values in vector 'filter' are published to the subscriber. As of now a streaming table can have only one filtering column. In the following example, the streaming table 'trades' on the publisher only publishes data for 'IBM' and 'GOOG' to the subscriber:
+Streaming data can be filtered at the publisher to significantly reduce network traffic. Use command `setStreamTableFilterColumn` on the stream table to specify the filtering column, then specify a vector for parameter 'filter' in function `subscribeTable`. Only the rows with filtering column values in vector 'filter' are published to the subscriber. As of now a stream table can have only one filtering column. In the following example, the stream table 'trades' on the publisher only publishes data for 'IBM' and 'GOOG' to the subscriber:
 
 ```
 share streamTable(10000:0,`time`symbol`price, [TIMESTAMP,SYMBOL,INT]) as trades
@@ -254,46 +253,45 @@ Unsubscribe from a remote table:
 ```
 unsubscribeTable("NODE_1","pubTable","actionName1")
 ```
-To delete a shared streaming table, use command `undef`:
+To delete a shared stream table, use command `undef`:
 ```
 undef("pubStreamTable", SHARED)
 ```
 #### 2.6 Streaming data persistence
 
-By default, the streaming table keeps all streaming data in memory. Streaming data can be persisted to disk for the following 3 reasons:
+By default, the stream table keeps all streaming data in memory. Streaming data can be persisted to disk for the following 3 reasons:
 1. Mitigate out-of-memory problems.
-2. Backup streaming data. When a node reboots, the persisted data can be automatically loaded into the streaming table.
+2. Backup streaming data. When a node reboots, the persisted data can be automatically loaded into the stream table.
 3. Resubscribe from any position. 
 
-If the number of rows in the streaming table reaches a preset threshold, the first half of the table will be persisted to disk. The persisted data can be resubscribed. 
+If the number of rows in the stream table reaches a preset threshold, the first half of the table will be persisted to disk. The persisted data can be resubscribed. 
 
 To initiate streaming data persistence, we need to add a persistence path to the configuration file of the publisher node:
 ```
 persisitenceDir = /data/streamCache
 ```
-Execute command [`enableTablePersistence`](https://www.dolphindb.com/help/enableTablePersistence.html) to enable persistence for streaming tables.
+Execute command [`enableTablePersistence`](https://www.dolphindb.com/help/enableTablePersistence.html) to enable persistence for stream tables.
 
-The following example enables persistence for pubTable. When the streaming table reaches 1 million rows, the first half of them are compressed to disk asynchronously.
-
+The following example enables persistence for pubTable. When the stream table reaches 1 million rows, the first half of them are compressed to disk asynchronously.
 ```
 enableTablePersistence(pubTable, true, true, 1000000)
 ```
 
-After `enableTablePersistence` is executed, if the persisted data of pubTable already exists on the disk, then the system will load the latest cacheSize=1000000 rows into the memory.
+After `enableTablePersistence` is executed, if the persisted data of pubTable already exists on the disk, the system will load the latest cacheSize=1000000 rows into the memory.
 
-Whether to enable persistence in asynchronous mode is a trade-off between data consistency and latency. If data consistency is the priority, we should use the synchronous mode. This ensures that data enter the publishing queue after the persistence is completed. On the other hand, if low latency is more important and we don't want disk I/O to affect latency, we should use asynchronous mode. The configuration parameter 'persistenceWorkerNum' only works when asynchronous mode is enabled. With multiple publishing tables to be persisted, increasing the value of 'persistenceWorkerNum' can improve the efficiency of persistence in asynchronous mode.
+Whether to enable persistence in asynchronous mode is a trade-off between data consistency and latency. If data consistency is the priority, we should use the synchronous mode. This ensures that data enters the publishing queue after the persistence is completed. On the other hand, if low latency is more important and we don't want disk I/O to affect latency, we should use asynchronous mode. The configuration parameter 'persistenceWorkerNum' only works when asynchronous mode is enabled. With multiple publishing tables to be persisted, increasing the value of 'persistenceWorkerNum' can improve the efficiency of persistence in asynchronous mode.
 
 Persisted data can be deleted with command `clearTablePersistence`.
 ```
 clearTablePersistence(pubTable)
 ```
 
-When the streaming data writing is finished, we can use command [`disableTablePersistence`] (https://www.dolphindb.com/cn/help/disableTablePersistence.html) to turn off persistence.
+To turn off persistence, use command [`disableTablePersistence`](https://www.dolphindb.com/cn/help/disableTablePersistence.html).
 ```
 disableTablePersistence(pubTable)
 ```
 
-Use function `getPersistenceMeta` to get detailed information regarding the persistence of a streaming table:
+Use function `getPersistenceMeta` to get detailed information regarding the persistence of a stream table:
 ```
 getPersistenceMeta(pubTable);
 ```
@@ -303,7 +301,7 @@ The result is a dictionary with the following keys:
 sizeInMemory->0
 //Whether asynchronous mode is enabled:
 asynWrite->true
-//The total number of rows of the streaming table:
+//The total number of rows of the stream table:
 totalSize->0
 //Whether the data is persisted with compression:
 compress->true
@@ -315,14 +313,14 @@ sizeOnDisk->0
 retentionMinutes->1440
 //The path where the persisted data is saved
 persistenceDir->/hdd/persistencePath/pubTable
-//hashValue is the identifier of the worker for persistence of the streaming table.
+//hashValue is the identifier of the worker for persistence of the stream table.
 hashValue->0
-//The offset of the first of the persisted streaming messages on disk relative to the entire streaming table. 
+//The offset of the first of the persisted streaming messages on disk relative to the entire stream table. 
 diskOffset->0
 ```
 ### 3. Data Replay
 
-DolphinDB provides function `replay` to replay historical data like live trading data. For details please refer to [Data Replay Tutorial]. 
+DolphinDB provides function `replay` to replay historical data like live trading data. For details please refer to [Data Replay Tutorial](historical_data_replay.md). 
 
 ### 4. Streaming API
 
@@ -345,7 +343,7 @@ while (true) {
 }
 ```
 
-Poller1 pulls new data when the streaming table publishes new data. When no new data is published, the program will wait at the poller1.poll method.
+Poller1 pulls new data when the stream table publishes new data. When no new data is published, the program will wait at the poller1.poll method.
 
 The Java API uses pre-configured MessageHandler to get and process new data. First, the caller needs to define the Handler. The Handler needs to implement the com.xxdb.streaming.client.MessageHandler interface.
 
@@ -364,7 +362,7 @@ When the subscription is initiated, the handler instance is passed as a paramete
 ThreadedClient client = new ThreadedClient(subscribePort);
 client.subscribe(serverIP, serverPort, tableName, new MyHandler(), offsetInt);
 ```
-Whenever new data is published by the streaming table, the Java API calls the MyHandler method and passes the new data through parameter 'msg'.
+Whenever new data is published by the stream table, the Java API calls the MyHandler method and passes the new data through parameter 'msg'.
 
 3. Reconnection
 
@@ -379,7 +377,7 @@ TopicPoller poller1 = client.subscribe(serverIP, serverPort, tableName, offset, 
 
 4. Filtering
 
-The parameter 'filter' is a vector. Use `setStreamTableFilterColumn` on the publisher node to specify the filtering column of the streaming table. Only the rows with values of the filtering column in the vector specified by the parameter 'filter' are published to the subscriber. 
+The parameter 'filter' is a vector. Use `setStreamTableFilterColumn` on the publisher node to specify the filtering column of the stream table. Only the rows with values of the filtering column in the vector specified by the parameter 'filter' are published to the subscriber. 
 
 In the following example, parameter 'filter' takes the value of an integer vector with 1 and 2. 
 
@@ -394,7 +392,7 @@ TopicPoller poller1 = client.subscribe(serverIP, serverPort, tableName, actionNa
 
 #### 4.2 Python API
 
-Please note that right now only [python3_api_experimental](https://github.com/dolphindb/python3_api_experimental) supports streaming.
+Please note that right now only [Python API](https://github.com/dolphindb/python3_api_experimental) supports streaming.
 
 1. Specify the subscriber port number
 
@@ -406,7 +404,7 @@ conn.enableStreaming(8000)
 
 2. Call function `subscribe`
 
-Use function `subscribe` in Python API to subscribe to streaming tables in DolphinDB. 
+Use function `subscribe` in Python API to subscribe to stream tables in DolphinDB. 
 
 Syntax of function `subscribe`:
 ```
@@ -415,13 +413,13 @@ conn.subscribe(host, port, handler, tableName, actionName="", offset=-1, resub=F
 - host is the IP address of the publisher node. 
 - port is the port number of the publisher node.
 - handler is a user-defined function to process the subscribed data. 
-- tableName is a string indicating the name of the publishing streaming table. 
+- tableName is a string indicating the name of the publishing stream table. 
 - actionName is a string indicating the name of the subscription task. 
-- offset is an integer indicating the position of the first message where the subscription begins. A message is a row of the streaming table. Offset is relative to the first row of the streaming table when it is created. If offset is unspecified, or -1, or above the number of rows of the streaming table, the subscription starts with the next new message. If some rows were cleared from memory due to cache size limit, they are still considered in determining where the subscription starts.
+- offset is an integer indicating the position of the first message where the subscription begins. A message is a row of the stream table. Offset is relative to the first row of the stream table when it is created. If offset is unspecified, or -1, or above the number of rows of the stream table, the subscription starts with the next new message. If some rows were cleared from memory due to cache size limit, they are still considered in determining where the subscription starts.
 - resub is a Boolean value indicating whether to resubscribe after network disconnection.
 - filter is a vector indicating filtering condition. Only the rows with values of the filtering column in the vector specified by the parameter 'filter' are published to the subscriber. 
 
-Example: Create a shared streaming table 'trades' in DolphinDB and insert data into the table.
+Example: Create a shared stream table 'trades' in DolphinDB and insert data into the table.
 ```
 share streamTable(1:0,`id`price`qty,[INT,DOUBLE,INT]) as trades
 trades.append!(table(1..10 as id,rand(10.0,10) as price,rand(10,10) as qty))
@@ -449,9 +447,9 @@ conn.subscribe("192.168.1.103", 8941, printMsg, "trades", "sub_trades", 0)
 
 3. Unsubscribe
 
-Use conn.unsubscribe to unsubscribe. 
+Use `conn.unsubscribe` to unsubscribe. 
 
-Syntax of conn.unsubscribe:
+Syntax of `conn.unsubscribe`:
 ```
 conn.unsubscribe(host,port,tableName,actionName="")
 ```
@@ -466,7 +464,7 @@ There are 3 ways for a C++ API to process streaming data: ThreadedClient, Thread
 
 #### 4.3.1 ThreadedClient
 
-Each time the streaming table publishes new messages, a single thread acquires and processes the messages.
+Each time the stream table publishes new messages, a single thread acquires and processes the messages.
 
 1. Create an instance of ThreadedClient 
 ```
@@ -481,9 +479,9 @@ ThreadSP ThreadedClient::subscribe(string host, int port, MessageHandler handler
 - host is the IP address of the publisher node. 
 - port is the port number of the publisher node.
 - handler is a user-defined function to process the subscribed data. The signature of the message handler is void(Message) where Message is a row. 
-- tableName is a string indicating the name of the publishing streaming table. 
+- tableName is a string indicating the name of the publishing stream table. 
 - actionName is a string indicating the name of the subscription task. 
-- offset is an integer indicating the position of the first message where the subscription begins. A message is a row of the streaming table. Offset is relative to the first row of the streaming table when it is created. If offset is unspecified, or -1, or above the number of rows of the streaming table, the subscription starts with the next new message. If some rows were cleared from memory due to cache size limit, they are still considered in determining where the subscription starts.
+- offset is an integer indicating the position of the first message where the subscription begins. A message is a row of the stream table. Offset is relative to the first row of the stream table when it is created. If offset is unspecified, or -1, or above the number of rows of the stream table, the subscription starts with the next new message. If some rows were cleared from memory due to cache size limit, they are still considered in determining where the subscription starts.
 - resub is a Boolean value indicating whether to resubscribe after network disconnection.
 - filter is a vector indicating filtering condition. Only the rows with values of the filtering column in the vector specified by the parameter 'filter' are published to the subscriber. 
 
@@ -503,12 +501,12 @@ void ThreadClient::unsubscribe(string host, int port, string tableName, string a
 ```
 - host is the IP address of the publisher node. 
 - port is the port number of the publisher node.
-- tableName is a string indicating the name of the publishing streaming table.
+- tableName is a string indicating the name of the publishing stream table.
 - actionName is a string indicating the name of the subscription task. 
 
 #### 4.3.2 ThreadPooledClient
 
-Each time the streaming table publishes new messages, multiple threads acquires and processes the messages.
+Each time the stream table publishes new messages, multiple threads acquires and processes the messages.
 
 1. Create an instance of ThreadPooledClient 
 ```
@@ -627,7 +625,7 @@ TopicPoller poller1 = client.subscribe(serverIP, serverPort, tableName, offset, 
 
 4. Filtering
 
-The parameter 'filter' is a vector. Use `setStreamTableFilterColumn` on the publisher node to specify the filtering column of the streaming table. Only the rows with values of the filtering column in the vector specified by the parameter 'filter' are published to the subscriber. 
+The parameter 'filter' is a vector. Use `setStreamTableFilterColumn` on the publisher node to specify the filtering column of the stream table. Only the rows with values of the filtering column in the vector specified by the parameter 'filter' are published to the subscriber. 
 
 In the following example, parameter 'filter' takes the value of an integer vector with 1 and 2. 
 ```
@@ -652,12 +650,12 @@ Column|Description
 Client|IP address and port number of a subscriber node
 queueDepthLimit|The maximum depth (number of records) of the message queue that is allowed on the publisher node. There is only one publishing message queue for each publisher node.
 queueDepth|Current depth (number of records) of the message queue on the publisher node
-Tables|All shared streaming tables in the publisher node, separated by commas.
+Tables|All shared stream tables in the publisher node, separated by commas.
 
 Run getStreamingStat().pubConns in DolphinDB GUI to view the contents of the table:
 ![image](https://github.com/dolphindb/Tutorials_CN/blob/master/images/streaming/pubconn.png?raw=true)
 
-Table pubConns lists information about all the subscription nodes of the publisher node, as well as the status of the message queue and the streaming table names on the publisher node.
+Table pubConns lists information about all the subscription nodes of the publisher node, as well as the status of the message queue and the names of stream tables on the publisher node.
 
 #### 5.2 subConns
 
@@ -671,7 +669,7 @@ cumMsgLatency|The average latency (in milliseconds) of all received messages. La
 lastMsgLatency|The latency (in milliseconds) of the last received message
 lastUpdate|The last time a message is received
 
-Run getStreamingStat().subConns in DolphinDB GUI to check the information in the table:
+Run getStreamingStat().subConns in DolphinDB GUI:
 ![image](https://github.com/dolphindb/Tutorials_CN/blob/master/images/streaming/subconn.png?raw=true)
 
 
@@ -702,16 +700,17 @@ To persist multiple tables in parallel, we need to set persistenceWorkerNum>1.
 
 #### 5.4 subWorkers
 
-Table subWorkers displays the status of workers of subscriber nodes responsible for streaming. Each row represents a subscriber worker thread.
+Table subWorkers displays the status of workers of subscriber nodes responsible for streaming. Each row represents a subscription topic.
 
 Column|Description
 ---|---
+workerId|Subscriber node worker ID
+Topic|Subscription topic
 queueDepthLimit|The maximum allowed depth (number of records) of a message queue on the subscriber node
 queueDepth|Current depth (number of records) of the message queue on the subscriber node
 processedMsgCount|The number of messages that have been processed
 failedMsgCount|The number of messages that failed to be processed
 lastErrMsg|The last error message
-Topics|Subscription topics, separated by commas.
 
 The following example shows the results of executing getStreamingStat().subWorkers in DolphinDB GUI with various values of configuration parameters 'subExecutorPooling' and 'subExecutors'.
 
@@ -739,7 +738,7 @@ We can monitor the amount of processed messages and other information in this ta
 
 ### 6. Performance tuning
 
-If an extremely large amount of streaming data arrive in a short period of time, system performance may suffer. You may see an extremely high value of 'queueDepth' in table subWorkers on the subscriber node. When the message queue depth on the a subscriber node reaches 'queueDepthLimit', new messages from the publisher node are blocked from entering subscriber nodes. This leads to a growing message queue on the publisher node. When the message queue depth of the publisher node reaches 'queueDepthLimit', the system blocks new messages from entering the streaming table on the publisher node.
+If an extremely large amount of streaming data arrive in a short period of time, we may see an extremely high value of 'queueDepth' in table subWorkers on the subscriber node. When the message queue depth on the a subscriber node reaches 'queueDepthLimit', new messages from the publisher node are blocked from entering subscriber nodes. This leads to a growing message queue on the publisher node. When the message queue depth of the publisher node reaches 'queueDepthLimit', the system blocks new messages from entering the stream table on the publisher node.
 
 There are several ways to optimize streaming performance:
 
@@ -749,7 +748,7 @@ There are several ways to optimize streaming performance:
 
 3. When each executor processes a different subscription, if there is great difference in throughput of different subscriptions or the complexities of calculation, some executors may idle. If we set subExecutorPooling=true, all executors form a shared thread pool to process all subscribed messages together. All subscribed messages enter the same queue and multiple executors read messages from the queue for parallel processing. With the shared thread pool, however, there is no guarantee that messages will be processed in the order they arrive. Therefore parameter 'subExecutorPooling' should not be turned on when messages need to be processed in the order they arrive. By default, the system uses a hash algorithm to assign an executor to each subscription. If we would like to ensure the messages in two subscriptions are processed by the order as they arrive, we can specify the same value for parameter 'hash' in function `subscribeTable` of the two subscriptions, so that the same executor processes the messages of the two subscriptions.
 
-4. If the streaming table enables synchronous persistence, disk I/O maybe become a bottleneck. One way to handle this is to use the method in section 2.4 to persist data in asynchronous mode while setting up a reasonable persistence queue by specifying 'maxPersistenceQueueDepth' (default 10 million messages). Alternatively, we can also use SSD hard drives to improve write performance.
+4. If the stream table enables synchronous persistence, disk I/O maybe become a bottleneck. One way to handle this is to use the method in section 2.4 to persist data in asynchronous mode while setting up a reasonable persistence queue by specifying 'maxPersistenceQueueDepth' (default 10 million messages). Alternatively, we can also use SSD hard drives to improve write performance.
 
 5. Publisher node maybe become a bottleneck. For example, there may be too many subscribing clients. We can use the following methods to handle this problem. First, we can reduce the number of subscriptions for each publisher node with multi-level cascading. Applications that can tolerate delay can subscribe to secondary or even third tier publisher nodes. Second, some parameters can be adjusted to balance throughput and latency. The parameter 'maxMsgNumPerBlock' sets the size of the messages batches. The default value is 1024. In general, larger batches increase throughput but increase network latency.
 
