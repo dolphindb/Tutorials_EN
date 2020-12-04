@@ -1,8 +1,6 @@
-# Hybrid Paradigm Programming for DolphinDB
+# DolphinDB Tutorial: Programming Guide
 
 To develop big data applications, in addition to a distributed database that can store huge volumes of data and a distributed computing framework capable of making efficient use of multi-cores and multi-nodes, we also need a programming language that is organically integrated with the distributed database and the distributed computing framework. DolphinDB drew inspiration from popular programming languages such as SQL and Python. It provides a highly expressive programming language that offers high performance and enables rapid development.
-
-In this tutorial, we will explain how to program in hybrid paradigm in DolphinDB.
 
 ## 1. Vector Programming
 
@@ -44,13 +42,14 @@ timer mavg(a, window)
 
 Time elapsed: 12.968 ms
 ```
-Vector programming also has its limitations. First, not all operations can be conducted with vectorized computing. In machine learning and statistical analysis, there are numerious occasions where we can only process data through iteration sentence by sentence instead of vectorization. To improve system performance in these situations, DolphinDB is developing just-in-time (JIT) compilation, which dynamically compiles script to machine code.
+
+Vector programming also has its limitations. First, not all operations can be conducted with vectorized computing. In machine learning and statistical analysis, there are numerious occasions where we can only process data through iteration sentence by sentence instead of vectorization. To improve system performance in these situations, you can use DolphinDB just-in-time (JIT) compilation version, which dynamically compiles script to machine code.
 
 Second, languages like MATLAB and R usually load an entire vector into a contiguous memory block. Sometimes large segments of contiguous memory may not be found due to the memory fragmentation problem. DolphinDB introduces big array to handle this problem. Big array can represent a vector with segmented memory blocks. Whether the system uses big array is dynamically determined and transparent to users. Usually, compared with contiguous memory, the performance loss is 1%~5% for scanning a big array and 20%~30% for random access. DolphinDB sacrifices acceptable performance for improved system availability in return.
 
 ## 2. SQL Programming
 
-SQL statements in DolphinDB support the standard SQL features and offer extensions for time-series data analysis.
+DolphinDB SQL supports most standard SQL features and also offers many new features.
 
 ### 2.1 Integration of SQL and Programming Languages
 
@@ -59,7 +58,7 @@ In DolphinDB, the scripting language is fully integrated with SQL statements.
 * SQL query can be assigned directly to a variable or as a function parameter.
 * SQL query statements can quote variables or functions. If a SQL query involves a distributed table, the variables and functions in the SQL query can be automatically serialized to the corresponding nodes.
 * SQL statements can be dynamically generated script.
-* Database table is a data form. Other data forms include scalar, vector, matrix, set, and dictionary. Database table can be transformed into other data forms.
+* Database table is a data form. Other data forms include scalar, vector, matrix, set and dictionary. Database table can be converted into other data forms.
 
 ``` TXT
 //generate a table of employee wages
@@ -90,7 +89,7 @@ id name    avg_wage
 
 In the examples above, SQL queries quote a vector and a dictionary directly. By integrating the programming language and SQL queries, the system uses hash tables to solve a problem that would have required subqueries and table joins. It makes the script more concise and easier to understand. More importantly, it improves the performance.
 
-DolphinDB introduces a SQL keyword 'exec'. Compared with 'select', the result returned by 'exec' can be a matrix, vector or scalar. The following example uses 'exec' and 'pivot by' to return a matrix.
+DolphinDB introduces a SQL keyword 'exec'. Compared with 'select', the result returned by 'exec' can be a scalar, vector or matrix. The following example uses 'exec' and 'pivot by' to return a matrix.
 
 ```TXT
 exec first(wage) from emp_wage pivot by month, id
@@ -153,7 +152,7 @@ DolphinDB uses columnar data storage and vector programming, which are very frie
 
 * DolphinDB designs 2 ways of nonsynchronous table joins: asof join and window join.
 
-The following example calculates the average salary of a group of people for 3 months before a certain point in time with function `wj`. For more details about function `wj`, please refer to [User Manual, Chapter 8](http://www.dolphindb.com/help/)
+The following example calculates the average salary of a group of people for 3 months before a certain point in time with function `wj`. For more details about function `wj`, please refer to [User Manual Chapter 8](http://www.dolphindb.com/help/).
 
 ```TXT
 p = table(1 2 3 as id, 2018.06M 2018.07M 2018.07M as month)
@@ -194,9 +193,9 @@ select sum(abs(price - (bid+ask)/2.0)*qty)/sum(price*qty) as cost from aj(trades
 select sum(abs(price - mid)*qty)/sum(price*qty) as cost from pwj(trades, quotes, -10:0, <avg((bid + ask)/2.0) as mid>,`date`sym`time) where date between dataRange group by sym
 ```
 
-### 2.4 Other Extensions of SQL
+### 2.4 Other new features
 
-DolphinDB offers many other SQL extensions. For examples:
+DolphinDB SQL offers various other new features. For examples:
 
 * User-defined functions can be used in SQL on the local node or distributed environment without compiling, packaging or deploying.
 * As shown in 5.4, SQL is fully integrated with the distributed computing framework in DolphinDB, making in-database analytics more convenient and efficient.
@@ -234,7 +233,7 @@ id alpha     beta1     beta2     R2
 
 ## 3. Imperative Programming
 
-Like most scripting languages (e.g. Python, JavaScript) and various strongly-typed, compiled languages (e.g. C++, C, Java), DolphinDB supports imperative programming, which means script can be executed sentence by sentence. DolphinDB currently supports 18 types of statements, including the most commonly used assignment statements, branch statements (e.g. 'if..else') and loop statements (e.g. 'for', 'do..while'). For more details, please refer to [User Manual, Chapter 5](http://www.dolphindb.com/help/).
+Like most scripting languages (e.g., Python, JavaScript) and various strongly-typed, compiled languages (e.g., C++, C, Java), DolphinDB supports imperative programming, which means script can be executed sentence by sentence. DolphinDB currently supports 18 types of statements, including the most commonly used assignment statements, branch statements (e.g., 'if..else') and loop statements (e.g., 'for', 'do..while'). For more details, please refer to [User Manual Chapter 5](http://www.dolphindb.com/help/).
 
 DolphinDB supports single and multiple assignment:
 ```txt
@@ -288,11 +287,11 @@ else{
 }
 ```
 
-With large amounts of data, control statements (e.g. 'for', 'if..else') are very inefficient. We recommend using vector programming, functional programming and SQL programmming to process large amounts of data. 
+With large amounts of data, control statements (e.g., 'for', 'if..else') are very inefficient. We recommend using vector programming, functional programming and SQL programmming to process large amounts of data. 
 
 ## 4. Functional Programming
 
-DolphinDB supports functional programming including: (1) pure function; (2) user defined function (udf); (3) lambda function; (4) higher order function; (5) partial application; (6) closure. For more details, please refer to [User Manual, Chapter 7](http://www.dolphindb.com/help/).
+DolphinDB supports functional programming including: (1) pure function; (2) user defined function (udf); (3) lambda function; (4) higher order function; (5) partial application; (6) closure. For more details, please refer to [User Manual Chapter 7](http://www.dolphindb.com/help/).
 
 ### 4.1 User Defined Function & Lambda Function
 
@@ -372,13 +371,13 @@ for(i in 0:cols)
 Partial application can also be used to keep a function in a state. Usually the result of a function is completely determined by the input parameters. Occasionally, however, we would like a function to be in a state. For example, in streaming, we define a message handler to accept a new message and return a result. For the message handler to return the average of a column for all the messages received, we can use partial application.
 
 ```TXT
-def cumavg(mutable stat, newNum){
+def cumulativeAverage(mutable stat, newNum){
     stat[0] = (stat[0] * stat[1] + newNum)/(stat[1] + 1)
     stat[1] += 1
     return stat[0]
 }
 
-msgHandler = cumavg{0.0 0.0}
+msgHandler = cumulativeAverage{0.0 0.0}
 each(msgHandler, 1 2 3 4 5)
 
 [1,1.5,2,2.5,3]
@@ -478,7 +477,7 @@ db = database("dfs://testdb", VALUE, 0..9)
 db.createPartitionedTable(t, "sample", "id").append!(t)
 
 ```
-Construct a function 'myOLSEx' to conduct a distributed linear regression with user-defined map function `myOLSMap`, built-in reduce function `add`, user-defined final function `myOLSFinal`, and built-in function `mr`. 
+Construct a function `myOLSEx` to conduct a distributed linear regression with user-defined map function `myOLSMap`, built-in reduce function `add`, user-defined final function `myOLSFinal`, and built-in function `mr`. 
 
 ```TXT
 //define a map function 'myOLSMap'
