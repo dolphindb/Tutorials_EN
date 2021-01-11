@@ -19,6 +19,8 @@
 - Streaming
     - [Streaming](https://github.com/dolphindb/Tutorials_EN/blob/master/streaming_tutorial.md)
     - [Stream Aggregator](https://github.com/dolphindb/Tutorials_EN/blob/master/stream_aggregator.md)
+    - [Historical Data Replay](historical_data_replay.md)
+   
 - System Management
     - [Security and User Access Control](https://github.com/dolphindb/Tutorials_EN/blob/master/ACL_and_Security.md)
 - API
