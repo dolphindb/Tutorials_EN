@@ -17,8 +17,8 @@
     - [Calculate OHLC bars in DolphinDB](https://github.com/dolphindb/Tutorials_EN/blob/master/OHLC.md)
     - [DolphinDB Tutorial: Just-in-time (JIT) Compilation](https://github.com/dolphindb/Tutorials_EN/blob/master/jit.md)
 - Streaming
-    - [Streaming](https://github.com/dolphindb/Tutorials_EN/blob/master/streaming_tutorial.md)
-    - [Stream Aggregator](https://github.com/dolphindb/Tutorials_EN/blob/master/stream_aggregator.md)
+    - [Streaming](streaming_tutorial.md)
+    - [Stream Aggregator](stream_aggregator.md)
     - [Historical Data Replay](historical_data_replay.md)
    
 - System Management
