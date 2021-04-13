@@ -159,7 +159,7 @@ A good partition scheme can reduce latency and improve query performance and thr
 
 #### 4.1 Select appropriate partitioning columns
 
-In DolphinDB, the data types that can be used for partitioning columns must be represented by 32-bit integers, including integers (CHAR, SHORT, INT), temporal (DATE, MONTH, TIME, SECOND, MINUTE, DATETIME), and SYMBOL. STRING, FLOAT and DOUBLE types cannot be used as a partitioning column.
+In DolphinDB, the data types that can be used for partitioning columns must be represented by 32-bit integers, including integers (CHAR, SHORT, INT), temporal (DATE, MONTH, TIME, SECOND, MINUTE, DATETIME), and SYMBOL. FLOAT and DOUBLE types cannot be used as a partitioning column. For optimal performance, please avoid using STRING type as a partitioning column. 
 
 ```
 db=database("dfs://rangedb1", RANGE,  0.0 5.0 10.0);
