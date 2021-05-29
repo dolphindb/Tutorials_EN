@@ -16,7 +16,7 @@
     - [DolphinDB Programming Guide](DolphinDB_Programming_Guide.md)
     - [Calculate OHLC bars in DolphinDB](OHLC.md)
     - [DolphinDB Tutorial: Just-in-time (JIT) Compilation](jit.md)
-    - [Meta Programming](meta_programming.md)
+    - [MetaProgramming](meta_programming.md)
     
 - Streaming
     - [Streaming](streaming_tutorial.md)
