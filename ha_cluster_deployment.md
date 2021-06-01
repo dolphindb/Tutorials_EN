@@ -12,6 +12,11 @@ DolphinDB APIs also support high availability. When the data node an API is conn
 
 High availability is offered in clusters but not in single node mode. Regarding how to deploy a multi-machine cluster please refer to [DolphinDB Cluster Deployment on Multiple Servers](https://github.com/dolphindb/Tutorials_CN/blob/master/multi_machine_cluster_deploy.md).
 
+
+![images](images/ha_cluster/arc.png?raw=true)
+
+<div align='center'>DolphinDB High Availability Architecture Diagram  </div>
+
 ## 2. High availability of data nodes
 
 DolphinDB supports storing replicas of data chunks on different servers, with strong consistency across all replicas. If data on one machine is corrupted, the database can still be accessed by visiting other machines. 
