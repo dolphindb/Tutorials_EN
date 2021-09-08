@@ -2,32 +2,37 @@
 
 DolphinDB provides the following 4 functions to import text files into memory or database:
 
-- [`loadText`](https://www.dolphindb.com/help/loadText.html): Import a text file as an in-memory table.
-- [`ploadText`](https://www.dolphindb.com/help/ploadText.html): Import a text file in parallel as a partitioned in-memory tables. It is faster than function `loadText`.
-- [`loadTextEx`](https://www.dolphindb.com/help/loadTextEx.html): Import a text file into a database either on disk or in memory.
-- [`textChunkDS`](https://www.dolphindb.com/help/textChunkDS.html): Divide a text file into multiple data sources, then use function [`mr`](https://www.dolphindb.com/help/mr.html) for fast and flexible data processing.
+- [`loadText`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/l/loadText.html): Import a text file as an in-memory table.
+- [`ploadText`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/p/ploadText.html): Import a text file in parallel as a partitioned in-memory tables. It is faster than function `loadText`.
+- [`loadTextEx`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/l/loadTextEx.html): Import a text file into a database either on disk or in memory.
+- [`textChunkDS`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/t/textChunkDS.html): Divide a text file into multiple data sources, then use function [`mr`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/m/mr.html) for fast and flexible data processing.
 
 Importing text files in DolphinDB is very flexible and is also very fast. Compared with popular systems such as Clickhouse, MemSQL, Druid or Pandas, DolphinDB is faster up to an order of magnitude with single-threaded importing and is even faster with multi-threaded parallel importing.
 
 This tutorial covers the folowing topics:
 
-- [1. Automatic identification of schema](#1-automatic-identification-of-schema)
-- [2. Specify schema](#2-specify-schema)
-    - [2.1 Get text file schema](#21-get-text-file-schema)
-    - [2.2 Specify column names and types](#22-specify-column-names-and-types)
-    - [2.3 Specify the format of temporal types](#23-specify-the-format-of-temporal-types)
-    - [2.4 Import selected columns](#24-import selected columns)
-    - [2.5 Skip lines](#25-skip lines)
-- [3. Import data in parallel](#3-import data in parallel)
-    - [3.1 Import a single file in parallel](#31-import-a-single-file-in-parallel)
-    - [3.2 Import multiple files in parallel](#32-import-multiple-files-in-parallel)
-- [4. Data preprocessing before importing text files](#4-data-preprocessing-before-importing-text-files)
-- [5. Custom data import with Map-Reduce](#5-custom-data-import-with-map-reduce)
-- [6. Other considerations](#6-other-considerations)
-    - [6.1 Encoding of strings](#61-encoding-of-strings)
-    - [6.2 Parsing Numeric Types](#62-parsing-numeric-types)
-    - [6.3 Automatically remove double quotation marks](#63-automatically-remove-double-quotation-marks)
-- [Appendix](#appendix)
+* [1. Automatic identification of schema](#1-automatic-identification-of-schema)
+  * [2. Specify schema](#2-specify-schema)
+    + [2.1 Get text file schema](#21-get-text-file-schema)
+    + [2.2 Specify column names and types](#22-specify-column-names-and-types)
+    + [2.3 Specify the format of temporal types](#23-specify-the-format-of-temporal-types)
+    + [2.4 Import selected columns](#24-import-selected-columns)
+    + [2.5 Skip lines](#25-skip-lines)
+  * [3. Import data in parallel](#3-import-data-in-parallel)
+    + [3.1 Import a single file in parallel](#31-import-a-single-file-in-parallel)
+    + [3.2 Import multiple files in parallel](#32-import-multiple-files-in-parallel)
+  * [4. Data preprocessing before importing text files](#4-data-preprocessing-before-importing-text-files)
+    + [4.1 Specify the data types of temporal columns](#41-specify-the-data-types-of-temporal-columns)
+      - [4.1.1 Convert integers into specified temporal types](#411-convert-integers-into-specified-temporal-types)
+      - [4.1.2 Data type conversion between temporal types](#412-data-type-conversion-between-temporal-types)
+    + [4.2 Fill Null values](#42-fill-null-values)
+  * [5. Custom data import with Map-Reduce](#5-custom-data-import-with-map-reduce)
+    + [5.1 Save stocks and futures data in two separate tables](#51-save-stocks-and-futures-data-in-two-separate-tables)    + [5.2 Quickly load data from the beginning and the end of large files](#52-quickly-load-data-from-the-beginning-and-the-end-of-large-files)
+  * [6. Other considerations](#6-other-considerations)
+    + [6.1 Encoding of strings](#61-encoding-of-strings)
+    + [6.2 Parsing Numeric Types](#62-parsing-numeric-types)
+    + [6.3 Automatically remove double quotation marks](#63-automatically-remove-double-quotation-marks)
+  * [Appendix](#appendix)
 
 ## 1. Automatic identification of schema
 
@@ -37,7 +42,7 @@ If none of the columns in the first line of the file starts with a number, the s
 
 > Note: The versions prior to 1.20.0 do not support importing UUID, IPADDR or INT128 types. To import these data types， please make sure to use version 1.20.0 or later. 
 
-The following example shows how to use function [`loadText`](https://www.dolphindb.com/help/loadText.html) to import a text file as an in-memory table. About the text file used in the examples, please refer to [Appendix](#Appendix).
+The following example shows how to use function [`loadText`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/l/loadText.html) to import a text file as an in-memory table. About the text file used in the examples, please refer to [Appendix](#Appendix).
 
 ```
 dataFilePath = "/home/data/candle_201801.csv"
@@ -53,7 +58,7 @@ symbol exchange cycle tradingDay date       time     open  high  low   close vol
 000001 SZSE     1     2018.01.02 2018.01.02 93500000 13.35 13.37 13.35 13.37 1601939 2.140652E7 1514856900000
 ```
 
-Call function [`schema`](https://www.dolphindb.com/help/schema.html) to view the table schema (column name, data type and other information):
+Call function [`schema`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/s/schema.html) to view the table schema (column name, data type and other information):
 
 ```
 tmpTB.schema().colDefs;
@@ -99,7 +104,7 @@ price | DOUBLE
 
 ### 2.1 Get text file schema
 
-Function [`extractTextSchema`](https://www.dolphindb.com/help/extractTextSchema.html) is used to obtain the schema of a text file.
+Function [`extractTextSchema`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/e/extractTextSchema.html) is used to obtain the schema of a text file.
 
 For example, to get the schema of the sample file in this tutorial:
 
@@ -147,7 +152,7 @@ We can use the same method to modify column names.
 
 ### 2.3 Specify the format of temporal types
 
-For temporal data, if the automatically inferred data types do not meet expectations, we need to specify not only the data type, but also the format (represented by a string) in column 'format' of the schema table, such as "MM/dd/yyyy". For more details please refer to [Parsing and Format of Temporal Variables](https://www.dolphindb.com/help/ParsingAndFormatOfTemporalVariab.html).
+For temporal data, if the automatically inferred data types do not meet expectations, we need to specify not only the data type, but also the format (represented by a string) in column 'format' of the schema table, such as "MM/dd/yyyy". For more details please refer to [Parsing and Format of Temporal Variables](https://www.dolphindb.com/help/DataManipulation/TemporalObjects/ParsingandFormatofTemporalVariables.html).
 
 Execute the following script in DolphinDB to generate the data file for this example.
 ```
@@ -206,7 +211,7 @@ schemaTB = select * from schemaTB where name in `symbol`date`open`high`close`vol
 
 Please note：
 > 1. Column indices start from 0. In the example above, the column index for the first column 'symbol' is 0.
-> 2. The order of the columns cannot be changed when loading text files. To adjust the order of the columns, use function [`reorderColumns!`](https://www.dolphindb.com/help/reorderColumns.html) after loading the text file.
+> 2. The order of the columns cannot be changed when loading text files. To adjust the order of the columns, use function [`reorderColumns!`](https://www.dolphindb.com/help/FunctionsandCommands/CommandsReferences/r/reorderColumns.html) after loading the text file.
 
 Finally, use function `loadText` and specify parameter 'schema' to import the selected columns from the text file.
 
@@ -300,7 +305,7 @@ symbol exchange cycle tradingDay date       time      open  high  low   close vo
 
 ### 3.1 Import a single file in parallel
 
-Function [`ploadText`](https://www.dolphindb.com/help/ploadText.html) loads a text file into memory in a multi-threaded manner. The syntax of the syntax of `ploadText` is the same as [`loadText`](https://www.dolphindb.com/help/loadText.html). The difference is that function `ploadText` loads a large file more quickly and generates a partitioned in-memory table. It makes full use of multi-core CPUs to load a file in parallel. The degree of parallelism depends on the number of CPU cores and the specification of parameter 'localExecutors'.
+Function [`ploadText`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/p/ploadText.html) loads a text file into memory in a multi-threaded manner. The syntax of the syntax of `ploadText` is the same as [`loadText`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/l/loadText.html). The difference is that function `ploadText` loads a large file more quickly and generates a partitioned in-memory table. It makes full use of multi-core CPUs to load a file in parallel. The degree of parallelism depends on the number of CPU cores and the specification of parameter 'localExecutors'.
 
 The following compares the performance of functions `loadText` and `ploadText`.
 
@@ -329,7 +334,7 @@ The results show that with the configuration of this test, the performance of `p
 
 In big data applications, data import is often about the batch import of dozens or even hundreds of large files instead of importing one or two files. For optimal performance, we should import a large number of files in parallel. 
 
-Function [`loadTextEx`](https://www.dolphindb.com/help/loadTextEx.html) imports a text file into a specified database, either on disk or in memory. As the partitioned tables in DolphinDB support concurrent reading and writing, they support multi-threaded data import. 
+Function [`loadTextEx`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/l/loadTextEx.html) imports a text file into a specified database, either on disk or in memory. As the partitioned tables in DolphinDB support concurrent reading and writing, they support multi-threaded data import. 
 
 When we use function `loadTextEx` to import a text file into a distributed database, the system imports data into memory first, and then writes the data to the database on disk. These two steps are completed by the same function to ensure optimal performance.
 
@@ -353,7 +358,7 @@ db=database(dbPath,VALUE,1..10000)
 tb=db.createPartitionedTable(trades,`tb,`id);
 ```
 
-Function [`cut`](https://www.dolphindb.com/help/cut.html) can group elements in a vector. The following script calls function `cut` to group the file paths to be imported, and then calls function [`submitJob`](https://www.dolphindb.com/help/submitJob.html) to assign write jobs to each thread.
+Function [`cut`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/c/cut.html) can group elements in a vector. The following script calls function `cut` to group the file paths to be imported, and then calls function [`submitJob`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/s/submitJob.html) to assign write jobs to each thread.
 
 ```
 def writeData(db,file){
@@ -367,7 +372,7 @@ for(x in dataFilePath.cut(100/parallelLevel)){
 
 > Please note: In DolphinDB, multiple threads are not allowed to write to the same partition of a database at the same time. In the example above, each text file has a different value of the partitioning column (column 'id'), so we don't need to worry that multiple threads may write to the same partition at the same time. When designing concurrent reads and writes of partitioned tables in DolphinDB, please make sure that only one thread writes to the same partition at the same time.
 
-Use function [`getRecentJobs`](https://www.dolphindb.com/help/getRecentJobs.html) to get the status of the last n batch jobs on the local node. The following script calculates the time consumed to import batch files in parallel. The result shows it took about 1.59 seconds with a 6-core 12-threaded CPU.
+Use function [`getRecentJobs`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/g/getRecentJobs.html) to get the status of the last n batch jobs on the local node. The following script calculates the time consumed to import batch files in parallel. The result shows it took about 1.59 seconds with a 6-core 12-threaded CPU.
 
 ```
 select max(endTime) - min(startTime) from getRecentJobs() where jobId like "loadData"+string(parallelLevel)+"%";
@@ -398,7 +403,7 @@ count
 
 ## 4. Data preprocessing before importing text files
 
-Before importing text files, if we need to preprocess the data, such as changing data types or filling NULL values, we can specify parameter 'transform' when calling function [`loadTextEx`](https://www.dolphindb.com/help/loadTextEx.html). The parameter 'transform' accepts a function that accepts only one parameter. Both the input and the output of the function is an unpartitioned in-memory table. Only function `loadTextEx` supports parameter 'transform'.
+Before importing text files, if we need to preprocess the data, such as changing data types or filling NULL values, we can specify parameter 'transform' when calling function [`loadTextEx`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/l/loadTextEx.html). The parameter 'transform' accepts a function that accepts only one parameter. Both the input and the output of the function is an unpartitioned in-memory table. Only function `loadTextEx` supports parameter 'transform'.
 
 ### 4.1 Specify the data types of temporal columns
 
@@ -480,7 +485,7 @@ symbol exchange cycle tradingDay date       time     open  high  low   close vol
 
 ### 4.2 Fill Null values
 
-As parameter 'transform' only takes a function with one parameter, to assign a DolphinDB built-in function with multiple parameters to 'transform', we can use [Partial Application](https://www.dolphindb.com/help/PartialApplication.html) to convert the function into a function with only one parameter. The following example assigns function [nullFill!](https://www.dolphindb.com/help/nullFill1.html) to parameter 'transform' to fill the Null values in the text file with 0. 
+As parameter 'transform' only takes a function with one parameter, to assign a DolphinDB built-in function with multiple parameters to 'transform', we can use [Partial Application](https://www.dolphindb.com/help/Functionalprogramming/PartialApplication.html) to convert the function into a function with only one parameter. The following example assigns function [nullFill!](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/n/nullFill1.html) to parameter 'transform' to fill the Null values in the text file with 0. 
 
 ```
 db=database(dbPath,VALUE,2018.01.02..2018.01.30)
@@ -492,7 +497,7 @@ tmpTB=loadTextEx(dbHandle=db,tableName=`pt,partitionColumns=`date,filename=dataF
 
 DolphinDB supports the use of Map-Reduce in custom data import. We can divide a text file into multiple parts and import all or some of the parts into DolphinDB with Map-Reduce.
 
-We can use function [`textChunkDS`](https://www.dolphindb.com/help/textChunkDS.html) to divide a text file into multiple data sources with each data source meaning a part of the text file, and then use function [`mr`](https://www.dolphindb.com/help/mr.html) to write the data sources to the database. Function `mr` can also process data before saving data to database.
+We can use function [`textChunkDS`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/t/textChunkDS.html) to divide a text file into multiple data sources with each data source meaning a part of the text file, and then use function [`mr`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/m/mr.html) to write the data sources to the database. Function `mr` can also process data before saving data to database.
 
 ### 5.1 Save stocks and futures data in two separate tables
 
@@ -534,7 +539,7 @@ ds;
 (DataSource<readTableFromFileSegment, DataSource<readTableFromFileSegment, DataSource<readTableFromFileSegment, DataSource<readTableFromFileSegment)
 ```
 
-Call function `mr` and specify the result of function `textChunkDS` as the data source to import the file into the database. As the map function (specified by parameter 'mapFunc') only accepts a table as the input, here we use [Partial Application](https://www.dolphindb.com/help/PartialApplication.html) to convert function `divideImport` into a function that only takes a table as the input.
+Call function `mr` and specify the result of function `textChunkDS` as the data source to import the file into the database. As the map function (specified by parameter 'mapFunc') only accepts a table as the input, here we use [Partial Application](https://www.dolphindb.com/help/Functionalprogramming/PartialApplication.html) to convert function `divideImport` into a function that only takes a table as the input.
 
 ```
 mr(ds=ds, mapFunc=divideImport{,tb1,tb2}, parallel=false);
@@ -605,7 +610,7 @@ count
 
 ### 6.1 Encoding of strings
 
-As strings in DolphinDB are encoded in UTF-8, if a text file with string columns is not UTF-8 encoded, the string columns must be changed to UTF-8 encoding after importing. DolphinDB provides functions [`convertEncode`](https://www.dolphindb.com/help/convertEncode.html), [`fromUTF8`](https://www.dolphindb.com/help/fromUTF8.html) and [`toUTF8`](https://www.dolphindb.com/help/toUTF8.html) to convert encoding of strings.
+As strings in DolphinDB are encoded in UTF-8, if a text file with string columns is not UTF-8 encoded, the string columns must be changed to UTF-8 encoding after importing. DolphinDB provides functions [`convertEncode`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/c/convertEncode.html), [`fromUTF8`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/f/fromUTF8.html) and [`toUTF8`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/t/toUTF8.html) to convert encoding of strings.
 
 For example, use function `convertEncode` to convert the encoding of column 'exchange' in the tmpTB table:
 

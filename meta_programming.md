@@ -23,7 +23,7 @@ In the example above, "a" is metacode and its data type is "CODE". Function `eva
 
 (2) Use metaprogramming functions including `expr`, `parseExpr`, `partial`, `sqlCol`, `sqlColAlias`, `sql`, `eval` and `makeCall`. 
 
-- [`expr`](https://www.dolphindb.com/help/expr.html) generates metacode from objects, operators, or other metacode.
+- [`expr`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/e/expr.html) generates metacode from objects, operators, or other metacode.
 
 ```
 a=6
@@ -32,7 +32,7 @@ expr(a,+,1);
 < 6 + 1 >
 ```
 
-- [`parseExpr`](http://www.dolphindb.com/help/parseExpr.html) converts string into metacode, which can be executed by function `eval`.
+- [`parseExpr`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/p/parseExpr.html) converts string into metacode, which can be executed by function `eval`.
 
 ```
 t=table(1 2 3 4 as id, 5 6 7 8 as value, `IBM`MSFT`IBM`GOOG as name)
@@ -44,7 +44,7 @@ id value name
 3  7     IBM
 ```
 
-- [`partial`](http://www.dolphindb.com/help/partital.html) creates a partial application. It sets some of the arguments of a function to fixed values to create a new function with less arguments. 
+- [`partial`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/p/partital.html) creates a partial application. It sets some of the arguments of a function to fixed values to create a new function with less arguments. 
 
 ```
 partial(add,1)(2);
@@ -56,7 +56,7 @@ g(3);
 8
 ```
 
-- [`sqlCol`](https://www.dolphindb.com/help/sqlCol.html) generates metacode for selecting one or multiple columns with or without calculations; [`sqlColAlias`](https://www.dolphindb.com/help/sqlColAlias.html) uses metacode and an optional alias name to define a column; [`sql`](https://www.dolphindb.com/help/sql1.html) creates a SQL statement dynamically.
+- [`sqlCol`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/s/sqlCol.html) generates metacode for selecting one or multiple columns with or without calculations; [`sqlColAlias`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/s/sqlColAlias.html) uses metacode and an optional alias name to define a column; [`sql`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/s/sql.html) creates a SQL statement dynamically.
 
 ```
 symbol = take(`GE,6) join take(`MSFT,6) join take(`F,6)
@@ -103,7 +103,7 @@ sql(select=sqlCol("*"), from=t1, groupBy=sqlCol(`symbol), groupFlag=0, limit=1);
 < select top 1 * from t1 context by symbol >
 ```
 
-- [`eval`](https://www.dolphindb.com/help/eval.html) executes metacode. 
+- [`eval`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/e/eval.html) executes metacode. 
 
 ```
 a = <1 + 2 * 3>
@@ -121,7 +121,7 @@ MSFT 2017.01.03 8300
 MSFT 2017.01.04 4925   
 ```
 
-- [`makeCall`](https://www.dolphindb.com/help/makeCall.html) calls a function with the specified parameters to generate metacode.
+- [`makeCall`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/m/makeCall.html) calls a function with the specified parameters to generate metacode.
 
 The following metacode outputs column 'date' as string in the format of "dd/MM/yyyy":
 ```

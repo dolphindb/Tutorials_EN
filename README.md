@@ -16,8 +16,6 @@
     - [DolphinDB Programming Guide](DolphinDB_Programming_Guide.md)
     - [Calculate OHLC bars in DolphinDB](OHLC.md)
     - [DolphinDB Tutorial: Just-in-time (JIT) Compilation](jit.md)
-    - [Metaprogramming](meta_programming.md)
-    
 - Streaming
     - [Streaming](streaming_tutorial.md)
     - [Stream Aggregator](stream_aggregator.md)
@@ -27,12 +25,12 @@
     - [Security and User Access Control](ACL_and_Security.md)
 - API
     - [Python API](https://github.com/dolphindb/Tutorials_EN/blob/master/python_api.md)
-    - [Java API](../../../api-java/blob/master/README.md)
-    - [C# API](../../../api-csharp/blob/master/README.md)
-    - [C++ API](../../../api-cplusplus/blob/master/README.md)
-    - [R API](../../../api-r/blob/master/README.md)
-    - [Json API](../../../api-json/blob/master/README.md)
-    - [Grafana Data Source Plugin](../../../grafana-datasource/blob/master/README.md)
+    - [Java API](../../api-java/blob/master/README.md)
+    - [C# API](../../api-csharp/blob/master/README.md)
+    - [C++ API](../../api-cplusplus/blob/master/README.md)
+    - [R API](../../api-r/blob/master/README.md)
+    - [Json API](../../api-json/blob/master/README.md)
+    - [Grafana Data Source Plugin](https://github.com/dolphindb/grafana-datasource/blob/master/README.md)
 - Modules
     - [Technical Analysis Indicator Library](ta.md)
  

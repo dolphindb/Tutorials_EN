@@ -48,7 +48,7 @@ https://github.com/dolphindb/Tutorials_EN/blob/master/database.md
 
 ### User Access Control
 Regarding the user access control functionalities in DolphinDB, please check
-https://github.com/dolphindb/Tutorials_CN/blob/master/ACL_and_Security.md
+https://github.com/dolphindb/Tutorials_EN/blob/master/ACL_and_Security.md
 
 ### Possible problems
 1. After starting a server, the system immediately exists. The error message in the log file is "The license has been expired". 

@@ -70,7 +70,7 @@ We can browse the data in the DFS Explorer of the cluster web interface.
 
 ![image](https://github.com/dolphindb/Tutorials_CN/blob/master/images/scaleout/scale_dfs_exp1.PNG?raw=true)
 
-> * For more details about cluster configuration, please refer to [DolphinDB Cluster Deployment on Multiple Servers](https://github.com/dolphindb/Tutorials_CN/blob/master/multi_machine_cluster_deploy.md)
+> * For more details about cluster configuration, please refer to [DolphinDB Cluster Deployment on Multiple Servers](https://github.com/dolphindb/Tutorials_EN/blob/master/multi_machine_cluster_deploy.md)
 
 The IP address of the new machine:
 ```

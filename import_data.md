@@ -3,10 +3,11 @@
 DolphinDB provides the following 3 ways to import large amounts of data from multiple data sources: 
 
 - Import from text files
+- Import from binary files
 - Import from HDF5 files
 - Import via ODBC interface
 
-#### 1. DolphinDB database basic concepts and features
+## 1. DolphinDB database basic concepts and features
 
 Data in DolphinDB are saved as tables. There are 3 types of tables based on storage location:
 
@@ -18,16 +19,16 @@ A table can be either a partitioned table, or a regular table (nonpartitioned ta
 
 In the traditional database system, each table in the same database can have its own partitioning scheme. In DolphinDB, a database can only use one partitioning scheme. This means that all tables in the same database must share the same partitioning scheme.
 
-#### 2. Import from text files
+## 2. Import from text files
 
 DolphinDB provides the following 3 functions to import data from text files: 
-- [`loadText`](http://www.dolphindb.com/cn/help/index.html?loadText.html): read a text file into memory as a table.
-- [`ploadText`](https://www.dolphindb.com/help/index.html?ploadText.html): load a text file into memory in parallel as an in-memory partitioned table. Compared to `loadText`, `ploadText` is much faster but uses twice as much memory.
-- [`loadTextEx`](https://www.dolphindb.com/help/index.html?loadTextEx.html): convert a text file to a table in a partitioned database, then load the table's metadata into memory.
+- [`loadText`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/l/loadText.html): read a text file into memory as a table.
+- [`ploadText`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/p/ploadText.html): load a text file into memory in parallel as an in-memory partitioned table. Compared to `loadText`, `ploadText` is much faster but uses twice as much memory.
+- [`loadTextEx`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/l/loadTextEx.html): convert a text file to a table in a partitioned database, then load the table's metadata into memory.
 
-We use file [candle_201801.csv](https://github.com/dolphindb/Tutorials_CN/blob/master/data/candle_201801.csv) to show how to use function `loadText` and `loadTextEx`.
+The following sections use file [candle_201801.csv](https://github.com/dolphindb/Tutorials_CN/blob/master/data/candle_201801.csv) to show how to use function `loadText` and `loadTextEx`.
 
-#### 2.1. `loadText` 
+### 2.1 `loadText` 
 
 `loadText` has 3 parameters:
  - "filename" is the input file name.
@@ -56,7 +57,7 @@ typeCol = [SYMBOL,SYMBOL,INT,DATE,DATE,INT,DOUBLE,DOUBLE,DOUBLE,DOUBLE,INT,DOUBL
 schemaTb = table(nameCol as name,typeCol as type);
 ```
 
-For a table with many columns, it could be time-consuming to write such script. To streamline the process, DolphinDB offers function [`extractTextSchema`](https://www.dolphindb.com/en/help/index.html?extractTextSchema.html) to extract table schema of a text file. We just need to modify the data types of selected columns of the "schema" table.
+For a table with many columns, it could be time-consuming to write such script. To streamline the process, DolphinDB offers function [`extractTextSchema`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/e/extractTextSchema.html) to extract table schema of a text file. We just need to modify the data types of selected columns of the "schema" table.
 
 ```
 dataFilePath = "/home/data/candle_201801.csv"
@@ -64,7 +65,7 @@ schemaTb=extractTextSchema(dataFilePath)
 update schemaTb set type=`LONG where name=`volume        
 tt=loadText(dataFilePath,,schemaTb);
 ```
-#### 2.2. `ploadText`
+### 2.2 `ploadText`
 
 Function `ploadText` can quickly load large files. It is designed to utilize multiple CPU cores to load files in parallel. The degree of parallelism depends on the number of CPU cores in the server and configuration parameter "localExecutors" of the nodes.
 
@@ -93,9 +94,9 @@ Time elapsed: 10685.838 ms
 
 The result shows that `ploadText` is about 4 times as fast as `loadText` with this configuration.
 
-#### 2.3. `loadTextEx`
+### 2.3 `loadTextEx`
 
-Function `loadText` imports the entire text file into memory. There could be insufficient memory for a very large data file. To reduce memory requirement, DolphinDB provides function [`loadTextEx`](http://www.dolphindb.com/en/help/index.html?loadTextEx.html). It divides a large text file into many small parts and gradually load them into a distributed database. 
+Function `loadText` imports the entire text file into memory. There could be insufficient memory for a very large data file. To reduce memory requirement, DolphinDB provides function [`loadTextEx`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/l/loadTextEx.html). It divides a large text file into many small parts and gradually load them into a distributed database. 
 
 First create a distributed database:
 ```
@@ -113,7 +114,103 @@ tb = database("dfs://dataImportCSVDB").loadTable("cycle");
 ```
 Subsequently, as a query is executed, the system will load the necessary data into memory.
 
-#### 3. Import data via HDF5 files
+## 3. Import from binary files
+
+DolphinDB provided 2 functions to import binary files: [`readRecord!`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/r/readRecord.html) and [`loadRecord`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/l/loadRecord.html). The former cannot load strings whereas the latter can.
+
+### 3.1 `readRecord!`
+
+In this section, we describe how to load a binary file [binSample.bin](data/binSample.bin) with function `readRecord!`.
+
+First, create an in-memory table 'tb' to store the imported data. We need to specify the name and data type for each column.
+```
+tb=table(1000:0, `id`date`time`last`volume`value`ask1`ask_size1`bid1`bid_size1, [INT,INT,INT,FLOAT,INT,FLOAT,FLOAT,INT,FLOAT,INT])
+```
+
+Open the file with function [`file`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/f/file.html) and import the file to table 'tb' with function `readRecord!`. 
+```
+dataFilePath="/home/data/binSample.bin"
+f=file(dataFilePath)
+f.readRecord!(tb);
+```
+```
+select top 5 * from tb;
+
+id date     time     last volume value ask1  ask_size1 bid1  bid_size1
+-- -------- -------- ---- ------ ----- ----- --------- ----- ---------
+1  20190902 91804000 0    0      0     11.45 200       11.45 200
+2  20190902 92007000 0    0      0     11.45 200       11.45 200
+3  20190902 92046000 0    0      0     11.45 1200      11.45 1200
+4  20190902 92346000 0    0      0     11.45 1200      11.45 1200
+5  20190902 92349000 0    0      0     11.45 5100      11.45 5100
+```
+
+We can see that the data type of columns 'date' and 'time' is INT. We can use function [`temporalParse`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/t/temporalParse.html) to [convert them to appropriate temporal formats](https://www.dolphindb.com/help/DataManipulation/TemporalObjects/ParsingandFormatofTemporalVariables.html), then use function `replaceColumn!` to replace the original columns in the table. 
+
+```
+tb.replaceColumn!(`date, tb.date.string().temporalParse("yyyyMMdd"))
+tb.replaceColumn!(`time, tb.time.format("000000000").temporalParse("HHmmssSSS"))
+select top 5 * from tb;
+
+id date       time         last volume value ask1  ask_size1 bid1  bid_size1
+-- ---------- ------------ ---- ------ ----- ----- --------- ----- ---------
+1  2019.09.02 09:18:04.000 0    0      0     11.45 200       11.45 200
+2  2019.09.02 09:20:07.000 0    0      0     11.45 200       11.45 200
+3  2019.09.02 09:20:46.000 0    0      0     11.45 1200      11.45 1200
+4  2019.09.02 09:23:46.000 0    0      0     11.45 1200      11.45 1200
+5  2019.09.02 09:23:49.000 0    0      0     11.45 5100      11.45 5100
+```
+
+### 3.2 `loadRecord`
+
+Function `loadRecord` can import string type data (including STRING and SYMBOL types). It requires, however, that the length of the string on the disk must be fixed. If the length of the string is less than the fixed value, the string will be appended with ASCII value 0s in the end, and these 0s will be removed when loading. The following describes how to use function `loadRecord` to import a binary file [binStringSample.bin](data/binStringSample.bin) with string type columns. 
+
+First, specify the schema of the file to be imported. Unlike function `readRecord!`, function `loadRecord` uses a tuple to specify the schema instead of a table. There are 3 requirements regarding the schema:
+- For each column, we need to specify the column name and the corresponding data type in a tuple.
+- For STRING and SYMBOL types, we also need to specify the length of the string on the disk (including the trailing 0s). For example: ("name", SYMBOL, 24).
+- Combine all tuples into a tuple in the same order as the columns in the table.
+
+The schema of the file [binStringSample.bin] in this example is as follows:
+```
+schema = [("code", SYMBOL, 32),("date", INT),("time", INT),("last", FLOAT),("volume", INT),("value", FLOAT),("ask1", FLOAT),("ask2", FLOAT),("ask3", FLOAT),("ask4", FLOAT),("ask5", FLOAT),("ask6", FLOAT),("ask7", FLOAT),("ask8", FLOAT),("ask9", FLOAT),("ask10", FLOAT),("ask_size1", INT),("ask_size2", INT),("ask_size3", INT),("ask_size4", INT),("ask_size5", INT),("ask_size6", INT),("ask_size7", INT),("ask_size8", INT),("ask_size9", INT),("ask_size10", INT),("bid1", FLOAT),("bid2", FLOAT),("bid3", FLOAT),("bid4", FLOAT),("bid5", FLOAT),("bid6", FLOAT),("bid7", FLOAT),("bid8", FLOAT),("bid9", FLOAT),("bid10", FLOAT),("bid_size1", INT),("bid_size2", INT),("bid_size3", INT),("bid_size4", INT),("bid_size5", INT),("bid_size6", INT),("bid_size7", INT),("bid_size8", INT),("bid_size9", INT),("bid_size10", INT)]
+```
+
+Load the binary file with function `loadRecord`:
+```
+dataFilePath="/home/data/binStringSample.bin"
+tmp=loadRecord(dataFilePath, schema)
+tb=select code,date,time,last,volume,value,ask1,ask_size1,bid1,bid_size1 from tmp;
+```
+```
+select top 5 * from tb;
+
+code      date     time     last volume value ask1  ask_size1 bid1  bid_size1
+--------- -------- -------- ---- ------ ----- ----- --------- ----- ---------
+601177.SH 20190902 91804000 0    0      0     11.45 200       11.45 200
+601177.SH 20190902 92007000 0    0      0     11.45 200       11.45 200
+601177.SH 20190902 92046000 0    0      0     11.45 1200      11.45 1200
+601177.SH 20190902 92346000 0    0      0     11.45 1200      11.45 1200
+601177.SH 20190902 92349000 0    0      0     11.45 5100      11.45 5100
+```
+
+Convert columns 'date' and 'time' into temporal types:
+```
+tb.replaceColumn!(`date, tb.date.string().temporalParse("yyyyMMdd"))
+tb.replaceColumn!(`time, tb.time.format("000000000").temporalParse("HHmmssSSS"))
+select top 5 * from tb;
+
+code      date       time         last volume value ask1  ask_size1 bid1  bid_size1
+--------- ---------- ------------ ---- ------ ----- ----- --------- ----- ---------
+601177.SH 2019.09.02 09:18:04.000 0    0      0     11.45 200       11.45 200
+601177.SH 2019.09.02 09:20:07.000 0    0      0     11.45 200       11.45 200
+601177.SH 2019.09.02 09:20:46.000 0    0      0     11.45 1200      11.45 1200
+601177.SH 2019.09.02 09:23:46.000 0    0      0     11.45 1200      11.45 1200
+601177.SH 2019.09.02 09:23:49.000 0    0      0     11.45 5100      11.45 5100
+```
+
+In addition to functions `readRecord!` and `loadRecord`, DolphinDB also provides some functions to process binary files, such as function [`writeRecord`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/w/writeRecord.html) that saves DolphinDB objects as binary files. For more details, please refer to [User Manual](https://www.dolphindb.com/help/FileIO/BinaryFileProcessing.html).
+
+## 4. Import data via HDF5 files
 
 HDF5 is a highly efficient binary file format and is widely used. DolphinDB supports importing data via HDF5 files.
 
@@ -171,7 +268,7 @@ Then import the HDF5 file:
 hdf5::loadHdf5Ex(db, "cycle", "tradingDay", dataFilePath,datasetName)
 ```
 
-#### 4. Import data via ODBC interface
+## 5. Import data via ODBC interface
 
 DolphinDB supports ODBC interface to connect to third-party databases, and directly reads tables from the source database into a DolphinDB in-memory table.
 
@@ -215,7 +312,7 @@ tb.append!(data);
 ```
 Importing data through ODBC is also a userful tool for data synchronization.
 
-#### 5. Example
+## 6. Examples
 
 The following example imports CSV files of daily stocks data of about 100GB in 10 years. The data are stored in annual directories. For the year 2008:
 ```
@@ -231,7 +328,7 @@ Each CSV file has the same structure:
 
 ![image](https://github.com/dolphindb/Tutorials_CN/blob/master/images/csvfile.PNG?raw=true)
 
-#### 5.1. Partition Planning
+### 6.1 Partition Planning
 
 First, we should plan how to partition the data. We need to determine the partitioning columns and the granularity of the partitions.
 
@@ -273,7 +370,7 @@ db = database(dbPath, COMPO, [dbDate, dbID])
 pt=db.createPartitionedTable(table(1000000:0,columns,types), `stockData, `tradingDay`symbol);
 ```
 
-#### 5.2. Import data
+### 6.2 Import data
 
 We import data by going through the directories to read and write all CSV files to the distributed table dfs://SAMPLE_TRDDB. 
 
@@ -294,7 +391,7 @@ def loadCsvFromYearPath(path, dbPath, tableName){
 	}
 }
 ```
-Next, the function defined above is used with [`submitJob`](https://www.dolphindb.com/help/submitJob.html) function and [`rpc`](https://www.dolphindb.com/help/rpc.html) function to submit the tasks to each node in the cluster to execute:
+Next, the function defined above is used with [`submitJob`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/s/submitJob.html) function and [`rpc`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/r/rpc.html) function to submit the tasks to each node in the cluster to execute:
 ```
 nodesAlias="NODE" + string(1..4)
 years= files(rootDir)[`filename]
@@ -314,10 +411,10 @@ In DolphinDB, partitions are the smallest units to store data and writing access
 
 The script for this example can be downloaded from the Appendix.
 
-#### 6. Appendix
+## 7. Appendix
 
-CSV file [ [click to download] ](https://github.com/dolphindb/Tutorials_CN/blob/master/data/candle_201801.csv)
+CSV file [[click to download]](https://github.com/dolphindb/Tutorials_CN/blob/master/data/candle_201801.csv)
 
-HDF5 file [ [click to download] ](https://github.com/dolphindb/Tutorials_CN/blob/master/data/candle_201801.h5)
+HDF5 file [[click to download]](https://github.com/dolphindb/Tutorials_CN/blob/master/data/candle_201801.h5)
 
-Script for examples [ [click to download] ](https://github.com/dolphindb/Tutorials_CN/blob/master/data/demoScript.txt)
+Script for examples [[click to download]](https://github.com/dolphindb/Tutorials_CN/blob/master/data/demoScript.txt)

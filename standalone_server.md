@@ -14,8 +14,20 @@ If you have obtained the Enterprise Edition license, please use it to replace th
 /DolphinDB/server/dolphindb.lic
 ```
 Otherwise, you can continue to use the community version of DolphinDB, which allows up to 4GB of memory use. 
+## 2. Update DolphinDB server
 
-## 2. Run DolphinDB Server
+When a new version of the server is available, you can get the free update from [DolphinDB](http://www.dolphindb.com/downloads.html) website. 
+
+After the server package is downloaded, you might need to complete a few steps to finish the upgrade.
+
+1. Open your original version of the server, then open the updated server file. 
+2. Replace everything from updated server file to your existing server folder except dolphindb.lic and dolphindb.cfg
+
+Note:
+You should not overwrite the existing server folder.
+If you have customized the parameters in the file dolphindb.cfg, or you have updated the license(dolphindb.lic), make sure not to overwrite those files. Otherwise, you will lose your changes. 
+
+## 3. Run DolphinDB Server
 
 Go to folder /DolphinDB/server/ and run dolphindb executable. 
 
@@ -63,13 +75,13 @@ Windows:
 dolphindb.exe -localSite localhost:8900:local8900 -maxMemSize 32
 ```
 
-## 3. Connect to DolphinDB Server in DolphinDB GUI
+## 4. Connect to DolphinDB Server in DolphinDB GUI
 
-### 3.1 Download the [DolphinDB GUI package](http://www.dolphindb.com/downloads.html)
+### 4.1 Download the [DolphinDB GUI package](http://www.dolphindb.com/downloads.html)
 
 Unzip the package to a directory. For example, unzip it to /DolphinDB_GUI. 
 
-### 3.2 Start GUI 
+### 4.2 Start GUI 
 
 In Linux,  execute the following command to start GUI:
 ```sh
@@ -81,7 +93,7 @@ If DolphinDB GUI cannot start normally, most likely it's because of one of the f
 - Java is not installed.
 - DolphinDB GUI requires Java 8 or above. If the installed Java version is lower than 8, please [download](https://www.oracle.com/technetwork/java/javase/downloads/index.html) a new version of Java. 
 
-### 3.3 After starting GUI
+### 4.3 After starting GUI
 
 Follow the prompts to select a folder as the workspace. 
 
@@ -96,7 +108,7 @@ Use the drop-down box at the right side of the toolbar to select the DolphinDB s
 ![SwitchSever](images/single_GUI_tool.png)
 
 
-#### 4. Run DolphinDB script in GUI
+#### 5. Run DolphinDB script in GUI
 
 In the "Project Explorer" panel on the left side of the DolphinDB GUI, right click "workspace" and select "New Project" to create a new project:
 
@@ -120,13 +132,11 @@ pt=loadTable("dfs://valuedb","pt")
 select top 100 * from pt
 ```
 Click the ![execute](images/execute.JPG) button in the toolbar to execute the script. The following figure shows the result of the operation:
-
-
 ![运行结果](images/single_GUI.PNG)
 
 By default, database files are stored under the directory of /server/local8848. To change the directory, please specify the configuration parameter 'volumes'. 
 
-## 5. Change configuration 
+## 6. Change configuration 
 
 There are 2 ways to change single-node mode configuration parameters:
 

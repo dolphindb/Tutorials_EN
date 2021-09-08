@@ -55,6 +55,8 @@ select count(x) from pt;
 
 ![](images/database/range.png)
 
+The partition scheme of a range domain can be appended after it is created. Please check function `addRangePartitions` in user manual for details. 
+
 
 #### 3.2 HASH Domain
 
@@ -329,9 +331,9 @@ db = database("dfs://stockDB")
 loadTextEx(db, "quotes", `date`sym, workDir + "/quotes.csv")
 ```
 
-##### 5.4.2 Subscibe to a streaming table and import data in batches
+##### 5.4.2 Subscibe to a stream table and import data in batches
 
-In the following example we subscribe to a streaming table quotes_stream. The streaming data from quotes_stream will be inserted to table quotes if the incoming data reaches 10,000 rows or if 6 seconds have elapsed since the last time streaming data were inserted into table quotes, whichever occurs first.
+In the following example we subscribe to a stream table quotes_stream. The streaming data from quotes_stream will be inserted to table quotes if the incoming data reaches 10,000 rows or if 6 seconds have elapsed since the last time streaming data were inserted into table quotes, whichever occurs first.
 
 ```
 dfsQuotes = loadTable("dfs://stockDB", "quotes")

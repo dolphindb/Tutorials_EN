@@ -152,7 +152,7 @@ DolphinDB uses columnar data storage and vector programming, which are very frie
 
 * DolphinDB designs 2 ways of nonsynchronous table joins: asof join and window join.
 
-The following example calculates the average salary of a group of people for 3 months before a certain point in time with function `wj`. For more details about function `wj`, please refer to [User Manual Chapter 8](http://www.dolphindb.com/help/).
+The following example calculates the average salary of a group of people for 3 months before a certain point in time with function `wj`. For more details about function `wj`, please refer to [User Manual Chapter 8](https://www.dolphindb.com/help/SQLStatements/index.html).
 
 ```TXT
 p = table(1 2 3 as id, 2018.06M 2018.07M 2018.07M as month)
@@ -233,7 +233,7 @@ id alpha     beta1     beta2     R2
 
 ## 3. Imperative Programming
 
-Like most scripting languages (e.g., Python, JavaScript) and various strongly-typed, compiled languages (e.g., C++, C, Java), DolphinDB supports imperative programming, which means script can be executed sentence by sentence. DolphinDB currently supports 18 types of statements, including the most commonly used assignment statements, branch statements (e.g., 'if..else') and loop statements (e.g., 'for', 'do..while'). For more details, please refer to [User Manual Chapter 5](http://www.dolphindb.com/help/).
+Like most scripting languages (e.g., Python, JavaScript) and various strongly-typed, compiled languages (e.g., C++, C, Java), DolphinDB supports imperative programming, which means script can be executed sentence by sentence. DolphinDB currently supports 18 types of statements, including the most commonly used assignment statements, branch statements (e.g., 'if..else') and loop statements (e.g., 'for', 'do..while'). For more details, please refer to [User Manual Chapter 5](https://www.dolphindb.com/help/ProgrammingStatements/index.html).
 
 DolphinDB supports single and multiple assignment:
 ```txt
@@ -291,7 +291,7 @@ With large amounts of data, control statements (e.g., 'for', 'if..else') are ver
 
 ## 4. Functional Programming
 
-DolphinDB supports functional programming including: (1) pure function; (2) user defined function (udf); (3) lambda function; (4) higher order function; (5) partial application; (6) closure. For more details, please refer to [User Manual Chapter 7](http://www.dolphindb.com/help/).
+DolphinDB supports functional programming including: (1) pure function; (2) user defined function (udf); (3) lambda function; (4) higher order function; (5) partial application; (6) closure. For more details, please refer to [User Manual Chapter 7](https://www.dolphindb.com/help/Functionalprogramming/index.html).
 
 ### 4.1 User Defined Function & Lambda Function
 

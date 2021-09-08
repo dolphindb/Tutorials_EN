@@ -221,9 +221,9 @@ JIT in DolphinDB supports arbitrary nesting of the statements above.
 <!-- add, sub, multi, div, bitor, bitand, bitxor, seq, eq, neq, lt, le, gt, ge, neg, at, mod -->
 Currently the following operators are supported in JIT: add (+), sub (-), multiply (*), divide (/), and (&&), or (||), bitand (&), bitor (|), bitxor (^ ), eq (==), neq (! =), ge (> =), gt (>), le (<=), lt (<), neg (-), mod (%), seq (.... ), at ([]). The implementation of the operators above for all data types is identical with the implementation in non-JIT.
 
-Currently the following mathematical functions are supported in JIT: `exp`,` log`, `sin`,`asin`, `cos`,`acos`, `tan`,` atan`, `abs`,`ceil`,`floor` and `sqrt`. When these mathematical functions appear in the JIT, if function parameter is a scalar, the corresponding function in glibc or the optimized C-implemented function is called in the machine code; if function parameter is an array, these DolphinDB built-in mathematical functions will be called in the machine code. The advantage of this approach is that the code implemented by directly calling C improves efficiency and reduces unnecessary virtual function calls and memory allocation.
+Currently the following mathematical functions are supported in JIT: `exp`,` log`, `sin`,`asin`, `cos`,`acos`, `tan`,` atan`, `abs`,`ceil`,`floor` and `sqrt`. When these mathematical functions appear in the JIT, if the function parameter is a scalar, the corresponding function in glibc or the optimized C-implemented function is called in the machine code; if function parameter is an array, these DolphinDB built-in mathematical functions will be called in the machine code. The advantage of this approach is that the code implemented by directly calling C improves efficiency and reduces unnecessary virtual function calls and memory allocation.
 
-Currently the following built-in functions are supported in JIT: `take`,`array`, `size`,` isValid`, `rand` and `cdfNormal`. 
+Currently the following built-in functions are supported in JIT: `take`, `seq` , `array`, `size`, `isValid`, `rand`, `cdfNormal`, `cdfBeta`, `cdfBinomial`, `cdfChiSquare`, `cdfExp`, `cdfF`, `cdfGamma`, `cdfKolmogorov`, `cdfcdfLogistic`, `cdfNormal`, `cdfUniform`, `cdfWeibull`, `cdfZipf`, `invBeta`, `invBinomial`, `invChiSquare`, `invExp`, `invF`, `invGamma`, `invLogistic`, `invNormal`, `invPoisson`, `invStudent`, `invUniform`, `invWeibull`, `cbrt`, `deg2rad`, `rad2deg`, `det`, `dot` and `flatten`. 
 
 Please note that the first parameter of function `array` must be a constant indicating a data type and cannot be a variable. This is because JIT compilation must know the data types of all variables before compilation. 
 
@@ -267,15 +267,88 @@ For each combination of data types of parameters, a JIT function is complied onl
 
 JIT can significantly improve performance for tasks that need to be executed repeatedly or for tasks with much longer execution time than compilation time. 
 
-### 3.7 Limitations
+### 3.7 Function parameters
 
-Currently, JIT in DolphinDB can only be used in limited scenarios:
+Starting from version 1.2.0, DolphinDB JIT supports functions and partial applications (including nested partial applications) as function parameters.
+
+In the example below, the first parameter of function `foo` referenced in function `g` is function `h`.
+```
+@jit
+def foo(f, x, y){return f(x,y)}
+
+@jit
+def h(x,y){return x+y}
+
+@jit
+def g(x,y){return foo(h, x, y)}
+```
+In the example below, the partial application `h{x}` is passed as the first parameter to function `foo`. The partial application can also be h{,x}, h{,,x} or h{x,,y}, etc. 
+```
+@jit
+def h(a,b,c){return a + b + c}
+
+@jit
+def foo(f,x,y){return f(x,y)}
+
+@jit
+def g(x,y,z){return foo(h{x}, y, z)}
+```
+
+Nested partial applications are supported:
+```
+@jit
+def f1(x,y,z){return x + y + z}
+
+@jit
+def f2(g2){return g2(1)}
+
+@jit
+def f3(g3){return f2(g3{2})}
+
+@jit
+def f4(){return f3(f1{,,3})}
+
+f4()
+```
+
+It should be noted that if the same function parameter has multiple signatures in a JIT function, an exception will be thrown during execution due to limitations of the compilation implementation. For example:
+
+```
+@jit
+def foo(x,y){return x + y}
+
+@jit
+def f1(f){return f(1,2) + f(1.0,2)}
+
+@jit
+def f2(){return f1(foo)}
+
+f2()
+// an exception is thrown
+```
+
+### 3.8 Matrices
+
+Starting from version 1.2.0, DolphinDB JIT supports the use of matrices as function parameters and return values, arithmetic calculations with matrices, the use of functions `det` and `flatten` on matrices, and transpose of a matrix. 
+
+```
+@jit
+def foo(a, b) {
+  c = a**b
+  d = c.transpose()
+  e = d * 2.0
+  f = e / 3.0
+  g = e + f
+  return g
+}
+
+g(1..100$10:10, 100..1$10:10)
+```
+
+### 3.9 Limitations
 
 - JIT only supports user-defined functions.
-- JIT functions only accept parameters with data forms of scalar or array. Other data forms such as pair, dict or table are not supported. 
-- JIT functions cannot accept parameters with data types of string or symbol.
-- A subarray cannot be used as a parameter.
-
+- JIT functions only accept parameters with data forms of scalar, array or matrix. Other data forms such as pair, dictionary or table are not supported. 
 
 ## 4 Type Inference
 
@@ -625,11 +698,9 @@ With 1 million rows of data in this example, the JIT version and the non-JIT ver
 
 In subsequent releases, we plan to add the following features in DolphinDB JIT:
 
-1. Support more data forms such as dictionary and more data types such as STRING. 
-2. Support more mathematical and statistical functions.
-3. Enhance type inference. Can infer the data types of results for more built-in functions.
-4. Support declaration of data types for parameters, results and local variables in user-defined functions.
- 
+- Support more data forms such as dictionary and more data types such as STRING. 
+- Support more mathematical and statistical functions.
+- Enhance type inference. Can infer the data types of results for more built-in functions.
 
 ## 7 Summary
 

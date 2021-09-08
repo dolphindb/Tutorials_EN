@@ -80,7 +80,7 @@ share keyedStreamTable(`timestamp, 10000:0,`timestamp`temperature, [TIMESTAMP,DO
 ```
 ### 2.2 Subscribe to streaming data
 
-Use function [`subscribeTable`](https://www.dolphindb.com/help/subscribeTable.html) to subscribe to streaming data. 
+Use function [`subscribeTable`](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/s/subscribeTable.html) to subscribe to streaming data. 
 
 Syntax of function `subscribeTable`:
 ```
@@ -305,7 +305,7 @@ To initiate streaming data persistence, we need to add a persistence path to the
 ```
 persisitenceDir = /data/streamCache
 ```
-Then execute command [`enableTableShareAndPersistence`](https://www.dolphindb.com/help/enableTableShareAndPersistence.html) to share the stream table and enable persistence of it.
+Then execute command [`enableTableShareAndPersistence`](https://www.dolphindb.com/help/FunctionsandCommands/ComandsReferences/e/enableTableShareAndPersistence.html) to share the stream table and enable persistence of it.
 
 The following example shares pubTable as sharedPubTable and enables the persistence of it. The parameter 'cacheSize' is set to 1000000, and the default values of parameters 'asynWrite' and 'compress' are both true. When the stream table reaches 1 million rows, the first half of them are compressed to disk asynchronously.
 ```
@@ -322,7 +322,7 @@ Persisted data can be deleted with command `clearTablePersistence`.
 clearTablePersistence(pubTable)
 ```
 
-To turn off persistence, use command [`disableTablePersistence`](https://www.dolphindb.com/cn/help/disableTablePersistence.html).
+To turn off persistence, use command [`disableTablePersistence`](https://www.dolphindb.com/help/FunctionsandCommands/ComandsReferences/d/disableTablePersistence.html).
 ```
 disableTablePersistence(pubTable)
 ```
