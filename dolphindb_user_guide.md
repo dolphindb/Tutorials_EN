@@ -51,7 +51,7 @@ Regarding the user access control functionalities in DolphinDB, please check
 https://github.com/dolphindb/Tutorials_EN/blob/master/ACL_and_Security.md
 
 ### Possible problems
-1. After starting a server, the system immediately exists. The error message in the log file is "The license has been expired". 
+1. After starting a server, the system immediately exits. The error message in the log file is "The license has been expired". 
 Cause: license expired
 Solution: contact support@dolphindb.com and update the license file. 
 
