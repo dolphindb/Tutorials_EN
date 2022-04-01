@@ -2,31 +2,31 @@
 
 This tutorial introduces how to deploy a multi-machine cluster in DolphinDB and the common reasons for node startup failures. 
 
-- [Multi-Machine Cluster Deployment](#Multi-Machine-Cluster-Deployment)
-  - [1. Cluster Architecture](#1-Cluster-Architecture)
-  - [2. Download DolphinDB](#2-Download-DolphinDB)
-  - [3. Update the License](#3-Update-the-License)
-  - [4. Upgrade DolphinDB Server](#4-Upgrade-DolphinDB-Server)
-  - [5. Initial Configuration](#5-Initial-Configuration)
-    - [5.1 Cluster Configuration Files](#51-Cluster-Configuration-Files)
+- [Multi-Machine Cluster Deployment](#multi-machine-cluster-deployment)
+  - [1. Cluster Architecture](#1-cluster-architecture)
+  - [2. Download DolphinDB](#2-download-dolphindb)
+  - [3. Update the License](#3-update-the-license)
+  - [4. Upgrade DolphinDB Server](#4-upgrade-dolphindb-server)
+  - [5. Initial Configuration](#5-initial-configuration)
+    - [5.1 Cluster Configuration Files](#51-cluster-configuration-files)
       - [5.1.1 controller.cfg](#511-controller.cfg)
       - [5.1.2 cluster.nodes](#512-cluster.nodes)
       - [5.1.3 cluster.cfg](#513-cluster.cfg)
-    - [5.2 Agent Configuration Files](#52-Agent-Configuration-Files)
-    - [5.3 Start a DolphinDB Cluster](#53-Start-a-DolphinDB-Cluster)
-      - [5.3.1 Use systemd to Start DolphinDB](#531-Use-systemd-to-Start-DolphinDB)
-      - [5.3.2 Start DolphinDB from Command Line](#532-Start-DolphinDB-from-Command-Line)
-      - [5.3.3 Start the Web-Based Cluster Manager](#533-Start-the-Web-Based-Cluster-Manager)
-      - [5.3.4 DolphinDB Access Control](#534-DolphinDB-Access-Control)
-      - [5.3.5 Start Data Nodes](#535-Start-Data-Nodes)
-  - [6. Common Reasons Why Nodes Cannot Start](#6-Common-Reasons-Why-Nodes-Cannot-Start)
-  - [7. Web-Based Cluster Management](#7-Web-Based-Cluster-Management)
-    - [7.1 Configuration Parameters for Controller](#71-Configuration-Parameters-for-Controller)
-    - [7.2 Add/Remove Data Node](#72-Add/Remove-Data-Node)
-    - [7.3 Configuration Parameters for Data Nodes](#71-Configuration-Parameters-for-Data-Nodes)
-    - [7.4 Access Cluster Manager via External Address](#74-Access-Cluster-Manager-via-External-Address)
-    - [7.5 Specify Volume Path](#75-Specify-Volume-Path)
-  - [8. Cloud Deployment](#8-Cloud-Deployment)
+    - [5.2 Agent Configuration Files](#52-agent-configuration-files)
+    - [5.3 Start a DolphinDB Cluster](#53-start-a-dolphindb-cluster)
+      - [5.3.1 Use systemd to Start DolphinDB](#531-use-systemd-to-start-dolphindb)
+      - [5.3.2 Start DolphinDB from Command Line](#532-start-dolphindb-from-command-line)
+      - [5.3.3 Start the Web-Based Cluster Manager](#533-start-the-web-based-cluster-manager)
+      - [5.3.4 DolphinDB Access Control](#534-dolphindb-access-control)
+      - [5.3.5 Start Data Nodes](#535-start-data-nodes)
+  - [6. Common Reasons Why Nodes Cannot Start](#6-common-reasons-why-nodes-cannot-start)
+  - [7. Web-Based Cluster Management](#7-web-based-cluster-management)
+    - [7.1 Configuration Parameters for Controller](#71-configuration-parameters-for-controller)
+    - [7.2 Add/Remove Data Node](#72-addremove-data-node)
+    - [7.3 Configuration Parameters for Data Nodes](#73-configuration-parameters-for-data-nodes)
+    - [7.4 Access Cluster Manager via External Address](#74-access-cluster-manager-via-external-address)
+    - [7.5 Specify Volume Path](#75-specify-volume-path)
+  - [8. Cloud Deployment](#8-cloud-deployment)
 
 
 ## 1. Cluster Architecture
@@ -553,7 +553,7 @@ Please note that removing a data node may cause data loss.
 
 ![nodes_setup](images/multi_nodes_setup.JPG)
 
-If the newly-added data node is on a new physical server, we must configure and start a new agent as described in [Sect 5.2](#52-Agent-Configuration-Files) on the server, add the information of the agent and data node to `cluster.nodes`, and restart the controller.
+If the newly-added data node is on a new physical server, we must configure and start a new agent as described in [Sect 5.2](#52-agent-configuration-files) on the server, add the information of the agent and data node to `cluster.nodes`, and restart the controller.
 
 ### 7.3 Configuration Parameters for Data Nodes
 
