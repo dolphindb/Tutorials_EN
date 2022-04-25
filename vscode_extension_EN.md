@@ -9,7 +9,7 @@ Table of Contents
     - [Create a DolphinDB Script File](#create-a-dolphindb-script-file)
       - [Code Completion and Function Documentation](#code-completion-and-function-documentation)
     - [Execute Code](#execute-code)
-      - [Browse Generated Data and Objects Online](#browse-generated-data-and-objects-online)
+      - [Browse Generated Data and Objects](#browse-generated-data-and-objects)
     - [Working with views in VS Code](#working-with-views-in-vs-code)
 
 Microsoft Visual Studio Code is a powerful and lightweight code editor with a rich extensibility model. VS Code extensions let you add languages, debuggers, and tools to your installation to support your development workflow.
@@ -20,12 +20,12 @@ Main features of the DolphinDB extension for VS Code:
 
 - Set up connections to DolphinDB servers via configuration file
 - Switch connections freely without losing any connection
-- Edit and manage scripts and organize them into project
+- Edit and manage scripts and organize them into projects
 - Code highlighting; Code completion for keywords, constants and built-in functions
 - View parameter info and function documentation for built-in functions as you type
 - Execute scripts and print execution information and result to the terminal
 - Manage databases and inspect session variables online
-- View tables, vectors, matrices and other data structures in your browser and check data updates online
+- View tables, vectors, matrices and other data structures in your browser and check data updates dynamically
 
 Note: Make sure to start the DolphinDB server before using the DolphinDB extension in VS Code.
 
@@ -35,7 +35,7 @@ Before installing the DolphinDB extension for VS Code, install or upgrade to VS 
 
 ### Install Extension
 
-Launch the Extensions view in VS Code by clicking the Extensions icon (`Ctrl+Shift+X`) on the left sidebar. Search for “dolphindb“ and click **Install**. For more information about the extension, check its **Details** page.
+Launch the **Extensions** view in VS Code by clicking the "Extensions" icon (`Ctrl+Shift+X`) on the left sidebar. Search for "dolphindb" and click **Install**. For more information about the extension, check its **Details** page.
 
 ![image](images/vscode/install_extension.png?raw=true)
 
@@ -46,9 +46,9 @@ Note: Restart VS Code for the installation to take effect.
 
 ### Configure Server Connections 
 
-Click `File > Preferences > Keyboard Shortcuts` in the menu bar or use the shortcut command `Ctrl + ,` to open the VSCode settings.
-Enter “dolphindb” in the search box, click `edit in settings.json`, and edit the `dolphindb.connections` configuration parameter in the opened file.
-`dolphindb.connections` is an array of objects where each object (wrapped in curly brackets "{ }") represents a connection. You can manually add or modify the connection objects to create or edit session connections as appropriate. Each object contains 6 attributes, where `name` and `url` are required (each connection object must have a unique name). Hover over an attribute to view its description.
+Click `File > Preferences > Settings` in the menu bar or use the shortcut command `Ctrl + ,` to open the VS Code settings.
+Enter "dolphindb" in the search box, click **edit in settings.json**, and edit the `dolphindb.connections` configuration parameter in the opened file.
+`dolphindb.connections` is an array of objects where each object (wrapped in curly brackets "{ }"") represents a connection. You can manually add or modify the connection objects to create or edit session connections as appropriate. Each object contains 6 attributes, where `name` and `url` are required (each connection object must have a unique name). Hover over an attribute to view its description.
 
 ![image](images/vscode/config_connections.png?raw=true)
 
@@ -97,9 +97,9 @@ Hover the mouse over the function name to view the function documentation. The a
 
 In the opened DolphinDB script file, select the code you want to execute and use the shortcut command `Ctrl+E` to send it to the DolphinDB Server for execution. If no code is selected, the line where the current cursor is located is executed. 
 
-Note: To customize the shortcut keys for code execution, navigate to **File** > **Preferences** > **Keyboard Shortcuts**, enter “dolphindb”, double-click **Execute Code**, and enter the shortcut keys you want.
+Note: To customize the shortcut keys for code execution, navigate to **File** > **Preferences** > **Keyboard Shortcuts**, enter "dolphindb", double-click **Execute Code**, and enter the shortcut keys you want.
 
-#### Browse Generated Data and Objects Online
+#### Browse Generated Data and Objects
 
 The **EXPLORER** view **DOLPHINDB** tab in the left pane displays the sessions created by the configured connections and all the variables generated in these sessions. You can check the name, type, dimension of the variables and how much memory they take up. 
 
@@ -154,12 +154,12 @@ DolphinDB provides a configuration parameter `dolphindb.ports` in `settings.json
 
 How to view variables:
 
-In the **Explorer** view **DOLPHINDB** tab, click the “Inspect Variable“ icon next to a variable to open it in a browser window (the address is in the format of localhost:{port}) where you can check the value and structure of the variable.
+In the **Explorer** view **DOLPHINDB** tab, click the "Inspect Variable" icon next to a variable to open it in a browser window (the address is in the format of localhost:{port}) where you can check the value and structure of the variable.
 
 After a variable is updated, click the icon again to refresh the web page to view the change. Or you can print the updated variable in VS code, and the web page will automatically reflect the change.
 
 <img src=images/vscode/inspect_variable.png>
 
-Click the “Inspect Variables in New Window“ icon to open the variable in a pop-up window (Note: Please make sure your browser allows pop-ups). The pop-up cannot be refreshed to reflect the changes of a variable. You can open multiple pop-ups to compare different variables, or compare the same variable before and after an update (see screenshot below).
+Click the "Inspect Variables in New Window" icon to open the variable in a pop-up window (Note: Please make sure your browser allows pop-ups). The pop-up cannot be refreshed to reflect the changes of a variable. You can open multiple pop-ups to compare different variables, or compare the same variable before and after an update (see screenshot below).
 
 ![image](images/vscode/inspect_variable_in_new_window.png)
