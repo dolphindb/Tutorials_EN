@@ -47,11 +47,11 @@ $ pip install dolphindb
       - [5.4.2 Data Type Conversion](#542-data-type-conversion)
       - [5.4.3 Missing Value Processing](#543-missing-value-processing)
   - [6 Append to DolphinDB Tables](#6-append-to-dolphindb-tables)
-    - [6.1 Append to In-Memory Table](#61-append-to-in-memory-table)
+    - [6.1 Append to In-Memory Tables](#61-append-to-in-memory-tables)
       - [6.1.1 `tableInsert`](#611-tableinsert)
       - [6.1.2 `insert into`](#612-insert-into)
       - [6.1.3 `tableAppender`](#613-tableappender)
-    - [6.2 Append to DFS Table](#62-append-to-dfs-table)
+    - [6.2 Append to DFS Tables](#62-append-to-dfs-tables)
     - [6.3 Append Data Asynchronously](#63-append-data-asynchronously)
     - [6.4 `MultithreadedTableWriter`](#64-multithreadedtablewriter)
     - [6.5 Data Conversion](#65-data-conversion)
@@ -1273,7 +1273,7 @@ There are 2 types of DolphinDB tables based on the storage method:
 
 ---->
 
-### 6.1 Append to In-Memory Table
+### 6.1 Append to In-Memory Tables
 
 Use the following 2 methods to append data to DolphinDB in-memory tables:
 
@@ -1481,7 +1481,7 @@ t = s.run("t")
 print(t)
 ```
 
-### 6.2 Append to DFS Table
+### 6.2 Append to DFS Tables
 
 DFS tables are the recommended data storage method in the production environment, which supports snapshot isolation and ensures data consistency. DFS tables support multiple replicas, which improves fault tolerance and load balancing. The following example appends data to a DFS table via the Python API.
 
@@ -3121,7 +3121,7 @@ print(tb.toDF())
 
 Function `executeAs` saves query result as a DolphinDB table. The table name is specified by parameter *newTableName*.
 
-**Note**: A table variable must be created in Python to refer to the table object created by `executeAs`, otherwise the table will be released. See [Section 2.3 The life cycle of uploaded table](#23-the-life-cycle-of-uploaded-table) 
+**Note**: A table variable must be created in Python to refer to the table object created by `executeAs`, otherwise the table will be released. See [Section 2.3](#23-life-cycle-of-uploaded-tables) 
 
 
 ```python
