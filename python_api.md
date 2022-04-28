@@ -1,6 +1,6 @@
 # Python API for DolphinDB
 
-DolphinDB Python API supports Python 3.6 - 3.8 on Windows, and Python 3.6 - 3.9 on Linux.
+DolphinDB Python API supports Python 3.6 - 3.8 on Windows (only 3.8 in conda environment), and Python 3.6 - 3.9 on Linux.
 
 Note: DolphinDB Python API does not support pandas 1.3.0 as it will cause deserialization errors.
 
