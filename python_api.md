@@ -1651,7 +1651,7 @@ s.run("appendStreamingData(tb)")
 
 ### 6.4 `MultithreadedTableWriter`
 
-For batch writing of single records, you can use methods of  `MultithreadedTableWriter` class for asynchronous data writes via DolphinDB Python API. The class maintains a buffer queue in Python. Even with blocking network I/O, the API client can still write data to the buffer queue continuously. You can use the method `getStatus` to check the status. 
+To insert single record frequently, you can use methods of `MultithreadedTableWriter` class for asynchronous writes via DolphinDB Python API. The class maintains a buffer queue in Python. Even when the server is fully occupied with network I/O operations, the writing threads of the API client will not be blocked. You can use the method `getStatus` to check the status of the `MultithreadedTableWriter` object.
 
 **`MultithreadedTableWriter`**
 
@@ -1673,9 +1673,9 @@ MultithreadedTableWriter(hostName, port, userId, password, dbName, tableName, us
 * **throttle**: a numeric scalar greater than 0 indicating the waiting time (in seconds) before the server processes the incoming data if the number of data written from the client does not reach *batchSize*.
 * **threadCount**: an integer indicating the number of working threads to be created. The default value is 1, indicating single-threaded process. It must be 1 for a dimension table.
 * **partitionCol**: a STRING indicating the partitioning column. It is None by default, and only works when *threadCount* is greater than 1. For a partitioned table, it must be the partitioning column; for a stream table, it must be a column name; for a dimension table, the parameter does not work.
-* **compressMethods** a list of the compression methods used for each column. If unspecified, the columns are not compressed. The methods include:
-    * "LZ4": LZ4 compression method
-    * "DELTA": DELTAOFDELTA compression method
+* **compressMethods** a list of the compression methods used for each column. If unspecified, the columns are not compressed. The compression methods include:
+    * "LZ4": LZ4 algorithm
+    * "DELTA": Delta-of-delta encoding
 
 
 
@@ -1795,7 +1795,7 @@ waitForThreadCompletion()
 ```
 
 **Details:** 
-After calling the method, `MultithreadedTableWriter` will wait for all threads to complete tasks execution, and then terminate the working threads.
+After calling the method, `MultithreadedTableWriter` will wait until all working threads complete their tasks. If you call `insert` or `insertUnwrittenData` after the execution of `waitForThreadCompletion`, an error "thread is exiting" will be raised.
 
 The methods of `MultithreadedTableWriter` are usually used in the following order:
 
@@ -1890,7 +1890,7 @@ writeStatus:
 
 As shown in the output, `MultithreadedTableWriter` has written data to the DFS table successfully and *errorCode* is None. 
 
-For `MultithreadedTableWriter`, the steps of writing data to the queue, converting data types in working threads, and appending data to the server are processed asynchronously. The queue simply performs basic validation on the incoming data, such as checking whether there is a column count mismatch, in which case the queue returns an error message without terminating the working threads. If the data types cannot be converted properly in the working threads before data writes, all threads are terminated immediately.
+In `MultithreadedTableWriter`, writing to the MTW queue, converting data types and sending data to the server are processed asynchronously. The queue simply performs basic validation on the incoming data, such as checking whether there is a column count mismatch. If an error occurs, the queue returns an error message without terminating the working threads. If the data types cannot be converted properly in the working threads before writes, all threads are terminated immediately. 
 
 The following example inserts data in batches to the `MultithreadedTableWriter` object. 
 
