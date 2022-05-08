@@ -33,7 +33,7 @@
     - [Json API](../../api-json/blob/master/README.md)
     - [Grafana Data Source Plugin](https://github.com/dolphindb/grafana-datasource/blob/master/README.md)
 - Plugins
-    - [DolphinDB Extension for Visual Studio Code](vscode_extension_EN.md)
+    - [DolphinDB Extension for Visual Studio Code](vscode_extension.md)
 - Modules
     - [Technical Analysis Indicator Library](ta.md)
 
