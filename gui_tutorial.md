@@ -100,7 +100,7 @@ You can select part of the code, then press `Ctrl + E` to send the code to the D
 
 You can find the output or error message in the Log Browser Panel, along with execution start time, end time, and elapsed time.
 
-![](images/gui_tutorial/log_browser.png)
+![](images/gui_tutorial/Log_browser.png)
 
 If the final statement executed returns a vector, matrix or table, the result will be displayed in the form of a table in the *Data Browser* panel. 
 
