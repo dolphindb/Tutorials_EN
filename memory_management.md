@@ -296,25 +296,25 @@ for(d in days){
 
 DolphinDB uses columnar storage. Only the relevant columns of a query are loaded into memory.
 
-**Example 4.** Calculate the maximum value of the column "tag1" in the "2019.01.01" partition and check the memory usage. As the query involves only 1 column from 1 partition, only this column is loaded to memory. As explained in the section above, the size of a column in a partition is about 80MB. 
+**Example 4.** Calculate the maximum value of the column "tag1" in the "2022.01.01" partition and check the memory usage. As the query involves only 1 column from 1 partition, only this column is loaded to memory. As explained in the section above, the size of a column in a partition is about 80MB. 
 
-The "2019.01.01" partition is stored on node1 (execute `getClusterChunksStatus()` on the controller to check the location of each partition). Connect to node1 and execute the following code:
+The "2022.01.01" partition is stored on node1 (execute `getClusterChunksStatus()` on the controller to check the location of each partition). Connect to node1 and execute the following code:
 
 ```
-select max(tag1) from loadTable(dbName,tableName) where day = 2019.01.01
+select max(tag1) from loadTable(dbName,tableName) where day = 2022.01.01
 mem().allocatedBytes - mem().freeBytes
 ```
 
 The result is 84,267,136 (bytes), which is consistent with the expectation of 80MB.
 
-**Example 5.** Query the first 100 records in the "2019.01.01" partition on node1 and check the memory usage.
+**Example 5.** Query the first 100 records in the "2022.01.01" partition on node1 and check the memory usage.
 
 Although only 100 records are selected, all columns in the partition (about 800 MB) are loaded because the smallest loading unit is a column of a partition.
 
 Execute the following code on node1:
 
 ```
-select top 100 * from loadTable(dbName,tableName) where day = 2019.01.01
+select top 100 * from loadTable(dbName,tableName) where day = 2022.01.01
 mem().allocatedBytes - mem().freeBytes
 ```
 
@@ -328,19 +328,19 @@ The result is 839,255,392 (bytes), which is close to the expectation of 800MB.
 
 Moving large amount of data between nodes is time-consuming. When executing a query in a DFS database, DolphinDB sends the task to the nodes with the relevant data and collects the result from other nodes to the node that sends out the query. Raw data is moved across nodes only if the query cannot be completed otherwise. 
 
-**Example 6.** On node1, query the maximum value in the "tag1" columns from 2 partitions, "2019.01.02" and "2019.01.03". The "2019.01.02" partition is stored on node1 and "2019.01.03" is stored on node2. Execute the code below on node1 and node2 to check the memory usage.
+**Example 6.** On node1, query the maximum value in the "tag1" columns from 2 partitions, "2022.01.02" and "2022.01.03". The "2022.01.02" partition is stored on node1 and "2022.01.03" is stored on node2. Execute the code below on node1 and node2 to check the memory usage.
 
 ```
-select max(tag1) from loadTable(dbName,tableName) where day in [2019.01.02,2019.01.03]
+select max(tag1) from loadTable(dbName,tableName) where day in [2022.01.02,2022.01.03]
 mem().allocatedBytes - mem().freeBytes)
 ```
 
-The result is 84,284,096 on node1 and 84,250,624 on node 2. This indicates that node1 loaded the relevant column from the "2019.01.02" partition to memory, and node2 loaded the relevant column from the "2019.01.03" partition to memory.
+The result is 84,284,096 on node1 and 84,250,624 on node 2. This indicates that node1 loaded the relevant column from the "2022.01.02" partition to memory, and node2 loaded the relevant column from the "2022.01.03" partition to memory.
 
-**Example 7.** Execute the following code on both nodes. We expect that the partition of "2019.01.02" would be loaded into memory on node1 and the partition of "2019.01.03" would be loaded into memory on node2. Memory usage is about 800MB on each node.
+**Example 7.** Execute the following code on both nodes. We expect that the partition of "2022.01.02" would be loaded into memory on node1 and the partition of "2022.01.03" would be loaded into memory on node2. Memory usage is about 800MB on each node.
 
 ```
-select top 100 * from loadTable(dbName,tableName) where day in [2019.01.02,2019.01.03]
+select top 100 * from loadTable(dbName,tableName) where day in [2022.01.02,2022.01.03]
 mem().allocatedBytes - mem().freeBytes
 ```
 
@@ -352,10 +352,10 @@ The result on node1 is 839,279,968 (bytes) and the result on node2 is 839,246,49
 
 For efficient use of memory, DolphinDB only stores a single copy of cached data for each partition across the entire cluster.
 
-**Example 8.** Open two DolphinDB GUI windows and connect to node1 and node2. Run the following script on both nodes to get the data from the "2019.01.01" partition that is located on node1.
+**Example 8.** Open two DolphinDB GUI windows and connect to node1 and node2. Run the following script on both nodes to get the data from the "2022.01.01" partition that is located on node1.
 
 ```
-select * from loadTable(dbName,tableName) where date = 2019.01.01
+select * from loadTable(dbName,tableName) where date = 2022.01.01
 mem().allocatedBytes - mem().freeBytes
 ```
 
