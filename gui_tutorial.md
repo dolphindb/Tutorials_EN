@@ -28,8 +28,7 @@ DolphinDB GUI is a full-fledged graphical interface based on Java for programmin
 ## Getting Started
 
 ### 1. Download GUI and Java
-You can download GUI from [here](https://www.dolphindb.com/downloads/DolphinDB_GUI_V1.30.15.zip).  
-Java Runtime Environment (JRE) 8 or above is required to run the GUI. You can download JRE 8 at https://www.java.com/en/download. For the specific requirements of Java version, please see Common reasons why GUI fails to start in Chap 2.
+You can download GUI [here](https://www.dolphindb.com/downloads/DolphinDB_GUI_V1.30.15.zip). Java Runtime Environment (JRE) 8 or above is required to run the GUI. You can download JRE 8 at https://www.java.com/en/download. For the specific requirements of Java version, please see [Common reasons why GUI fails to start](#common-reasons-why-gui-fails-to-start) in Chap 2.
 
 
 ### 2. Launch GUI
@@ -41,7 +40,7 @@ cd /your/gui/folder
 ./gui.sh 
 ```
 
-**Common reasons why GUI fails to start**
+#### **Common reasons why GUI fails to start**
 
 If the GUI fails to start, it may be due to one of the following:
 - Java not installed. 
