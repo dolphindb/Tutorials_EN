@@ -24,6 +24,7 @@
 
 - System Management
     - [Security and User Access Control](ACL_and_Security.md)
+    - [Memory Management](memory_management.md)
 - API
     - [Python API](https://github.com/dolphindb/Tutorials_EN/blob/master/python_api.md)
     - [Java API](../../api-java/blob/master/README.md)
