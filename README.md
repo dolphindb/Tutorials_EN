@@ -35,7 +35,7 @@
     - [Grafana Data Source Plugin](https://github.com/dolphindb/grafana-datasource/blob/master/README.md)
 - Client Tools
     - [GUI Tutorial](gui_tutorial.md)
-    - [DolphinDB Extension for Visual Studio Code](vscode_extension_EN.md)
+    - [Visual Studio Code DolphinDB Extension](vscode_extension.md)
 - Modules
     - [Technical Analysis Indicator Library](ta.md)
 
