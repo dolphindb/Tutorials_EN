@@ -100,7 +100,7 @@ You can select part of the code, then press `Ctrl + E` to send the code to the D
 - The line where the current cursor is on will be sent to DolphinDB server for execution
 - The whole script will be sent to DolphinDB server for execution 
 
-You can find the output or error message in the Log Browser Panel, along with execution start time, end time, and elapsed time.
+You can find the output or error message in the *Log Browser* Panel, along with execution start time, end time, and elapsed time.
 
 ![](images/gui_tutorial/Log_browser.png)
 
@@ -118,7 +118,7 @@ If the variable is a vector, matrix, or table, double-click it and a data browse
 
 ![](images/gui_tutorial/variable_data.png) 
 
-You can also view the column names and data types of all DFS  tables  on the server under *Database Explorer*. 
+You can also view the column names and data types of all DFS tables on the server under *Database Explorer*. 
 
 ## User Manual
 
