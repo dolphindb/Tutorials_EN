@@ -80,6 +80,8 @@ Click the icon before a project to expand in the *Project Explorer* panel, and y
 The *Server* in GUI menu refers to the DolphinDB server. You can add or manage server connections. Click *Server* and *Add Server* to open a new dialog to add a new server. There is a default server called 'local8848', which points to port 8848 of localhost.   
 
 ![](images/gui_tutorial/add_edit_server.png) 
+</br>
+
 ![](images/gui_tutorial/add_server.png)
 
 Once added, the server will appear in drop-down menu in the toolbar. To connect to a specific server, choose that server in the menu.
