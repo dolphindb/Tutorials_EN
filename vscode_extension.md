@@ -1,4 +1,4 @@
-# Visual Studio Code DolphinDB extension
+# Visual Studio Code DolphinDB Extension
 
 Table of Contents
 
