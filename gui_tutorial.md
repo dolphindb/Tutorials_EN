@@ -8,7 +8,7 @@ DolphinDB GUI is a full-fledged graphical interface based on Java for programmin
     - [1. Download GUI and Java](#1-download-gui-and-java)
     - [2. Launch GUI](#2-launch-gui)
     - [3. Setup Workspace and project, develop DolphinDB scripts](#3-setup-workspace-and-project-develop-dolphindb-scripts)
-    - [4. Connect to servers](#4-connect-to-servers)
+    - [4. Connect to servers and login](#4-connect-to-servers-and-login)
     - [5. Execute code](#5-execute-code)
     - [6. View variables and databases](#6-view-variables-and-databases)
   - [User Manual](#user-manual)
@@ -71,27 +71,32 @@ After specifying the workspace directory, right-click your new workspace in the 
 
 ![](images/gui_tutorial/new_project.png) 
 
-Click the icon before a project to expand in the *Project Explorer* panel, and you will see 2 folders: *modules* and *scripts*. Right-click the *scripts* folder, and you can add sub-folders and scripts by clicking *New Folder* and *New File*. After a script is created, you can write, modify, or execute DolphinDB code in GUI’s editor. 
+Click the icon before a project to expand in the *Project Explorer* panel, and you will see 2 folders: *modules* and *scripts*. Right-click the *scripts* folder, and you can add sub-folders and scripts by clicking *New Folder* and *New File*. After a script is created, you can write, modify, or execute DolphinDB code in GUI's *Editor*. 
 
 ![](images/gui_tutorial/new_script.png) 
 
-### 4. Connect to servers
+### 4. Connect to servers and login
 
-The *Server* in GUI menu refers to the DolphinDB server. You can add or manage server connections. Click *Server* and *Add Server* to open a new dialog to add a new server. There is a default server called 'local8848', which points to port 8848 of localhost.   
+The *Server* in GUI menu refers to connection to DolphinDB server. You can add or manage server connections. Click *Server* and *Add Server* to open a new dialog to add a new server connection. There is a default server connection called 'local8848', which connects to port 8848 of localhost.   
 
 ![](images/gui_tutorial/add_edit_server.png) 
 </br>
 
 ![](images/gui_tutorial/add_server.png)
 
-Once added, the server will appear in drop-down menu in the toolbar. To connect to a specific server, choose that server in the menu.
+Once added, the server connection will appear in drop-down menu in the toolbar. To connect to a specific server, choose the corresponding connection in the menu.
 
 ![](images/gui_tutorial/server_dropdown.png) 
 
-To edit or delete servers, click *Edit Server*. Double-click the field to make modifications, or click the checkbox to delete a server.
+To edit or delete server connections, click *Edit Server*. Double-click the field to make modifications, or click the checkbox to delete a server connection.
 
 ![](images/gui_tutorial/edit_server.png) 
 
+The GUI provides 3 ways to login:
+
+- Specify the username and password when adding server connection, and you will be automatically logged in every time you use this connection.
+- Click on ![](images/gui_tutorial/login_icon.png) in tool bar to specify username and password after you choose a connection.
+- Run login() function in *Editor* after you choose a connection. 
 
 ### 5. Execute code
 
