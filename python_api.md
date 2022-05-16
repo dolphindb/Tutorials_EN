@@ -9,6 +9,7 @@ Please install DolphinDB Python API with the following command:
 $ pip install dolphindb
 ```
 
+
 - [Python API for DolphinDB](#python-api-for-dolphindb)
   - [1 Execute DolphinDB Scripts and Functions](#1-execute-dolphindb-scripts-and-functions)
     - [1.1 Establish Connection](#11-establish-connection)
@@ -62,6 +63,7 @@ $ pip install dolphindb
     - [11.1 Stock Momentum Strategy](#111-stock-momentum-strategy)
     - [11.2 Time-Series Operations](#112-time-series-operations)
   - [12 FAQ](#12-faq)
+
 
 
 
@@ -531,6 +533,8 @@ print(s.loadTable("testDict").toDF())
 
 (2) upload pandas DataFrame
 
+Example 1:
+
 The script below defines function `createDemoDataFrame()` to create a pandas DataFrame. 
 
 ```python
@@ -572,12 +576,36 @@ dt = s.table(data=createDemoDataFrame(), tableAliasName="testDataFrame")
 print(s.loadTable("testDataFrame").toDF())
 
 # output
->>> print(s.loadTable("testDataFrame").toDF())
    cid  cbool  cchar  cshort  cint  ...             cnanotimestamp    cfloat    cdouble csymbol cstring
 0    1   True      1       1     1  ... 2019-01-01 15:00:00.807060  2.100000   0.000000       A     abc
 1    2  False      2       2     2  ... 2019-01-01 15:30:00.807060  2.658956  47.456213       B     def
 2    3   True      3       3     3  ...                        NaT       NaN        NaN
 ```
+
+Example 2:
+
+Use `table` to upload a DataFrame with arrays to DolphinDB as a table with array vectors. 
+
+```python
+import numpy as np
+import pandas as pd
+import dolphindb as ddb
+s = ddb.session()
+s.connect("localhost", 8848, "admin", "123456")
+df = pd.DataFrame({
+                'value': [np.array([1,2,3,4,5,6,7,8,9],dtype=np.int64),np.array([11,12,13,14],dtype=np.int64),np.array([22,13,11,12,13,14],dtype=np.int64)]
+        })
+tmp = s.table(data=df, tableAliasName="testArrayVector")
+
+print(s.loadTable("testArrayVector").toDF())
+
+# output
+                         value
+0  [1, 2, 3, 4, 5, 6, 7, 8, 9]
+1             [11, 12, 13, 14]
+2     [22, 13, 11, 12, 13, 14]
+```
+
 
 ### 2.3 Life Cycle of Uploaded Tables
 
@@ -762,6 +790,7 @@ re = s.loadTable(tableName='pt', dbPath=dbPath).toDF()
 
 Creating databases in the TSDB engine is similar to that in the OLAP engine. You can set *engine* = "TSDB" in the function `database` and specify the parameter *sortColumns* in function `createTable` or `createPartitionedTable`. For the function usage, see [database](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/d/database.html), [createPartitionedTable](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/c/createPartitionedTable.html?highlight=createpartitionedtable), and [createTable](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/c/createTable.html).
 
+Example 1:
 
 ```python
 import dolphindb.settings as keys
@@ -781,6 +810,50 @@ df = pd.DataFrame({'datetime': np.array(
     ['2012-01-01T00:00:00', '2012-01-02T00:00:00', '2012-01-04T00:00:00', '2012-01-05T00:00:00', '2012-01-08T00:00:00'],
     dtype='datetime64'),
     'sym': ['AA', 'BB', 'BB', 'AA', 'BB'], 'val': [1, 2, 3, 4, 5]})
+t = s.table(data=df)
+
+db.createPartitionedTable(table=t, tableName='pt', partitionColumns='datetime', sortColumns=["sym", "datetime"]).append(t)
+re = s.loadTable(tableName='pt', dbPath=dbPath).toDF()
+print(re)
+
+# output
+
+    datetime sym  val
+0 2012-01-01  AA    1
+1 2012-01-02  BB    2
+2 2012-01-04  BB    3
+3 2012-01-05  AA    4
+4 2012-01-08  BB    5
+```
+
+Example 2:
+
+Create a DFS table with array vectors
+
+```python
+import dolphindb.settings as keys
+import numpy as np
+import pandas as pd
+
+s = ddb.session()
+s.connect("localhost", 8848, "admin", "123456")
+
+dates = np.array(pd.date_range(start='20120101', end='20120110'), dtype="datetime64[D]")
+values = np.array([np.array([11,12,13,14],dtype=np.int64),
+    np.array([15,16,17,18],dtype=np.int64),
+    np.array([19,10,11,12],dtype=np.int64),
+    np.array([13,14,15],dtype=np.int64),
+    np.array([11,14,17,12,15],dtype=np.int64),
+],dtype=object)
+
+dbPath = "dfs://tsdb"
+if s.existsDatabase(dbPath): s.dropDatabase(dbPath)
+db = s.database(dbName='mydb_tsdb', partitionType=keys.VALUE, partitions=dates, dbPath=dbPath, engine="TSDB")
+
+df = pd.DataFrame({'datetime': np.array(
+    ['2012-01-01T00:00:00', '2012-01-02T00:00:00', '2012-01-04T00:00:00', '2012-01-05T00:00:00', '2012-01-08T00:00:00'],
+    dtype='datetime64'),
+    'sym': ['AA', 'BB', 'BB', 'AA', 'BB'], 'val': values})
 t = s.table(data=df)
 
 db.createPartitionedTable(table=t, tableName='pt', partitionColumns='datetime', sortColumns=["sym", "datetime"]).append(t)
@@ -1656,15 +1729,15 @@ To insert single record frequently, you can use methods of `MultithreadedTableWr
 **`MultithreadedTableWriter`**
 
 ```Python
-MultithreadedTableWriter(hostName, port, userId, password, dbName, tableName, useSSL, enableHighAvailability, highAvailabilitySites, batchSize, throttle, threadCount, partitionCol, compressMethods)
+MultithreadedTableWriter(host, port, userId, password, dbPath, tableName, useSSL, enableHighAvailability, highAvailabilitySites, batchSize, throttle, threadCount, partitionCol, compressMethods)
 ```
 
 **Parameters:**
 
-* **hostName**: host name
+* **host**: host name
 * **port**: port number
 * **userId** / **password**: username and password
-* **dbName**: a STRING indicating the DFS database path or in-memory table name 
+* **dbPath**: a STRING indicating the DFS database path or in-memory table name 
 * **tableName**: a STRING indicating the DFS table name. Leave it unspecified for an in-memory table
 * **useSSL**: a Boolean value indicating whether to enable SSL. The default value is False.
 * **enableHighAvailability**: a Boolean value indicating whether to enable high availability. The default value is False.
@@ -1688,7 +1761,9 @@ insert(*args)
 ```
 
 **Details:**
-Insert a single record. Return a class containing *errorCode* and *errorInfo*. If *errorCode* is not None, `MultithreadedTableWriter` has failed to insert the data, and *errorInfo* displays the error message.
+Insert a single record. Return a class `ErrorCodeInfo` containing *errorCode* and *errorInfo*. If *errorCode* is not None, `MultithreadedTableWriter` has failed to insert the data, and *errorInfo* displays the error message.
+
+The class `ErrorCodeInfo` provides methods `hasError()` and `succeed()` to check whether the data is written properly. `hasError()` returns True if an error occurred, False otherwise. `succeed()` returns True if the data is written successfully, False otherwise.
 
 **Parameters:**
 
@@ -1773,7 +1848,7 @@ getStatus()
 ```
 
 **Details:**
-Get the current status of the object. Return a class with the following attributes:
+Get the current status of the object. It returns a class with the following attributes and methods:
 
 * **isExiting:** whether the threads are exiting
 * **errorCode:** error code
@@ -1787,6 +1862,15 @@ Get the current status of the object. Return a class with the following attribut
     * unsentRows: number of rows to be sent by the thread
     * sendFailedRows: number of rows failed to be sent by the thread
 
+Methods:
+
+* `hasError()`
+
+Return True if an error occurred, False otherwise.
+
+* `succeed()`
+
+Return True if the data is written successfully, False otherwise.
 
 (5) `waitForThreadCompletion`
 
