@@ -50,7 +50,7 @@ To configure a cluster on multiple physical servers, please check [Multi-Machine
 4. Regarding how to use the DolphinDB streaming engines for real-time data processing and analyzing, see [Stream for DolphinDB](https://github.com/dolphindb/Tutorials_EN/blob/master/streaming_tutorial.md) and [Time-Series Stream Engine](https://github.com/dolphindb/Tutorials_EN/blob/master/stream_aggregator.md).
 
 ### User Access Control
-Regarding the user access control functionalities in DolphinDB, please check (DolphinDB Database User Access Control and Security)[https://github.com/dolphindb/Tutorials_EN/blob/master/ACL_and_Security.md].
+Regarding the user access control functionalities in DolphinDB, please check [DolphinDB Database User Access Control and Security](https://github.com/dolphindb/Tutorials_EN/blob/master/ACL_and_Security.md).
 
 ### Possible problems
 1. After starting a server, the system immediately exists. The error message in the log file is "The license has been expired". 
