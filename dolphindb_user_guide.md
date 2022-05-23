@@ -47,7 +47,7 @@ To configure a cluster on multiple physical servers, please check [Multi-Machine
 
 3. Regarding how to create distributed databases in DolphinDB, please check [DolphinDB Partitioned Database Tutorial](https://github.com/dolphindb/Tutorials_EN/blob/master/database.md).
 
-4. Regarding how to use the DolphinDB streaming engines for real-time data processing and analyzing, see [Stream for DolphinDB](https://dolphindb.net/dolphindb/tutorials_en/-/blob/master/streaming_tutorial.md) and [Time-Series Stream Engine](https://dolphindb.net/dolphindb/tutorials_en/-/blob/master/stream_aggregator.md).
+4. Regarding how to use the DolphinDB streaming engines for real-time data processing and analyzing, see [Stream for DolphinDB](https://github.com/dolphindb/Tutorials_EN/blob/master/streaming_tutorial.md) and [Time-Series Stream Engine](https://github.com/dolphindb/Tutorials_EN/blob/master/stream_aggregator.md).
 
 ### User Access Control
 Regarding the user access control functionalities in DolphinDB, please check (DolphinDB Database User Access Control and Security)[https://github.com/dolphindb/Tutorials_EN/blob/master/ACL_and_Security.md].
