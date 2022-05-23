@@ -45,25 +45,26 @@ In the "config" directory, create the configuration file of the controller (cont
 ```
 localSite=192.168.1.103:8920:ctl8920
 localExecutors=3
-maxConnections=128
+maxConnections=512
 maxMemSize=16
 webWorkerNum=4
 workerNum=4
 dfsReplicationFactor=1
 dfsReplicaReliabilityLevel=0
+dataSync=1
 ```
 
-
-| Parameter Configuration        | Explanation          |
-|:------------- |:-------------|
-|localSite=10.1.1.7::master|     Host address, port number and alias of the local node.|
-|localExecutors=3          |      The number of local executors. The default value is the number of cores of the CPU - 1.   |
-|maxConnections=128     |         The maximum number of inward connections.|
-|maxMemSize=16          |        The maximum memory (in terms of GB) allocated to DolphinDB. If set to 0, it means no limit on memory usage.|
-|webWorkerNum=4              |   The size of the worker pool to process http requests. The default value is 1.|
-|workerNum=4        |         The size of the worker pool for regular interactive jobs. The default value is the number of cores of the CPU.       |
-|dfsReplicationFactor=1         | The number of replicas for each table partition or file block. The default value is 2.   |
-|dfsReplicaReliabilityLevel=0     |  Whether multiple replicas can reside on the same server. 0: Yes; 1: No. The default value is 0.|
+| Parameter Configuration              | Explanation                                                  |
+| :----------------------------------- | :----------------------------------------------------------- |
+| localSite=192.168.1.103:8920:ctl8920 | Host address, port number, and alias of the local node. The host address is the LAN IP. All fields are mandatory. |
+| localExecutors=3                     | The number of local executors. The default value is the number of cores of the CPU - 1. |
+| maxConnections=512                   | The maximum number of inward connections.                    |
+| maxMemSize=16                        | The maximum memory (in terms of GB) allocated to DolphinDB. If set to 0, it means no limit on memory usage. |
+| webWorkerNum=4                       | The size of the worker pool to process HTTP requests. The default value is 1. |
+| workerNum=4                          | The size of the worker pool for regular interactive jobs. The default value is the number of cores of the CPU. |
+| dfsReplicationFactor=1               | The number of replicas for each table partition or file block. The default value is 2. |
+| dfsReplicaReliabilityLevel=0         | Whether multiple replicas can reside on the same server. 0: Yes; 1: No. The default value is 0. |
+| dataSync=1                           | Force synchronize the redo log, data and metadata to disk when the database is updated. The parameter chunkCacheEngineMemSize in the cluster.cfg must also be specified at the same time. |
 
 
 ##### 3.1.2 Cluster Nodes File
@@ -81,10 +82,10 @@ localSite,mode
 ```
 #### 3.1.3 Data Nodes Configuration File
 
-In "config" directory, create the configuration file for the data nodes (cluster.cfg). The configuration parameters in this file apply to each data node in the cluster.
+In "config" directory, create the configuration file for the data nodes (cluster.cfg). The configuration parameters in this file apply to each data node in the cluster. For more information about the parameters, see the [user manual](https://dolphindb.com/help/DatabaseandDistributedComputing/Configuration/StandaloneMode.html  ).
 
 ```
-maxConnections=128
+maxConnections=512
 maxMemSize=32
 workerNum=8
 localExecutors=7
@@ -212,31 +213,35 @@ Alternatively, we can start the data nodes with DolphinDB script on the controll
 startDataNode(["DFS_NODE1", "DFS_NODE2","DFS_NODE3","DFS_NODE4"])
 ```
 
-#### 3.3.7 Possible reasons why nodes cannot start
+### 4 Possible reasons why nodes cannot start
 
-1. If there is an error message "Failed to bind the socket on XXXX" in the log file where XXXX is the port number of a node to be started, maybe this port is occupied by another process. To start the node, close that process or reassign a port number to the node. It's also possible that the node was just closed and the Linux kernel has not released this port number. If this is the case, wait for 30 second and restart the node. 
+1. Port is occupied. If you find in the log file an error message "Failed to bind the socket on XXXX" where XXXX is the port number on the node to be started, it means this port may be occupied by another program. Close the other program or reassign a port number and then restart the node. It may also be that this node has just been closed and the Linux kernel has not released this port number. Just wait about 30 seconds and then restart the node.
 
-2. Incorrect IP address, port number or node alias in configuration files. 
+2. Port is blocked by firewall. If the ports used are blocked, we need to open them in the firewall.
 
-3. The port is not open in firewall.
+3. Incorrect IP address, port number or node alias in the configuration files.
 
 4. If the cluster is deployed on cloud or k8s, we need to add a configuration parameter lanCluster=0 in agent.cfg and cluster.cfg.
 
-### 4. Web-based cluster management
+5. The first line in the configuration file for cluster nodes (cluster.nodes) is empty. If you find in the log file an error message "Failed to load the nodes file [XXXX/cluster.nodes] with error: The input file is empty.", it means the first line in the file cluster.nodes is empty. In this case just remove the empty line from the file and restart the node.
+
+6. The macro variable<ALIAS> has no effect when the node is specified explicitly. In cluster.cfg, if the macro variable<ALIAS> is used when a node is specified, e.g., P1-NODE1.persistenceDir = /hdd/hdd1/streamCache/<ALIAS>, the node will not start properly. In this case just remove <ALIAS> and replace it with a specific node alias, e.g., P1-NODE1.persistenceDir = /hdd/hdd1/streamCache/P1-NODE1. To use macro variables for all nodes, specify persistenceDir = /hdd/hdd1/streamCache/<ALIAS>. For more information about how to use the macro variable, see [DolphinDB user guide](https://www.dolphindb.com/help/DatabaseandDistributedComputing/Configuration/ClusterMode.html ).
+
+### 5. Web-based cluster management
 
 We can change cluster configuration and add/delete data nodes on the web-based cluster manager. 
 
-The bottom left panel shows all the agents, and the main panel displays the controller and the data nodes. Click on the "DFS Explorer" button in the upper left corner to browse the distributed databases stored in the distributed file system.
-
 ![](images/cluster_web_started.JPG)
 
-#### 4.1. Controller node configuration
+#### 5.1. Controller node configuration
 
 Clicking on the button "Controller Config" will open up a control interface, where "localExectors", "maxConnections", "maxMemSize", "webWorkerNum" and "workerNum" were specified when we created controller.cfg in 3.1.1. These configuration parameters can be modified, and will take effect after the controller node is restarted.
 
+Please note that to modify the configuration parameter localSite, the parameter controllerSite in each agent.cfg should also be changed, otherwise the cluster will not run properly.
+
 ![](images/cluster_web_controller_config.JPG)
 
-#### 4.2. Add/delete data nodes
+#### 5.2. Add/delete data nodes
 
 Click on the button "Nodes Setup" to enter the cluster nodes configuration interface. The figure below shows the parameters in cluster.nodes that we created in 3.1.2. We can add or delete data nodes here. The new configuration will take effect after the entire cluster is restarted. The steps to restart the cluster include: (1) close all data nodes (2) close the controller, (3) start the controller, and (4) start the data nodes. Deleting a data node may result in loss of data that were saved on the node. 
 
@@ -244,13 +249,11 @@ Click on the button "Nodes Setup" to enter the cluster nodes configuration inter
 
 If the new data node is on a new physical server, we must configure and start an agent node as in 3.2 on the new physical server, revise cluster.nodes with the information about the new agent node and new data node, and restart the controller node. 
 
-#### 4.3. Modify data node configuration
+#### 5.3. Modify data node configuration
 
 Click on the button "Nodes Config" to configure the data nodes. This figure below displays parameters we specified in cluster.cfg in 3.1.3. We can also add other parameters to be configured here. They will take effect after all the data nodes are restarted.
 
 ![](images/cluster_web_nodes_config.JPG)
 
 
-### 5. Reference
-
-For a complete list of the cluster configuration parameters and details, please refer to Chapter 10 of DolphinDB [help](http://dolphindb.com/help/ClusterSetup.html).
+For a complete list of the cluster configuration parameters and details, please refer to Chapter 10 of [DolphinDB help](https://dolphindb.com/help/DatabaseandDistributedComputing/Configuration/index.html).
