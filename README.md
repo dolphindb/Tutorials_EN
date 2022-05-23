@@ -2,11 +2,12 @@
 
 - Deployment
     - [DolphinDB User Guide](dolphindb_user_guide.md)
-    - [Single Node Deployment](standalone_server.md)
-    - [Single Node Deployment for ARM](ARM_standalone_deploy.md)
+    - [DolphinDB Standalone Deployment](standalone_deployment.md)
+    - [DolphinDB ARM Standalone Deployment](ARM_standalone_deployment.md)
     - [Cluster Deployment on Single Server](single_machine_cluster_deploy.md)
-    - [Cluster Deployment on Multiple Servers](multi_machine_cluster_deployment.md)
-    - [Scale Out a Cluster](cluster_scaleout.md)
+    - [Multi-Machine Cluster Deployment](multi_machine_cluster_deployment.md)
+    - [High availability for DolphinDB](ha_cluster_deployment.md)
+    - [How to scale out a DolphinDB cluster](cluster_scaleout.md)
 - Database
     - [Partitioned Databases](database.md)
     - [Import Data](import_data.md)
