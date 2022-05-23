@@ -1,6 +1,6 @@
-# High availability for DolphinDB
+# High Availability for DolphinDB
 
-- [High availability for DolphinDB](#high-availability-for-dolphindb)
+- [High Availability for DolphinDB](#high-availability-for-dolphindb)
 	- [1. Introduction](#1-introduction)
 	- [2. High availability of data nodes](#2-high-availability-of-data-nodes)
 	- [3. High availability of controllers](#3-high-availability-of-controllers)
