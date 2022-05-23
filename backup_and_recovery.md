@@ -1,8 +1,22 @@
-# Data Backup and Recovery
+# Backup and Recovery
 
 With DolphinDB built-in functions, users can back up and restore partitions in a database.
 
-## 1. Data Backup
+- [Backup and Recovery](#backup-and-recovery)
+  - [1. Backup](#1-backup)
+    - [1.1 Full Backup](#11-full-backup)
+    - [1.2 Incremental Backup](#12-incremental-backup)
+    - [1.3 Daily Backup](#13-daily-backup)
+  - [2. Recovery](#2-recovery)
+    - [2.1 `restore`](#21-restore)
+    - [2.2 `migrate`](#22-migrate)
+  - [3. Backup and Recovery Management](#3-backup-and-recovery-management)
+    - [3.1 `getBackupList`](#31-getbackuplist)
+    - [3.2 `getBackupMeta`](#32-getbackupmeta)
+    - [3.3 `loadBackup`](#33-loadbackup)
+  - [4. Examples](#4-examples)
+
+## 1. Backup
 
 DolphinDB function [backup](https://www.dolphindb.com/help/FunctionsandCommands/FunctionReferences/b/backup.html) backs up some or all partitions of a table and returns an integer indicating the number of partitions that are successfully backed up. Both full backup and incremental backup are supported. After backup, a metadata file named “_metaData.bin” and files named “chunkID.bin” will be created under the path “backupDir/dbName/tbName”.
 
@@ -139,7 +153,7 @@ You can set up a scheduled job for daily backup. A daily job is scheduled at 5:0
 scheduleJob(`backupJob, "backupDB", backup{"/hdd/hdd1/backup/"+(today()-1).format("yyyyMMdd"),<select * from loadTable("dfs://ddb","windTurbine") where tm between datetime(today()-1) : (today().datetime()-1) >,false,true}, 00:05m, today(), 2030.12.31, 'D');
 ```
 
-## 2. Data Recovery
+## 2. Recovery
 
 There are two ways to restore the data in DolphinDB.
 
@@ -221,7 +235,7 @@ for(i in 2..31){
 
 ```
 
-## 3. Manage Data Backup and Recovery
+## 3. Backup and Recovery Management
 
 ### 3.1 `getBackupList`
 
