@@ -31,13 +31,13 @@ Please check [User Manual](https://dolphindb.com/help/ProgrammingAPIs/index.html
 ### Configuration
 
 #### Single node
-To use DolphinDB on a single node, please check [DolphinDB Signle Node Deployment](https://github.com/dolphindb/Tutorials_EN/blob/master/standalone_server.md).  
+To use DolphinDB on a single node, please check [DolphinDB Standalone Deployment](https://github.com/dolphindb/Tutorials_EN/blob/master/standalone_deployment.md).  
 
-#### Single server cluster
+#### Single-server cluster
 To configure a cluster on a physical server, please check [DolphinDB Cluster Deployment on Single Server](https://github.com/dolphindb/Tutorials_EN/blob/master/single_machine_cluster_deploy.md). 
 
 #### Multi-server cluster
-To configure a cluster on multiple physical servers, please check [Multi-Machine Cluster Deployment](https://github.com/dolphindb/Tutorials_EN/blob/master/multi_machine_cluster_deployment.md ).
+To configure a cluster on multiple physical servers, please check [Multi-Machine Cluster Deployment](https://github.com/dolphindb/Tutorials_EN/blob/master/multi_machine_cluster_deployment.md).
 
 ### Use DolphinDB
 
