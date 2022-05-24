@@ -115,7 +115,6 @@ lanCluster=0
 The parameters are described in the table below.
 
 
-The parameters are described in the table below.
 | Parameter Configuration        | Description          |
 |:------------- |:-------------|
 |localSite=10.1.1.7:8990:master|     Node LAN information in the format of IP address:port number:alias of the local node. All fields are mandatory.|
