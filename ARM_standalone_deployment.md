@@ -7,6 +7,7 @@
 	- [4. Run DolphinDB Server](#4-run-dolphindb-server)
 	- [5. Connect to DolphinDB Server from Web](#5-connect-to-dolphindb-server-from-web)
 	- [6. Run DolphinDB Script from Web](#6-run-dolphindb-script-from-web)
+	- [7. Update DolphinDB Server](#7-update-dolphindb-server)
 
 ## 1. System Requirements
 
@@ -96,10 +97,15 @@ Run DolphinDB server:
 - Linux background mode: 
 
 ```
-nohup ./dolphindb -console 0 &
+./startSingle.sh
 ```
 
-In Linux, we recommend starting in the background mode with Linux command **nohup** (header) and **&** (tail). Even if the terminal is disconnected, DolphinDB will keep running. "-console" is set to 1 by default. To run in the background mode, we need to set it to 0 ("-console 0"). Otherwise, the system will quit after running for a while. 
+<!--
+In Linux, we recommend starting in the background mode with Linux command **nohup** (header) and **&** (tail). Even if the terminal is disconnected, DolphinDB will keep running. "-console" is set to 1 by default. To run in the background mode, please set it to 0 ("-console 0"). Otherwise, the system will quit after running for a while. 
+-->
+
+In console mode, you can execute DolphinDB code from the command line. Otherwise, you can execute scripts via a user interface such as GUI or VS Code Extension.
+
 
 ## 5. Connect to DolphinDB Server from Web
 
@@ -114,12 +120,60 @@ table(1..5 as id, 6..10 as v)
 ```
 ![](images/single_web.JPG)
 
-<!---
 ## 7. Update DolphinDB Server
 
+<!--
+For Linux users, you can execute upgrade.sh under the subdirectory clusterDemo to update the server. Or you can follow the steps:
 
 -->
 
+Please follow the steps to update the server:
 
-For details about more configuration parameters, please refer to DolphinDB [help](http://dolphindb.com/help/).
+1. Close the server.
+
+2. Backup the metadata. The default directory to save the metadata for a standalone mode is:
+
+   ```sh
+   /DolphinDB/server/local8900/dfsMeta/
+   ```
+   ```sh
+   /DolphinDB/server/local8900/storage/CHUNK_METADATA/
+   ```
+
+   You can execute the following command on Linux to back up the metadata:
+
+   ```sh
+   mkdir backup
+   cp -r local8900/dfsMeta/ backup/dfsMeta
+   cp -r local8900/storage/CHUNK_METADATA/ backup/CHUNK_METADATA
+   ```
+   
+>  If the backup files are not in the above default directories, please check the directories specified by the configuration parameters *dfsMetaDir* and *chunkMetaDir*. If the configuration parameters are not modified but the configuration parameter *volumes* is specified, then you can find the CHUNK_METADATA under the *volumes* directory.
+
+3. Download a new version of server package from [DolphinDB website](https://dolphindb.com). You can also download a 1.30.6 server using the following Linux command:
+
+   ```sh
+   wget https://www.dolphindb.cn/downloads/DolphinDB_Linux64_V1.30.6.zip
+   ```
+
+>  Note the file name changes with different version number.
+
+4. Unzip the package. Execute the following Linux command to unzip the package to the directory v1.30.6:
+
+   ```sh
+   unzip DolphinDB_Linux64_V1.30.6.zip -d v1.30.6
+   ```
+
+5. Replace the files under the server directory except for config, data, log folders and dolphindb.cfg.
+
+>  Note: Please do not overwrite the existing server folder. If you have customized the parameters in the file *dolphindb.cfg*,  added scripts to the init file *dolphindb.dos*, or updated the license *dolphindb.lic*, make sure not to overwrite those files. Otherwise, you will lose your changes.
+
+6. Restart the server and GUI. Execute the following command to check the version information:
+
+   ```sh
+   version()
+   ```
+
+
+For more details about configuration parameters, please refer to DolphinDB [help](http://dolphindb.com/help/).
 
