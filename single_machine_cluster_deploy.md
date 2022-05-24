@@ -5,6 +5,14 @@ A DolphinDB cluster consists of 3 types of nodes: data node, agent and controlle
   *  An agent node executes the commands issued by the controller to start or close local data nodes. 
   *  The controller collects heartbeats of agents and data nodes, and monitors the status of each node. It provides the web interface for cluster management.
 
+- [DolphinDB Cluster Deployment on Single Server](#dolphindb-cluster-deployment-on-single-server)
+    - [1. Download DolphinDB](#1-download-dolphindb)
+    - [2. Update the License File](#2-update-the-license-file)
+    - [3. Initial Configuration](#3-initial-configuration)
+    - [4 Possible Reasons Why Nodes Cannot Start](#4-possible-reasons-why-nodes-cannot-start)
+    - [5. Web-based Cluster Management](#5-web-based-cluster-management)
+
+
 ### 1. Download DolphinDB
 
 Download DolphinDB from [DolphinDB](http://www.dolphindb.com/downloads.html) website and extract it to a directory. For example, extract it to the following directory:
@@ -213,7 +221,7 @@ Alternatively, we can start the data nodes with DolphinDB script on the controll
 startDataNode(["DFS_NODE1", "DFS_NODE2","DFS_NODE3","DFS_NODE4"])
 ```
 
-### 4 Possible reasons why nodes cannot start
+### 4 Possible Reasons Why Nodes Cannot Start
 
 1. Port is occupied. If you find in the log file an error message "Failed to bind the socket on XXXX" where XXXX is the port number on the node to be started, it means this port may be occupied by another program. Close the other program or reassign a port number and then restart the node. It may also be that this node has just been closed and the Linux kernel has not released this port number. Just wait about 30 seconds and then restart the node.
 
@@ -227,7 +235,7 @@ startDataNode(["DFS_NODE1", "DFS_NODE2","DFS_NODE3","DFS_NODE4"])
 
 6. The macro variable<ALIAS> has no effect when the node is specified explicitly. In cluster.cfg, if the macro variable<ALIAS> is used when a node is specified, e.g., P1-NODE1.persistenceDir = /hdd/hdd1/streamCache/<ALIAS>, the node will not start properly. In this case just remove <ALIAS> and replace it with a specific node alias, e.g., P1-NODE1.persistenceDir = /hdd/hdd1/streamCache/P1-NODE1. To use macro variables for all nodes, specify persistenceDir = /hdd/hdd1/streamCache/<ALIAS>. For more information about how to use the macro variable, see [DolphinDB user guide](https://www.dolphindb.com/help/DatabaseandDistributedComputing/Configuration/ClusterMode.html ).
 
-### 5. Web-based cluster management
+### 5. Web-based Cluster Management
 
 We can change cluster configuration and add/delete data nodes on the web-based cluster manager. 
 
