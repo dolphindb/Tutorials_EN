@@ -9,6 +9,7 @@
     - [3.3 After Starting GUI](#33-after-starting-gui)
   - [4. Run DolphinDB Script in GUI](#4-run-dolphindb-script-in-gui)
   - [5. Change Configuration](#5-change-configuration)
+  - [6. Update DolphinDB Server](#6-update-dolphindb-server)
 
 
 Download DolphinDB from [DolphinDB](http://www.dolphindb.com/downloads.html) website and extract it to a directory. For example, extract it to the following directory:
@@ -37,20 +38,26 @@ Go to folder /DolphinDB/server/ and run dolphindb executable.
 - Linux:
 
 First, modify the file permissions:
+
 ```sh
 chmod +x dolphindb
 ```
 
 Linux console mode: 
+
 ```
 ./dolphindb
 ```
+
 Linux background mode: 
+
 ```
-nohup ./dolphindb -console 0 &
+./startSingle.sh
 ```
 
+<!--
 In Linux, we recommend starting in the background mode with Linux command **nohup** (header) and **&** (tail). Even if the terminal is disconnected, DolphinDB will keep running. "-console" is set to 1 by default. To run in the background mode, please set it to 0 ("-console 0"). Otherwise, the system will quit after running for a while. 
+-->
 
 In console mode, you can execute DolphinDB code from the command line. Otherwise, you can execute scripts via a user interface such as GUI or VS Code Extension.
 
@@ -174,15 +181,20 @@ Windows:
 dolphindb.exe -localSite localhost:8900:local8900 -maxMemSize 8
 ```
 
-For more configuration parameters, please see [Configuration](https://www.dolphindb.com/help/DatabaseandDistributedComputing/Configuration/index.html).
-
-<!--
+For more details on configuration parameters, please see [Configuration](https://www.dolphindb.com/help/DatabaseandDistributedComputing/Configuration/index.html).
 
 ## 6. Update DolphinDB Server
 
+<!--
+For Linux users, you can execute upgrade.sh under the subdirectory clusterDemo to update the server. Or you can follow the steps:
+
+-->
+
+Please follow the steps to update the server:
+
 1. Close the server.
 
-2. Backup the metadata of the old version. The default directory to save the metadata for a standalone mode is:
+2. Backup the metadata. The default directory to save the metadata for a standalone mode is:
 
    ```sh
    /DolphinDB/server/local8900/dfsMeta/
@@ -199,34 +211,30 @@ For more configuration parameters, please see [Configuration](https://www.dolphi
    cp -r local8900/storage/CHUNK_METADATA/ backup/CHUNK_METADATA
    ```
    
->  If the backup files are not in the above default directories, please check the directories specified by the configuration parameters dfsMetaDir and chunkMetaDir. If the configuration parameters are not modified but the configuration parameter volumes is specified, then you can find the CHUNK_METADATA under the directory specified by volumes.
+>  If the backup files are not in the above default directories, please check the directories specified by the configuration parameters *dfsMetaDir* and *chunkMetaDir*. If the configuration parameters are not modified but the configuration parameter *volumes* is specified, then you can find the CHUNK_METADATA under the *volumes* directory.
 
-3. Download a new version of server package from [DolphinDB website](https://dolphindb.com/alone/alone.php?id=75). You can also download a server using the following Linux command:
+3. Download a new version of server package from [DolphinDB website](https://dolphindb.com). You can also download a 1.30.6 server using the following Linux command:
 
    ```sh
    wget https://www.dolphindb.cn/downloads/DolphinDB_Linux64_V1.30.6.zip
    ```
 
->  Note
+>  Note the file name changes with different version number.
 
-4. Unzip the package. Execute the following Linux command to unzip the 1.30.6 package to the directory v1.30.6:
+4. Unzip the package. Execute the following Linux command to unzip the package to the directory v1.30.6:
 
    ```sh
    unzip DolphinDB_Linux64_V1.30.6.zip -d v1.30.6
    ```
 
-5. Replace the files in the original folder except
+5. Replace the files under the server directory except for config, data, log folders and dolphindb.cfg.
 
 >  Note: Please do not overwrite the existing server folder. If you have customized the parameters in the file *dolphindb.cfg*,  added scripts to the init file *dolphindb.dos*, or updated the license *dolphindb.lic*, make sure not to overwrite those files. Otherwise, you will lose your changes.
 
-1. Restart the server and GUI. Execute the following command to check the version information:
+6. Restart the server and GUI. Execute the following command to check the version information:
 
    ```sh
    version()
    ```
 
-
-
 For more information, please see [DolphinDB help](https://www.dolphindb.com/help/index.html).
-
--->
