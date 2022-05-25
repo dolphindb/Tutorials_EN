@@ -48,10 +48,10 @@ Please check [User Manual](https://dolphindb.com/help/ProgrammingAPIs/index.html
 To use DolphinDB on a single node, please check [DolphinDB Standalone Deployment](standalone_deployment.md).  
 
 ### Single-server Cluster
-To configure a cluster on a physical server, please check [DolphinDB Cluster Deployment on Single Server](single_machine_cluster_deploy.md). 
+To configure a cluster on a physical server, please check [DolphinDB Single-Server Cluster Deployment](single_machine_cluster_deploy.md). 
 
 ### Multi-server Cluster
-To configure a cluster on multiple physical servers, please check [Multi-Machine Cluster Deployment](multi_machine_cluster_deployment.md).
+To configure a cluster on multiple physical servers, please check [DolphinDB Multi-Machine Cluster Deployment](multi_machine_cluster_deployment.md).
 
 ## Use DolphinDB
 
