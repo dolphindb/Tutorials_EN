@@ -4,10 +4,10 @@
     - [DolphinDB User Guide](dolphindb_user_guide.md)
     - [DolphinDB Standalone Deployment](standalone_deployment.md)
     - [DolphinDB ARM Standalone Deployment](ARM_standalone_deployment.md)
-    - [Cluster Deployment on Single Server](single_machine_cluster_deploy.md)
-    - [Multi-Machine Cluster Deployment](multi_machine_cluster_deployment.md)
+    - [DolphinDB Single-Server Cluster Deployment](single_machine_cluster_deploy.md)
+    - [DolphinDB Multi-Machine Cluster Deployment](multi_machine_cluster_deployment.md)
     - [High availability for DolphinDB](ha_cluster_deployment.md)
-    - [How to scale out a DolphinDB cluster](cluster_scaleout.md)
+    - [Scale out a DolphinDB Cluster](cluster_scaleout.md)
 - Database
     - [Partitioned Databases](database.md)
     - [Import Data](import_data.md)
@@ -22,12 +22,11 @@
     - [Streaming](streaming_tutorial.md)
     - [Stream Aggregator](stream_aggregator.md)
     - [Historical Data Replay](historical_data_replay.md)
-
 - System Management
     - [Security and User Access Control](ACL_and_Security.md)
     - [Memory Management](memory_management.md)
 - API
-    - [Python API](https://github.com/dolphindb/Tutorials_EN/blob/master/python_api.md)
+    - [Python API](python_api.md)
     - [Java API](../../api-java/blob/master/README.md)
     - [C# API](../../api-csharp/blob/master/README.md)
     - [C++ API](../../api-cplusplus/blob/master/README.md)
@@ -39,4 +38,4 @@
     - [Visual Studio Code DolphinDB Extension](vscode_extension.md)
 - Modules
     - [Technical Analysis Indicator Library](ta.md)
-
+ 
