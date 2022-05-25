@@ -1,17 +1,17 @@
-# DolphinDB Cluster Deployment on Single Server
+# DolphinDB Single-Server Cluster Deployment
 
-A DolphinDB cluster consists of 3 types of nodes: data node, agent and controller. 
+A DolphinDB cluster consists of 4 types of nodes: data node, compute node, agent and controller. 
   *  Data are stored and queries (and more complex computations) are executed on the data nodes. 
+  *  The compute node is only used for computation, including stream computing, distributed join and machine learning. Data are not stored on a compute node.
   *  An agent node executes the commands issued by the controller to start or close local data nodes. 
-  *  The controller collects heartbeats of agents and data nodes, and monitors the status of each node. It provides the web interface for cluster management.
+  *  The controller collects heartbeats of agents and data nodes, compute nodes, and monitors the status of each node. It provides the web interface for cluster management.
 
-- [DolphinDB Cluster Deployment on Single Server](#dolphindb-cluster-deployment-on-single-server)
+- [DolphinDB Single-Server Cluster Deployment](#dolphindb-single-server-cluster-deployment)
     - [1. Download DolphinDB](#1-download-dolphindb)
     - [2. Update the License File](#2-update-the-license-file)
     - [3. Initial Configuration](#3-initial-configuration)
     - [4 Possible Reasons Why Nodes Cannot Start](#4-possible-reasons-why-nodes-cannot-start)
     - [5. Web-based Cluster Management](#5-web-based-cluster-management)
-
 
 ### 1. Download DolphinDB
 
@@ -32,11 +32,11 @@ The Enterprise Edition supports more nodes, CPU cores and memory than the commun
  
 ### 3. Initial Configuration
 
-To start a cluster, we must configure the controller node and the agent node. The data nodes can be configured either in this initial stage or on the web interface after the cluster is started. 
+To start a cluster, we must configure the controller node and the agent node. The data nodes and compute nodes can be configured either in this initial stage or on the web interface after the cluster is started. 
 
 #### 3.1.  Controller Configuration
 
-Please make sure the number of nodes and the number cores per node do not exceed the limits set in the license file. Otherwise the cluster will not start properly. To check the limits please execute license() in DolphinDB single node mode. 
+Please make sure the number of nodes and the number cores per node do not exceed the limits set in the license file. Otherwise the cluster will not start properly. To check the limits please execute ``license()`` in DolphinDB single node mode. 
 
 Go to the "server" subdirectory to create config, data, and log subdirectories. Users can also specify these subdirectories to other locations they see fit.
 
@@ -77,7 +77,7 @@ dataSync=1
 
 ##### 3.1.2 Cluster Nodes File
 
-In "config" directory, create the file cluster.nodes to store information about agent nodes and data nodes. This file has two columns: "localSite" and "mode". The parameter "localSite" contains the node IP address, port number and node alias, separated by a colon ":". Node aliases are case sensitive and must be unique in a cluster. The parameter "mode" specifies the node type. This tutorial uses 1 agent node and 4 data nodes.
+In "config" directory, create the file cluster.nodes to store information about agent nodes, compute nodes, and data nodes. This file has two columns: "localSite" and "mode". The parameter "localSite" contains the node IP address, port number and node alias, separated by a colon ":". Node aliases are case sensitive and must be unique in a cluster. The parameter "mode" specifies the node type. This tutorial uses 1 agent node and 4 data nodes.
 
 
 ```
@@ -90,7 +90,7 @@ localSite,mode
 ```
 #### 3.1.3 Data Nodes Configuration File
 
-In "config" directory, create the configuration file for the data nodes (cluster.cfg). The configuration parameters in this file apply to each data node in the cluster. For more information about the parameters, see the [user manual](https://dolphindb.com/help/DatabaseandDistributedComputing/Configuration/StandaloneMode.html  ).
+In "config" directory, create the configuration file for the data nodes (cluster.cfg). The configuration parameters in this file apply to each data node and compute node in the cluster. For more information about the parameters, see the [user manual](https://dolphindb.com/help/DatabaseandDistributedComputing/Configuration/StandaloneMode.html  ).
 
 ```
 maxConnections=512
@@ -177,7 +177,7 @@ quit
 
 #### 3.3.4 Start the web-based cluster manager
 
-After both the controller and the agent node are started, we can start or stop data nodes on DolphinDB cluster management web interface. Enter the following in the address bar of your browser (currently supporting Chrome and Firefox) where 8920 is the port number of the controller. 
+After both the controller and the agent node are started, we can start or stop data nodes/compute nodes on DolphinDB cluster management web interface. Enter the following in the address bar of your browser (currently supporting Chrome and Firefox) where 8920 is the port number of the controller. 
 
 
 ```
