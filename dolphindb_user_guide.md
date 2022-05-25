@@ -67,7 +67,7 @@ To configure a cluster on multiple physical servers, please check [Multi-Machine
 Regarding the user access control functionalities in DolphinDB, please check [DolphinDB Database User Access Control and Security](ACL_and_Security.md).
 
 ## Possible Problems
-1. After starting a server, the system immediately exists. The error message in the log file is "The license has been expired". 
+1. After starting a server, the system immediately exists. The error message in the log file is "The license has expired". 
 
 Cause: license expired
 
