@@ -1,8 +1,8 @@
-# Multi-Machine Cluster Deployment
+# DolphinDB Multi-Machine Cluster Deployment
 
 This tutorial introduces how to deploy a multi-machine cluster in DolphinDB and the common reasons for node startup failures. 
 
-- [Multi-Machine Cluster Deployment](#multi-machine-cluster-deployment)
+- [DolphinDB Multi-Machine Cluster Deployment](#dolphindb-multi-machine-cluster-deployment)
   - [1. Cluster Architecture](#1-cluster-architecture)
   - [2. Download DolphinDB](#2-download-dolphindb)
   - [3. Update the License](#3-update-the-license)
@@ -113,7 +113,6 @@ lanCluster=0
 ```
 
 The parameters are described in the table below.
-
 
 | Parameter Configuration        | Description          |
 |:------------- |:-------------|
