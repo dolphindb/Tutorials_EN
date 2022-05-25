@@ -1,6 +1,6 @@
-# How to scale out a DolphinDB cluster
+# Scale out a DolphinDB Cluster
 
-- [How to scale out a DolphinDB cluster](#how-to-scale-out-a-dolphindb-cluster)
+- [Scale out a DolphinDB Cluster](#scale-out-a-dolphindb-cluster)
   - [1. About DolphinDB Cluster](#1-about-dolphindb-cluster)
   - [2. Add Data Nodes](#2-add-data-nodes)
     - [2.1 Add a Data Node Offline](#21-add-a-data-node-offline)
@@ -86,7 +86,7 @@ We can browse the data in the DFS Explorer of the cluster web interface.
 
 ![image](https://github.com/dolphindb/Tutorials_CN/blob/master/images/scaleout/scale_dfs_exp1.PNG?raw=true)
 
-> For more details about cluster configuration, please refer to [Multi-Machine Cluster Deployment](multi_machine_cluster_deployment.md)
+> For more details about cluster configuration, please refer to [DolphinDB Multi-Machine Cluster Deployment](multi_machine_cluster_deployment.md)
 
 The IP address of the new machine:
 
@@ -212,5 +212,7 @@ tb.append!(table(1501..2000 as id,rand(`A`B`C,500) as name))
 Data has been written to the disk:
 
 ![image](https://github.com/dolphindb/Tutorials_CN/blob/master/images/scaleout/3.PNG?raw=true)
+
+
 
 
