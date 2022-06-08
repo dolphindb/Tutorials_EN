@@ -2,15 +2,6 @@
 
 DolphinDB provides users with a powerful, flexible and secure access control system. As the access control center, the controller of a cluster adopts RSA to encrypt key information.
 
-Main features of the access control system:
-* Can conveniently grant/deny access privileges to groups of users
-* 9 types of access privileges for various scenarios
-* Various access control functions/commands
-* Function views can provide analysis results without sacrificing data privacy
-* Access control for scheduled jobs and streaming tasks
-* RSA encryption for key information
-* Support SSO to simplify cross domain access
-
 - [DolphinDB Database Security and User Access Control](#dolphindb-database-security-and-user-access-control)
 	- [1. Access Control](#1-access-control)
 		- [1.1 Users and Groups](#11-users-and-groups)
@@ -25,6 +16,15 @@ Main features of the access control system:
 		- [3.1 Enable HTTPS](#31-enable-https)
 		- [3.2 HTTPS Certificate](#32-https-certificate)
 	- [4. SSO (Single Sign-On)](#4-sso-single-sign-on)
+
+Main features of the access control system:
+* Can conveniently grant/deny access privileges to groups of users
+* 9 types of access privileges for various scenarios
+* Various access control functions/commands
+* Function views can provide analysis results without sacrificing data privacy
+* Access control for scheduled jobs and streaming tasks
+* RSA encryption for key information
+* Support SSO to simplify cross domain access
 
 ## 1. Access Control
 
