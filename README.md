@@ -26,6 +26,7 @@
 - System Management
     - [Security and User Access Control](ACL_and_Security.md)
     - [Memory Management](memory_management.md)
+    - [Overview of Threading Model in DolphinDB](thread_model_SQL.md)
 - API
     - [Python API](python_api.md)
     - [Java API](../../api-java/blob/master/README.md)
