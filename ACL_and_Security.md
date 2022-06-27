@@ -72,8 +72,6 @@ The following table summarises the difference among super admin, admin and regul
 | Can create or delete function view                   | Yes                   | Yes              | No               |
 | Can delete scheduled jobs submitted by other users   | Yes                   | Yes              | No               |
 
-**Note**: An admin cannot delete the super admin, or grant/deny privileges to the super admin.
-
 ### 1.3 Access Privilege Types
 
 DolphinDB supports the following 9 types of access privileges: 
@@ -88,7 +86,7 @@ DolphinDB supports the following 9 types of access privileges:
 8. **SCRIPT_EXEC**: execute script 
 9. **TEST_EXEC**: execute testing script
 
-Please note that all the databases and tables related to access privileges are created in the distributed file system (DFS).
+Please note that the access privileges are applicable to the distributed file system (DFS).
 
 ### 1.4 Set Access Privileges
 
