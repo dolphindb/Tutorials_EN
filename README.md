@@ -30,11 +30,11 @@
     - [Overview of Threading Model in DolphinDB](thread_model_SQL.md)
 - API
     - [Python API](python_api.md)
-    - [Java API](../../api-java/blob/master/README.md)
-    - [C# API](../../api-csharp/blob/master/README.md)
-    - [C++ API](../../api-cplusplus/blob/master/README.md)
-    - [R API](../../api-r/blob/master/README.md)
-    - [Json API](../../api-json/blob/master/README.md)
+    - [Java API](https://github.com/dolphindb/api-java/blob/master/README.md)
+    - [C# API](https://github.com/dolphindb/api-csharp/blob/master/README.md)
+    - [C++ API](https://github.com/dolphindb/api-cplusplus/blob/master/README.md)
+    - [R API](https://github.com/dolphindb/api-r/blob/master/README.md)
+    - [Json API](https://github.com/dolphindb/api-json/blob/master/README.md)
     - [Grafana Data Source Plugin](https://github.com/dolphindb/grafana-datasource/blob/master/README.md)
 - Client Tools
     - [GUI Tutorial](gui_tutorial.md)
