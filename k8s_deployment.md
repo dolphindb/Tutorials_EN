@@ -379,7 +379,7 @@ kubectl delete ddb $ddbName  -ndolphindb
 Run the following command to uninstall DolphinDB-MGR:
 
 ```
-helm uninstall dolphindb-mgr -ndolphindb
+helm uninstall dolphindb-mgr -n dolphindb
 ```
 
 ## 3. Enable Core Dump in Kubernetes
