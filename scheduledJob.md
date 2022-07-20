@@ -49,7 +49,7 @@ scheduleJob(`monthlyJob, "Monthly Job 1", run{"/home/DolphinDB/script/monthlyJob
 - Example 3. The scheduled job calls the `shell` function to remove log files at 01:00 on Sundays. The operating system command `rm/home/DolphinDB/server/dolphindb.log` is passed in as the argument to `shell`. 
 
 ```
-1scheduleJob(`weeklyjob, "rm log", shell{"rm /home/DolphinDB/server/dolphindb.log"}, 01:00m, 2020.01.01, 2021.12.31, 'W', 0);
+scheduleJob(`weeklyjob, "rm log", shell{"rm /home/DolphinDB/server/dolphindb.log"}, 01:00m, 2020.01.01, 2021.12.31, 'W', 0);
 ```
 
 In many cases, it is a common practice to retrieve data from a database and pass it to the job function, and save the execution result to a database. The more common In the following example, the user-defined function `computeK` fetches market data from the DFS table “trades” for calculation and saves the results to the DFS table “OHLC“.
