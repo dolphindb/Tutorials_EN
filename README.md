@@ -27,6 +27,7 @@
 - System Management
     - [Security and User Access Control](ACL_and_Security.md)
     - [Memory Management](memory_management.md)
+    - [Scheduled Jobs](scheduledJob.md)
     - [Overview of Threading Model in DolphinDB](thread_model_SQL.md)
 - API
     - [Python API](python_api.md)
