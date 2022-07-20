@@ -7,7 +7,7 @@
     - [DolphinDB Single-Server Cluster Deployment](single_machine_cluster_deploy.md)
     - [DolphinDB Multi-Machine Cluster Deployment](multi_machine_cluster_deployment.md)
     - [Deploy DolphinDB on Kubernetes](k8s_deployment.md)
-    - [High availability for DolphinDB](ha_cluster_deployment.md)
+    - [High Availability for DolphinDB](ha_cluster_deployment.md)
     - [Scale out a DolphinDB Cluster](cluster_scaleout.md)
 - Database
     - [Partitioned Databases](database.md)
