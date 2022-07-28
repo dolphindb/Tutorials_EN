@@ -1,6 +1,6 @@
 # Import Data to DolphinDB
 
-DolphinDB provides the following 3 ways to import large amounts of data from multiple data sources: 
+DolphinDB provides the following ways to import large amounts of data from multiple data sources: 
 
 - Import from text files
 - Import from binary files
