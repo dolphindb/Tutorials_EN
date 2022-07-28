@@ -190,7 +190,7 @@ In the above example, the parameter *parallel* of function `mr` is set to false 
 
 ## 3. Comparison
 
-| **Online**         | **Offline**                                                                                                                                  | **Offline**                                                                                                                   |
+|                    | **Online**                                                                                                                                  | **Offline**                                                                                                                   |
 |--------------------|---------------------------------------------------------------------------|-----------------------------------------------------------------------------------|
 | Performance        | Better performance. Data are transferred and written to the remote database over the network.                                                | Data are backed up to local disk first, then transferred to the remote disk, and finally written to the database.             |
 | Memory Requirement | Lower memory requirement. If the available memory of the server cannot hold the backup data, use function mr to write the data by partition. | The backup is performed on a partition basis. The available memory should be larger than each partition.                      |
