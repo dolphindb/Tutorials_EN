@@ -69,12 +69,17 @@ Modify the following configs to create an EKS cluster:
 - `volumeSize`: size of disk, set it as needed
 
 Config SSH access using following steps (only applied to Linux system):
+
 (1) Generate an EC2 key pair (k8s-tester.pem in this tutorial) in your AWS account, and save it to your local environment
+
 (2) Change permission to 400
+
 (3) Use `ssh-keygen -y -f` to generate public key based the `.pem` file and put it in a .pub file (k8s-tester.pub in this tutorial), and place it under the same directory as that of eks-test.yaml
+
 	```
 	ssh-keygen -y -f k8s-tester.pem > k8s-tester.pub
 	```
+	
 (4) Configure SSH in the config. Set the "allow" to true, and publicKeyPath to the path of your .pub file.
 	![config ssh](images/aws/eks_ssh.png)
 
