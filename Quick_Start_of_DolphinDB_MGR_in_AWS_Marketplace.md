@@ -48,7 +48,7 @@ Before you begin, go through all below steps:
 
 ## 3. Create Amazon EKS Cluster Using eksctl
 ### 3.1 Choose an Instance Type
-The instance type determines the resources (number of CPU cores, memory capacity, etc.) available to you. In this tutorial, DolphinDB will need 2 CPUs and 8GB of memory, and the host of K8s cluster should have more resources than the requirement of DolphinDB, so we choose m5.xlarge, which has 4 cores and 16 GB of memory. 
+The instance type determines the resources (number of CPU cores, memory capacity, etc.) available to you. This tutorial uses the DolphinDB community edition, which allows for 2 CPU cores and 8 GB of memory. To successfully deploy the DolphinDB MGR, the host in the K8s cluster must have slightly more resources than specified in the community license.  
 
 ### 3.2 Create an Amazon EKS Cluster and a Nodegroup
 #### 3.2.1 Generate a Config File for eksctl
