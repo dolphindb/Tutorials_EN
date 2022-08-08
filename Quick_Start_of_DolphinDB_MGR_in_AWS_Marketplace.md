@@ -69,13 +69,13 @@ Modify the following configs to create an EKS cluster:
 - `volumeSize`: size of disk, set it as needed
 
 Config SSH access using following steps (only applied to Linux system):
-1. Generate an EC2 key pair (k8s-tester.pem in this tutorial) in your AWS account, and save it to your local environment
-2. Change permission to 400
-3. Use `ssh-keygen -y -f` to generate public key based the `.pem` file and put it in a .pub file (k8s-tester.pub in this tutorial), and place it under the same directory as that of eks-test.yaml
+(1) Generate an EC2 key pair (k8s-tester.pem in this tutorial) in your AWS account, and save it to your local environment
+(2) Change permission to 400
+(3) Use `ssh-keygen -y -f` to generate public key based the `.pem` file and put it in a .pub file (k8s-tester.pub in this tutorial), and place it under the same directory as that of eks-test.yaml
 	```
 	ssh-keygen -y -f k8s-tester.pem > k8s-tester.pub
 	```
-4. Configure SSH in the config. Set the "allow" to true, and publicKeyPath to the path of your .pub file.
+(4) Configure SSH in the config. Set the "allow" to true, and publicKeyPath to the path of your .pub file.
 	![config ssh](images/aws/eks_ssh.png)
 
 #### 3.2.3 Create an EKS Cluster
@@ -89,9 +89,9 @@ Expected output:
 [✓]  EKS cluster "ddbawstest" in "us-east-1" region is ready
 ```
 It takes about 5 - 20 minutes for the system to complete the following tasks before printing the output:
-1. Create the AWS EKS cluster
-2. Create a nodegroup
-3. Add the nodegroup to Amazon EKS cluster
+(1) Create the AWS EKS cluster
+(2) Create a nodegroup
+(3) Add the nodegroup to Amazon EKS cluster
 
 For more configuration options, see the [official eksctl documentation](https://eksctl.io/usage/creating-and-managing-clusters/#using-config-files).
 
@@ -134,7 +134,7 @@ This section introduces how to configure StorageClass local volumes.
 
 > *Note: Local path provisioner only provides the user with Storage Class to create Persistent Volume Claims (PVC). It is not required for users with other types of CSI.*
 
-- Download local-path-provisioner from GitHub:
+(1) Download local-path-provisioner from GitHub:
 
   ```
   wget https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
@@ -155,7 +155,7 @@ This section introduces how to configure StorageClass local volumes.
   2022-08-07 10:36:07 (56.9 MB/s) - ‘local-path-storage.yaml’ saved [2939/2939]
   ```
 
-- Modify configs:
+(2) Modify configs:
 
   ![modifyConfig](images/aws/local-path-path.png)
 
@@ -165,7 +165,7 @@ This section introduces how to configure StorageClass local volumes.
   >
   > To modify the local path for provisioning, find the config map "local-path-config" and specify a node path in the Kubernetes cluster for the selected "paths" under “data“. If more than one path was specified, the path would be chosen randomly when provisioning.
 
-- Deploy in a Kubernetes environment:
+(3) Deploy in a Kubernetes environment:
 
   ```
   kubectl apply -f  local-path-storage.yaml
@@ -201,7 +201,7 @@ namespace/dolphindb created
 
 ### 4.2 Deploy DolphinDB MGR
 
-- Set environment variables
+(1) Set environment variables
 
   ```
   export HELM_EXPERIMENTAL_OCI=1
@@ -217,7 +217,7 @@ namespace/dolphindb created
   Login succeeded
   ```
 
-- Run following command to download the DolphinDB MGR helm chart from AWS. `$DolphinDB_MGR_version` is the version of DolphinDB MGR, in this example, v1.0.3:
+(2) Run following command to download the DolphinDB MGR helm chart from AWS. `$DolphinDB_MGR_version` is the version of DolphinDB MGR, in this example, v1.0.3:
 
   ```
   mkdir awsmp-chart && cd awsmp-chart
@@ -231,7 +231,7 @@ namespace/dolphindb created
   Digest: sha256:b99a4df2c5f1b4c95e26d620616be4f88bdfd5061d6f3352c2c222a926e56fab
   ```
 
-- Unzip helm chart and install
+(3) Unzip helm chart and install
 
   ```
   tar xf $(pwd)/* && find $(pwd) -maxdepth 1 -type f -delete
@@ -253,7 +253,7 @@ namespace/dolphindb created
   TEST SUITE: None
   ```
 
-- Check whether the deployment is successful
+(4) Check whether the deployment is successful
 
   ```
   kubectl -n dolphindb get po
@@ -305,11 +305,11 @@ In this example, the address is http://3.227.20.112:31268/dolphindb-cloud/
 
 ### 5.2 Deploy DolphinDB 
 
-1. Click `Create Cluster`
+(1) Click `Create Cluster`
 
   ![createCluster](images/aws/createCluster.png)
 
-2. Modify the configs
+(2) Modify the configs
 
   ![clusterConfig](images/aws/clusterConfig.png)
 
@@ -321,11 +321,11 @@ In this example, the address is http://3.227.20.112:31268/dolphindb-cloud/
   -  CPU: number of CPU for the pod. Since the community edition limits number of CPUs to 2, set it to 2 here.
   -  Memory: Memory for the pod. To prevent DolphinDB from being killed by operating system's OOM killer, we recommend you set it to be bigger than 8GB. In this tutorial, we set it to 12GB.
 
-3. Wait until DolphinDB is successfully deployed
+(3) Wait until DolphinDB is successfully deployed
   - The DolphinDB cluster is created successfully when the status becomes Available.
 
     ![available](images/aws/nodeAvailable.png)
-4. Connect to DolphinDB
+(4) Connect to DolphinDB
 
    As the above picture shows, the port of DolphinDB is 30403.
 
@@ -337,7 +337,7 @@ In this example, the address is http://3.227.20.112:31268/dolphindb-cloud/
 
    You can also connect to it using DolphinDB GUI. For the installation and usage instruction, please refer to [GUI tutorial]([Tutorials_EN/gui_tutorial.md at master · dolphindb/Tutorials_EN · GitHub](https://github.com/dolphindb/Tutorials_EN/blob/master/gui_tutorial.md)) and [GUI manual](https://dolphindb.com/gui_help/index.html ).
 
-5. Validate DolphinDB is functioning
+(5) Validate DolphinDB is functioning
 
    After connecting to DolphinDB successfully, you can test the node with function `version()`.
 
@@ -359,11 +359,11 @@ Please refer to [Deploy DolphinDB on Kubernetes](https://github.com/dolphindb/Tu
 
 There are 2 ways to destroy DolphinDB
 
-1. Destroy using `delete` tab in web user interface
+- Destroy using `delete` tab in web user interface
 
    ![deleteNode](images/aws/deleteNode.png)
 
-2. Destroy using `kubectl`
+- Destroy using `kubectl`
 
    ```
    kubectl delete ddb $ddbName -n dolphindb
