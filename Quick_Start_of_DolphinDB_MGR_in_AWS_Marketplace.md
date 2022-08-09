@@ -81,6 +81,7 @@ Config SSH access using following steps (only applied to Linux system):
 	```
 	
 (4) Configure SSH in the config. Set the "allow" to true, and publicKeyPath to the path of your .pub file.
+
 	![config ssh](images/aws/eks_ssh.png)
 
 #### 3.2.3 Create an EKS Cluster
@@ -94,8 +95,11 @@ Expected output:
 [✓]  EKS cluster "ddbawstest" in "us-east-1" region is ready
 ```
 It takes about 5 - 20 minutes for the system to complete the following tasks before printing the output:
+
 (1) Create the AWS EKS cluster
+
 (2) Create a nodegroup
+
 (3) Add the nodegroup to Amazon EKS cluster
 
 For more configuration options, see the [official eksctl documentation](https://eksctl.io/usage/creating-and-managing-clusters/#using-config-files).
@@ -330,6 +334,7 @@ In this example, the address is http://3.227.20.112:31268/dolphindb-cloud/
   - The DolphinDB cluster is created successfully when the status becomes Available.
 
     ![available](images/aws/nodeAvailable.png)
+
 (4) Connect to DolphinDB
 
    As the above picture shows, the port of DolphinDB is 30403.
@@ -340,7 +345,7 @@ In this example, the address is http://3.227.20.112:31268/dolphindb-cloud/
    $IP:30403
    ```
 
-   You can also connect to it using DolphinDB GUI. For the installation and usage instruction, please refer to [GUI tutorial]([Tutorials_EN/gui_tutorial.md at master · dolphindb/Tutorials_EN · GitHub](https://github.com/dolphindb/Tutorials_EN/blob/master/gui_tutorial.md)) and [GUI manual](https://dolphindb.com/gui_help/index.html ).
+   You can also connect to it using DolphinDB GUI. For the installation and usage instruction, please refer to [GUI tutorial](https://github.com/dolphindb/Tutorials_EN/blob/master/gui_tutorial.md) and [GUI manual](https://dolphindb.com/gui_help/index.html).
 
 (5) Validate DolphinDB is functioning
 
@@ -391,4 +396,3 @@ Use following command to delete EKS cluster
 ```
 eksctl delete cluster --name=$cluster_name
 ```
-
