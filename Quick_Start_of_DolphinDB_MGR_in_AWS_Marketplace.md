@@ -82,7 +82,7 @@ Config SSH access using following steps (only applied to Linux system):
 	
 (4) Configure SSH in the config. Set the "allow" to true, and publicKeyPath to the path of your .pub file.
 
-	![config ssh](images/aws/eks_ssh.png)
+![config ssh](images/aws/eks_ssh.png)
 
 #### 3.2.3 Create an EKS Cluster
 Run below command to create an EKS cluster:
