@@ -26,12 +26,14 @@ Main features of the DolphinDB extension for VS Code:
 - Execute scripts and print execution information and result to the terminal
 - Manage databases and inspect session variables online
 - View tables, vectors, matrices and other data structures in your browser and check data updates dynamically
+- View tables, vectors, matrices and other data structures in tabular forms in the panel.
+- Display the plot in the panel.
 
 Note: Make sure to start the DolphinDB server before using the DolphinDB extension in VS Code.
 
 ## Getting Started
 
-Before installing the DolphinDB extension for VS Code, install or upgrade to VS Code v1.66.0 or higher (https://code.visualstudio.com/).
+Before installing the DolphinDB extension for VS Code, install or upgrade to VS Code v1.68.0 or higher (https://code.visualstudio.com/).
 
 ### Install Extension
 
@@ -124,27 +126,27 @@ In the **EXPLORER** view **DOLPHINDB** tab, all configured connections and their
 
 - Data Browsers
 
-You can browse variables in the terminal and the **EXPLORER** view **DOLPHINDB** tab in the VS Code editor in text-based format, or open it in your web browser in tabular format.
+You can browse variables in the terminal and the **EXPLORER** view **DOLPHINDB** tab in the VS Code editor in text-based format, or open it in DOLPHINDB panel or your web browser in tabular format.
 
 **Terminal**
 
-![image](images/vscode/terminal.png)
-
 The first line of the execution result shows the elapsed time of execution and the server alias corresponding to the session.
 
-The subsequent lines show the details of the data. In this example, we print a table object to the terminal (see screenshot above):
+The second line shows the data form and data size of the object. If the variable is a matrix or table, numbers of rows and columns are displayed.
 
-- First is the data form of the object, which is a table in this example. "[10r][4c]" means this table has 10 rows and 4 columns.
-
-- Then follows the type, number of rows, name and values of each column.
-
-- The last line displays elapsed time of the execution.
+The last line displays elapsed time of the execution.
   
 **Explorer view > DOLPHINDB tab**
 
 ![image](images/vscode/dolphindb_tab.png)
 
 In the **DOLPHINDB** tab, hover over a variable to check its value and information. The content is displayed in text-based format, which is the same as the output in the **TERMINAL**.
+
+**DOLPHINDB panel**
+
+![image](images/vscode/dolphindb_panel.png)
+
+Select the DOLPHINDB at the bottom to view data structures such as vectors, matrices, and tables in tabular forms.
 
 **Web browser**
 
