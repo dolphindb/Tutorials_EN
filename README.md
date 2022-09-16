@@ -42,4 +42,6 @@
     - [Visual Studio Code DolphinDB Extension](vscode_extension.md)
 - Modules
     - [Technical Analysis Indicator Library](ta.md)
+- Application Scenarios
+    - [Calculating ETF IOPV in DolphinDB](streaming_IOPV.md)
  
