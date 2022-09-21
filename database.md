@@ -25,7 +25,7 @@ DolphinDB supports range, hash, value, list and composite partitions.
   *  Range partitions use ranges to form partitions. Each range is defined by 2 adjacent elements of a partition scheme vector. It is the most commonly used partition type.
   *  Hash partitions use a hash function on a partitioning column. Hash partition is a convenient way to generate a given number of partitions. 
   *  In a value domain, each element of the partition scheme vector corresponds to a partition. 
-  *  A list domain partitions data according to a list. It is more flexible than a range domain.
+  *  A partitions data according to a list. It is more flexible than a range domain.
   *  The composite domain is suitable for situations where multiple columns are frequently used in SQL **where** or **group by** clauses on large tables. A composite domain can have 2 or 3 partitioning columns. Each column can be of range, hash, value or list domain. For example, we can use a value domain on trading days, and a range domain on stock symbols. The order of the partitioning columns is irrelevant. 
 
 When we create a new distributed database, we need to specify parameters "partitionType" and "partitionScheme". When we reopen an existing distributed database, we only need to specify "directory". We cannot overwrite an existing distributed database with a different "partitionType" or "partitionScheme". 
@@ -102,7 +102,7 @@ The partition scheme of a value domain can be appended with new values after it 
 
 #### 3.4 LIST Domain
 
-In a list domain, each element of a vector represents a partition. The different between a list domain and a value domain is that all the elements in a value domain partition scheme are scalars, whereas each element in a list domain partition scheme may be a vector.
+In a list domain, each element of a vector represents a partition. The difference between a list domain and a value domain is that all the elements in a value domain partition scheme are scalars, whereas each element in a list domain partition scheme may be a vector.
 
 ```
 n=1000000
