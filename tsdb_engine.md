@@ -2,37 +2,47 @@
 
 This tutorial introduces the TSDB storage engine that was released in DolphinDB 2.0.
 
+- [Introduction to DolphinDB TSDB Storage Engine](#introduction-to-dolphindb-tsdb-storage-engine)
+  - [1. Application Scenarios: OLAP vs TSDB](#1-application-scenarios-olap-vs-tsdb)
+    - [Examples](#examples)
+  - [2. How the TSDB Engine Works](#2-how-the-tsdb-engine-works)
+    - [2.1 Redo Log](#21-redo-log)
+    - [2.2 Cache Engine](#22-cache-engine)
+    - [2.3 Sort Columns](#23-sort-columns)
+    - [2.4 Level Files](#24-level-files)
+  - [3. Usage Tips](#3-usage-tips)
+
 ## 1. Application Scenarios: OLAP vs TSDB
 
 Before DolphinDB version 2.0, the OLAP engine was the only storage engine. Each column in a partition of a table is saved as a file. Data is stored in the order as it is written, which makes writing highly efficient.
 
 The OLAP engine has the following major limitations:
 
-    (1) There's no index within a partition, which means (the selected columns of) an entire partition must be loaded even for queries involving only 1 record;
+(1) There's no index within a partition, which means (the selected columns of) an entire partition must be loaded even for queries involving only 1 record;
 
-    (2) Deduplication cannot be conducted during writing;
+(2) Deduplication cannot be conducted during writing;
 
-    (3) It is not suitable for tables with more than a few hundred columns.
+(3) It is not suitable for tables with more than a few hundred columns.
 
-    (4) To modify a single record, an entire partition must be rewritten.
+(4) To modify a single record, an entire partition must be rewritten.
 
 The TSDB storage engine can overcome the aforementioned limitations of the OLAP engine. It is developed based on the Log-Structured Merge-Tree (LSM Tree). The data in each partition is stored in level files. The data in each level file is sorted and has block indexing.
 
 The TSDB engine has the following advantages over the OLAP engine:
 
-    (1) Queries with partitioning columns and within-partition sort columns in filtering conditions have extremely high performance;
+(1) Queries with partitioning columns and within-partition sort columns in filtering conditions have extremely high performance;
 
-    (2) Data can be sorted and duplicate data can be purged as data is written to the database.
+(2) Data can be sorted and duplicate data can be purged as data is written to the database.
 
-    (3) Suitable for storing tables with hundreds or thousands of columns (up to 32,767 columns). It also supports data types such as array vector or BLOB;
+(3) Suitable for storing tables with hundreds or thousands of columns (up to 32,767 columns). It also supports data types such as array vector or BLOB;
 
-    (4) To update a record, if only the last record is kept for duplicate records, only the level file that this record belongs to needs to be rewritten instead of an entire partition.
+(4) To update a record, if only the last record is kept for duplicate records, only the level file that this record belongs to needs to be rewritten instead of an entire partition.
 
 The TSDB engine has the following disadvantages compared with the OLAP engine:
 
-    (1) Lower write throughput as data needs to be sorted in the cache engine and the level files might be merged and compacted;
+(1) Lower write throughput as data needs to be sorted in the cache engine and the level files might be merged and compacted;
 
-    (2) Lower performance when reading data from an entire partition or columns in an entire partition.
+(2) Lower performance when reading data from an entire partition or columns in an entire partition.
 
 ### Examples
 
