@@ -2,7 +2,6 @@
 
 This tutorial introduces the TSDB storage engine that was released in DolphinDB 2.0.
 
-- [Introduction to DolphinDB TSDB Storage Engine](#introduction-to-dolphindb-tsdb-storage-engine)
   - [1. Application Scenarios: OLAP vs TSDB](#1-application-scenarios-olap-vs-tsdb)
     - [Examples](#examples)
   - [2. How the TSDB Engine Works](#2-how-the-tsdb-engine-works)
@@ -36,7 +35,7 @@ The TSDB engine has the following advantages over the OLAP engine:
 
 (3) Suitable for storing tables with hundreds or thousands of columns (up to 32,767 columns). It also supports data types such as array vector or BLOB;
 
-(4) To update a record, if only the last record is kept for duplicate records, only the level file that this record belongs to needs to be rewritten instead of an entire partition.
+(4) To update a record, if only the last record is kept for duplicate records (set *keepDuplicates*=LAST for function `createPartitionedTable`), only the level file that this record belongs to needs to be rewritten instead of an entire partition.
 
 The TSDB engine has the following disadvantages compared with the OLAP engine:
 
