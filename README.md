@@ -9,6 +9,7 @@
     - [Deploy DolphinDB on Kubernetes](k8s_deployment.md)
     - [High Availability for DolphinDB](ha_cluster_deployment.md)
     - [Scale out a DolphinDB Cluster](cluster_scaleout.md)
+    - [GUI Tutorial](gui_tutorial.md)
 - Database
     - [Partitioned Databases](database.md)
     - [Import Data](import_data.md)
@@ -38,8 +39,8 @@
     - [R API](https://github.com/dolphindb/api-r/blob/master/README.md)
     - [Json API](https://github.com/dolphindb/api-json/blob/master/README.md)
     - [Grafana Data Source Plugin](https://github.com/dolphindb/grafana-datasource/blob/master/README.md)
-- Client Tools
-    - [GUI Tutorial](gui_tutorial.md)
+- Plugins
+    - [Parquet](../../../DolphinDBPlugin/blob/release200/parquet/README.md)
     - [Visual Studio Code DolphinDB Extension](vscode_extension.md)
 - Modules
     - [Technical Analysis Indicator Library](ta.md)
