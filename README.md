@@ -52,7 +52,7 @@
     - [Parquet](../../../DolphinDBPlugin/blob/release200/parquet/README.md)
     - [XGBoost](../../../DolphinDBPlugin/blob/release200/xgboost/README.md)
     - [Visual Studio Code DolphinDB Extension](vscode_extension.md)
-    - [Use the HTTPClient Plugin to Send Emails](Use the HTTP Client Plugin to Send Emails.md)
+    - [Use the HTTPClient Plugin to Send Emails](Use%20the%20HTTP%20Client%20Plugin%20to%20Send%20Emails.md)
 - Modules
     - [Technical Analysis Indicator Library](ta.md)
 - Application Scenarios
