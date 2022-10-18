@@ -43,6 +43,7 @@
     - [AWS S3](../../../DolphinDBPlugin/blob/release200/aws/README_EN.md)
     - [Excel](../../../excel-add-in)
     - [HDF5](../../../DolphinDBPlugin/blob/release200/hdf5/README.md)
+    - [HTTPClient](../../../DolphinDBPlugin/blob/release200/httpClient/README_EN.md)
     - [Kafka](../../../DolphinDBPlugin/blob/release200/kafka/README.md)
     - [MQTT](../../../DolphinDBPlugin/blob/release200/mqtt/README.md)
     - [MySQL](../../../DolphinDBPlugin/blob/release200/mysql/README.md)
@@ -51,6 +52,7 @@
     - [Parquet](../../../DolphinDBPlugin/blob/release200/parquet/README.md)
     - [XGBoost](../../../DolphinDBPlugin/blob/release200/xgboost/README.md)
     - [Visual Studio Code DolphinDB Extension](vscode_extension.md)
+    - [Use the HTTPClient Plugin to Send Emails](Use the HTTP Client Plugin to Send Emails.md)
 - Modules
     - [Technical Analysis Indicator Library](ta.md)
 - Application Scenarios
