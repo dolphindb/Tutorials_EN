@@ -40,7 +40,16 @@
     - [Json API](https://github.com/dolphindb/api-json/blob/master/README.md)
     - [Grafana Data Source Plugin](https://github.com/dolphindb/grafana-datasource/blob/master/README.md)
 - Plugins
+    - [AWS S3](../../../DolphinDBPlugin/blob/release200/aws/README_EN.md)
+    - [Excel](../../../excel-add-in)
+    - [HDF5](../../../DolphinDBPlugin/blob/release200/hdf5/README.md)
+    - [Kafka](../../../DolphinDBPlugin/blob/release200/kafka/README.md)
+    - [MQTT](../../../DolphinDBPlugin/blob/release200/mqtt/README.md)
+    - [MySQL](../../../DolphinDBPlugin/blob/release200/mysql/README.md)
+    - [ODBC](../../../DolphinDBPlugin/blob/release200/odbc/README.md)
+    - [OPC](../../../DolphinDBPlugin/blob/release200/opc/README.md)
     - [Parquet](../../../DolphinDBPlugin/blob/release200/parquet/README.md)
+    - [XGBoost](../../../DolphinDBPlugin/blob/release200/xgboost/README.md)
     - [Visual Studio Code DolphinDB Extension](vscode_extension.md)
 - Modules
     - [Technical Analysis Indicator Library](ta.md)
