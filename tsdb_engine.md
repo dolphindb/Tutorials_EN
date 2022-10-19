@@ -16,7 +16,7 @@ This tutorial introduces the TSDB storage engine that was released in DolphinDB 
 
 Before DolphinDB version 2.0, the OLAP engine was the only storage engine. Each column in a partition of a table is saved as a file. Data is stored in the order as it is written, which makes writing highly efficient.
 
-The OLAP engine has the following major limitations:
+**The OLAP engine has the following major limitations:**
 
 (1) There's no index within a partition, which means (the selected columns of) an entire partition must be loaded even for queries involving only 1 record;
 
@@ -28,7 +28,7 @@ The OLAP engine has the following major limitations:
 
 The TSDB storage engine can overcome the aforementioned limitations of the OLAP engine. It is developed based on the Log-Structured Merge-Tree (LSM Tree). The data in each partition is stored in level files. The data in each level file is sorted and has block indexing.
 
-The TSDB engine has the following advantages over the OLAP engine:
+**The TSDB engine has the following advantages over the OLAP engine:**
 
 (1) Queries with partitioning columns and within-partition sort columns in filtering conditions have extremely high performance;
 
@@ -38,11 +38,12 @@ The TSDB engine has the following advantages over the OLAP engine:
 
 (4) If only the last record is kept for duplicate records (set *keepDuplicates*=LAST for function `createPartitionedTable`), to update a record, only the level file that this record belongs to needs to be rewritten instead of an entire partition. 
 
-The TSDB engine has the following disadvantages compared with the OLAP engine:
+**The TSDB engine has the following disadvantages compared with the OLAP engine:**
 
 (1) Lower write throughput as data needs to be sorted in the cache engine and the level files might be merged and compacted;
 
 (2) Lower performance when reading data from an entire partition or columns in an entire partition.
+
 
 ### Examples
 
