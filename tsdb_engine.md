@@ -2,6 +2,7 @@
 
 This tutorial introduces the TSDB storage engine that was released in DolphinDB 2.0.
 
+- [Introduction to DolphinDB TSDB Storage Engine](#introduction-to-dolphindb-tsdb-storage-engine)
   - [1. Application Scenarios: OLAP vs TSDB](#1-application-scenarios-olap-vs-tsdb)
     - [Examples](#examples)
   - [2. How the TSDB Engine Works](#2-how-the-tsdb-engine-works)
@@ -35,7 +36,7 @@ The TSDB engine has the following advantages over the OLAP engine:
 
 (3) Suitable for storing tables with hundreds or thousands of columns (up to 32,767 columns). It also supports data types such as array vector or BLOB;
 
-(4) To update a record, if only the last record is kept for duplicate records (set *keepDuplicates*=LAST for function `createPartitionedTable`), only the level file that this record belongs to needs to be rewritten instead of an entire partition.
+(4) If only the last record is kept for duplicate records (set *keepDuplicates*=LAST for function `createPartitionedTable`), to update a record, only the level file that this record belongs to needs to be rewritten instead of an entire partition. 
 
 The TSDB engine has the following disadvantages compared with the OLAP engine:
 
@@ -115,7 +116,7 @@ Please note that if there's new data coming in while the cache engine is being f
 
 ### 2.3 Sort Columns
 
-In the TSDB engine, columns that are used to sort data in the cache engine, such as StockID and Timestamp in the above example, are called “sort columns” (which are specified by the parameter *sortColumns* of function `createPartitionedTable`). A common practice is to specify a temporal column as the last column of sort columns, and column(s) that SQL *where* conditions may frequently involve as the other sort columns. The unique combinations of the values of the sort columns (except the last sort column) are called sort keys. Records with the same sort key are sorted by the temporal column and stored in blocks (the size of which is 16 KB by default). When a query is executed, relevant blocks are first located based on the sort key and the specified time range, and then loaded to memory for decompression, which considerably improves the query efficiency.
+In the TSDB engine, columns that are used to sort data within each level file, such as StockID and Timestamp in the above example, are called “sort columns” (which are specified by the parameter *sortColumns* of function `createPartitionedTable`). A common practice is to specify a temporal column as the last column of sort columns, and column(s) that SQL *where* conditions may frequently involve as the other sort columns. The unique combinations of the values of the sort columns (except the last sort column) are called sort keys. Records with the same sort key are sorted by the temporal column and stored in blocks (the size of which is 16 KB by default). When a query is executed, relevant blocks are first located based on the sort key and the specified time range, and then loaded to memory for decompression, which considerably improves the query efficiency.
 
 ### 2.4 Level Files
 
@@ -135,6 +136,11 @@ The parameter can be set to the following values:
 - ALL: keep all records (the default value)
 - LAST: only keep the last record
 - FIRST: only keep the first record
+
+**Limit the number of sort keys**
+
+To ensure optimal performance, it is recommended that the number of sort keys within each partition does not exceed 1000. If the number of sort keys is too large but there are only a few records with the same sort key, there might be too many blocks. This may affect query performance. You can specify sortKeyMappingFunction for function createPartitionedTable to reduce the dimensionality of sort keys. It, however, may affect the write performance. Therefore, when creating a table, please carefully specify the sort columns to avoid an excessive number of sort keys.
+
 
 **Configure cache engine size**
 
