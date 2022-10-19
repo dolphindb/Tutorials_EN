@@ -39,10 +39,10 @@
     - [C++ API](https://github.com/dolphindb/api-cplusplus/blob/master/README.md)
     - [R API](https://github.com/dolphindb/api-r/blob/master/README.md)
     - [Json API](https://github.com/dolphindb/api-json/blob/master/README.md)
-    - [Grafana Data Source Plugin](https://github.com/dolphindb/grafana-datasource/blob/master/README.md)
 - Plugins
     - [AWS S3](../../../DolphinDBPlugin/blob/release200/aws/README_EN.md)
     - [Excel](../../../excel-add-in)
+    - [Grafana Data Source Plugin](https://github.com/dolphindb/grafana-datasource/blob/master/README.md)
     - [HDF5](../../../DolphinDBPlugin/blob/release200/hdf5/README.md)
     - [HTTPClient](../../../DolphinDBPlugin/blob/release200/httpClient/README_EN.md)
     - [Kafka](../../../DolphinDBPlugin/blob/release200/kafka/README.md)
