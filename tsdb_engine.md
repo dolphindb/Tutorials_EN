@@ -139,7 +139,7 @@ The parameter can be set to the following values:
 
 **Limit the number of sort keys**
 
-To ensure optimal performance, it is recommended that the number of sort keys within each partition does not exceed 1000. If the number of sort keys is too large but there are only a few records with the same sort key, there might be too many blocks. This may affect query performance. You can specify sortKeyMappingFunction for function createPartitionedTable to reduce the dimensionality of sort keys. It, however, may affect the write performance. Therefore, when creating a table, please carefully specify the sort columns to avoid an excessive number of sort keys.
+To ensure optimal performance, it is recommended that the number of sort keys within each partition does not exceed 1000. If the number of sort keys is too large but there are only a few records with the same sort key, there might be too many blocks. This may affect query performance. You can specify *sortKeyMappingFunction* for function `createPartitionedTable` to reduce the dimensionality of sort keys. It, however, may affect the write performance. Therefore, when creating a table, please carefully specify the sort columns to avoid an excessive number of sort keys.
 
 
 **Configure cache engine size**
