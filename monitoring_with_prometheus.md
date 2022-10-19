@@ -43,11 +43,11 @@ You can monitor DolphinDB database with Prometheus using the following metrics.
 | networkRecvRate       | the rate at which data are received                          | Bytes/Sec    |
 | cumMsgLatency         | cumulative latency of messages                               | Milliseconds |
 | lastMsgLatency        | latency of the last received message                         | Milliseconds |
-| maxLast10QueryTime    | the maximum execution time of the previous 10 finished queries | Milliseconds |
-| medLast10QueryTime    | the median execution time of the previous 10 finished queries | Milliseconds |
-| medLast100QueryTime   | the median execution time of the previous 100 finished queries | Milliseconds |
-| maxLast100QueryTime   | the maximum execution time of the previous 100 finished queries | Milliseconds |
-| maxRunningQueryTime   | the maximum elapsed time of the queries that are currently running | Milliseconds |
+| maxLast10QueryTime    | the maximum execution time of the previous 10 finished queries | Nanoseconds |
+| medLast10QueryTime    | the median execution time of the previous 10 finished queries | Nanoseconds |
+| medLast100QueryTime   | the median execution time of the previous 100 finished queries | Nanoseconds |
+| maxLast100QueryTime   | the maximum execution time of the previous 100 finished queries | Nanoseconds |
+| maxRunningQueryTime   | the maximum elapsed time of the queries that are currently running | Nanoseconds |
 | avgLoad               | average CPU load                                             | -            |
 | jobLoad               | CPU load of a job                                            | -            |
 | runningJobs           | number of running jobs                                       | -            |
