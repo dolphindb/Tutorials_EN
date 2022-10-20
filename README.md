@@ -52,6 +52,7 @@
     - [OPC](../../../DolphinDBPlugin/blob/release200/opc/README.md)
     - [Parquet](../../../DolphinDBPlugin/blob/release200/parquet/README.md)
     - [XGBoost](../../../DolphinDBPlugin/blob/release200/xgboost/README.md)
+    - [ZeroMQ](../../../DolphinDBPlugin/blob/release200/zmq/README_EN.md)
     - [Visual Studio Code DolphinDB Extension](vscode_extension.md)
     - [Use the HTTPClient Plugin to Send Emails](Use%20the%20HTTP%20Client%20Plugin%20to%20Send%20Emails.md)
 - Modules
