@@ -51,6 +51,7 @@
     - [ODBC](../../../DolphinDBPlugin/blob/release200/odbc/README.md)
     - [OPC](../../../DolphinDBPlugin/blob/release200/opc/README.md)
     - [Parquet](../../../DolphinDBPlugin/blob/release200/parquet/README.md)
+    - [py](../../../DolphinDBPlugin/blob/release200/py/README.md)
     - [XGBoost](../../../DolphinDBPlugin/blob/release200/xgboost/README.md)
     - [ZeroMQ](../../../DolphinDBPlugin/blob/release200/zmq/README_EN.md)
     - [Visual Studio Code DolphinDB Extension](vscode_extension.md)
