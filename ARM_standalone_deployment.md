@@ -1,13 +1,13 @@
 # DolphinDB ARM Standalone Deployment
 
 - [DolphinDB ARM Standalone Deployment](#dolphindb-arm-standalone-deployment)
-	- [1. System Requirements](#1-system-requirements)
-	- [2. Download DolphinDB Database](#2-download-dolphindb-database)
-	- [3. Update License File](#3-update-license-file)
-	- [4. Run DolphinDB Server](#4-run-dolphindb-server)
-	- [5. Connect to DolphinDB Server from Web](#5-connect-to-dolphindb-server-from-web)
-	- [6. Run DolphinDB Script from Web](#6-run-dolphindb-script-from-web)
-	- [7. Update DolphinDB Server](#7-update-dolphindb-server)
+  - [1. System Requirements](#1-system-requirements)
+  - [2. Download DolphinDB Database](#2-download-dolphindb-database)
+  - [3. Update License File](#3-update-license-file)
+  - [4. Run DolphinDB Server](#4-run-dolphindb-server)
+  - [5. Connect to DolphinDB Server from Web](#5-connect-to-dolphindb-server-from-web)
+  - [6. Run DolphinDB Script from Web](#6-run-dolphindb-script-from-web)
+  - [7. Update DolphinDB Server](#7-update-dolphindb-server)
 
 ## 1. System Requirements
 

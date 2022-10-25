@@ -2,15 +2,13 @@
 
 Table of Contents
 
-- [DolphinDB Extension for Visual Studio Code](#dolphindb-extension-for-visual-studio-code)
+- [Visual Studio Code DolphinDB Extension](#visual-studio-code-dolphindb-extension)
   - [Getting Started](#getting-started)
     - [Install Extension](#install-extension)
     - [Configure Server Connections](#configure-server-connections)
     - [Create a DolphinDB Script File](#create-a-dolphindb-script-file)
-      - [Code Completion and Function Documentation](#code-completion-and-function-documentation)
     - [Execute Code](#execute-code)
-      - [Browse Generated Data and Objects](#browse-generated-data-and-objects)
-    - [Working with views in VS Code](#working-with-views-in-vs-code)
+    - [Working with Views in VS Code](#working-with-views-in-vs-code)
 
 Microsoft Visual Studio Code is a powerful and lightweight code editor with a rich extensibility model. VS Code extensions let you add languages, debuggers, and tools to your installation to support your development workflow.
 

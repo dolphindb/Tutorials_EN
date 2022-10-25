@@ -2,6 +2,28 @@
 
 Starting from version 1.01, DolphinDB supports JIT. 
 
+- [DolphinDB Tutorial: Just-in-time (JIT) Compilation](#dolphindb-tutorial-just-in-time-jit-compilation)
+  - [1 Introduction](#1-introduction)
+  - [2 The role of JIT](#2-the-role-of-jit)
+  - [3 How to use JIT](#3-how-to-use-jit)
+    - [3.1 Declare](#31-declare)
+    - [3.2 Supported statements](#32-supported-statements)
+    - [3.3 Supported operators and functions](#33-supported-operators-and-functions)
+    - [3.4 Null values](#34-null-values)
+    - [3.5 Call another JIT function from a JIT function](#35-call-another-jit-function-from-a-jit-function)
+    - [3.6 JIT compilation cost and caching mechanism](#36-jit-compilation-cost-and-caching-mechanism)
+    - [3.7 Function parameters](#37-function-parameters)
+    - [3.8 Matrices](#38-matrices)
+    - [3.9 Limitations](#39-limitations)
+  - [4 Type Inference](#4-type-inference)
+  - [5 Examples](#5-examples)
+    - [5.1 Implied volatility of options](#51-implied-volatility-of-options)
+    - [5.2 Greeks](#52-greeks)
+    - [5.3 Stop loss](#53-stop-loss)
+    - [5.4 Cost of inventory shares](#54-cost-of-inventory-shares)
+  - [6 Future work](#6-future-work)
+  - [7 Summary](#7-summary)
+
 ## 1 Introduction
 
 Programming languages are generally either compiled language or interpreted language. For compiled language, the source code is translated into machine code before the program is executed. For interpreted language, source code is interpreted and executed. Compiled language generally runs faster than interpreted language, but interpreted language is more flexible.

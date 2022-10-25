@@ -1,4 +1,9 @@
-# Tutorial: How to use DolphinDB support portal
+# How to use DolphinDB support portal
+
+- [How to use DolphinDB support portal](#how-to-use-dolphindb-support-portal)
+  - [Sign up to DolphinDB support portal](#sign-up-to-dolphindb-support-portal)
+  - [Submit a support ticket](#submit-a-support-ticket)
+  - [Access submitted tickets and track the progress](#access-submitted-tickets-and-track-the-progress)
 
 ## Sign up to DolphinDB support portal
 

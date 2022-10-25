@@ -4,6 +4,14 @@ Metaprogramming is a programming technique in which computer programs are treate
 
 DolphinDB supports metaprogramming for dynamic expression generation and delayed evaluation. With metaprogramming, users can generate SQL statements and evaluate them dynamically.
 
+- [DolphinDB Tutorial: Metaprogramming](#dolphindb-tutorial-metaprogramming)
+	- [1. How to use metaprogramming](#1-how-to-use-metaprogramming)
+	- [2. Applications of metaprogramming](#2-applications-of-metaprogramming)
+		- [2.1 Update in-memory tables](#21-update-in-memory-tables)
+		- [2.2 Use metaprogramming in DolphinDB built-in functions](#22-use-metaprogramming-in-dolphindb-built-in-functions)
+		- [2.3 Customized reports](#23-customized-reports)
+		- [2.4 Execute a large number of similar queries and combine results](#24-execute-a-large-number-of-similar-queries-and-combine-results)
+
 ## 1. How to use metaprogramming 
 
 Use the following 2 ways for metaprogramming in DolphinDB. 

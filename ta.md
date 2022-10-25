@@ -1,5 +1,29 @@
 # Technical Analysis Indicator Library
 
+- [Technical Analysis Indicator Library](#technical-analysis-indicator-library)
+  - [1. Naming conventions of functions and parameters](#1-naming-conventions-of-functions-and-parameters)
+  - [2. Examples](#2-examples)
+    - [2.1 Apply functions directly](#21-apply-functions-directly)
+    - [2.2 Apply functions in groups in SQL statements](#22-apply-functions-in-groups-in-sql-statements)
+    - [2.3 Results with multiple columns](#23-results-with-multiple-columns)
+  - [3. Performance comparison](#3-performance-comparison)
+    - [3.1 Apply functions directly](#31-apply-functions-directly)
+    - [3.2 Apply functions in groups in SQL statements](#32-apply-functions-in-groups-in-sql-statements)
+  - [4. Vectorization](#4-vectorization)
+    - [4.1. Handling of null values](#41-handling-of-null-values)
+    - [4.2 Iteration](#42-iteration)
+    - [4.3 Moving window functions](#43-moving-window-functions)
+    - [4.4 Tips for reducing data replication](#44-tips-for-reducing-data-replication)
+  - [5. DolphinDB ta module functions list](#5-dolphindb-ta-module-functions-list)
+    - [Overlap Studies](#overlap-studies)
+    - [Momentum Indicators](#momentum-indicators)
+    - [Volume Indicators](#volume-indicators)
+    - [Volatility Indicators](#volatility-indicators)
+    - [Price Transform](#price-transform)
+    - [Statistic Functions](#statistic-functions)
+    - [Other Functions](#other-functions)
+  - [6. Future work](#6-future-work)
+
 [TA-Lib](https://github.com/mrjbq7/ta-lib) is a Python library implemented in C language that encapsulates numerous indicators commonly used in technical analysis of financial market data. To help users calculate these technical indicators in DolphinDB, TA-Lib functions are implemented with DolphinDB script in DolphinDB ta module (ta.dos).
 
 The ta module requires DolphinDB Database Server 1.10.3 or above.

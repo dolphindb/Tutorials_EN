@@ -1,5 +1,21 @@
 # Import Data to DolphinDB
 
+- [Import Data to DolphinDB](#import-data-to-dolphindb)
+	- [1. DolphinDB database basic concepts and features](#1-dolphindb-database-basic-concepts-and-features)
+	- [2. Import from text files](#2-import-from-text-files)
+		- [2.1 `loadText`](#21-loadtext)
+		- [2.2 `ploadText`](#22-ploadtext)
+		- [2.3 `loadTextEx`](#23-loadtextex)
+	- [3. Import from binary files](#3-import-from-binary-files)
+		- [3.1 `readRecord!`](#31-readrecord)
+		- [3.2 `loadRecord`](#32-loadrecord)
+	- [4. Import data via HDF5 files](#4-import-data-via-hdf5-files)
+	- [5. Import data via ODBC interface](#5-import-data-via-odbc-interface)
+	- [6. Examples](#6-examples)
+		- [6.1 Partition Planning](#61-partition-planning)
+		- [6.2 Import data](#62-import-data)
+	- [7. Appendix](#7-appendix)
+
 DolphinDB provides the following ways to import large amounts of data from multiple data sources: 
 
 - Import from text files

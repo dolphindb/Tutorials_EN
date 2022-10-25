@@ -1,7 +1,29 @@
-### DolphinDB Partitioned Database Tutorial
+# DolphinDB Partitioned Database Tutorial
 
+- [DolphinDB Partitioned Database Tutorial](#dolphindb-partitioned-database-tutorial)
+	- [1. Benefits of partitioned databases](#1-benefits-of-partitioned-databases)
+	- [2. The differences between DolphinDB and MPP databases regarding partitions](#2-the-differences-between-dolphindb-and-mpp-databases-regarding-partitions)
+	- [3. Partition Domains](#3-partition-domains)
+		- [3.1 RANGE Domain](#31-range-domain)
+		- [3.2 HASH Domain](#32-hash-domain)
+		- [3.3  VALUE Domain](#33--value-domain)
+		- [3.4 LIST Domain](#34-list-domain)
+		- [3.5 COMPO Domain](#35-compo-domain)
+	- [4. Partition guidelines](#4-partition-guidelines)
+		- [4.1 Select appropriate partitioning columns](#41-select-appropriate-partitioning-columns)
+		- [4.2 Partition size should not be too large](#42-partition-size-should-not-be-too-large)
+		- [4.3 Partition size should not be too small](#43-partition-size-should-not-be-too-small)
+		- [4.4 How to partition data evenly](#44-how-to-partition-data-evenly)
+		- [4.5 Partitions on temporal variables](#45-partitions-on-temporal-variables)
+		- [4.6 Partition colocation](#46-partition-colocation)
+	- [5. Import data into distributed databases](#5-import-data-into-distributed-databases)
+		- [5.1 Replicas](#51-replicas)
+		- [5.2 Transactions](#52-transactions)
+		- [5.3 Parallel data writing](#53-parallel-data-writing)
+		- [5.4 Import data](#54-import-data)
+	- [6. Queries on partitioned tables](#6-queries-on-partitioned-tables)
 
-#### 1. Benefits of partitioned databases
+## 1. Benefits of partitioned databases
 
 Partitioned databases can significantly reduce latency and improve throughput. 
 * Partitioning makes large tables more manageable by enabling users to access subsets of data quickly and efficiently, while maintaining the integrity of a data collection. 
@@ -9,7 +31,7 @@ Partitioned databases can significantly reduce latency and improve throughput.
 * Partitioning increases system availability. As partition replicas usually reside on different physical nodes, if a partition copy becomes unavailable, the system can use other replicas. 
 
 
-#### 2. The differences between DolphinDB and MPP databases regarding partitions
+## 2. The differences between DolphinDB and MPP databases regarding partitions
 
 MPP (Massive Parallel Processing) databases are widely adopted in popular systems such as Greenplum, Amazon Reshift, etc. In MPP a leader node connects to all client applications. DolphinDB adolpts a peer-to-peer structure in database and doesn't have a leader node. Each client application can connect to any compute node. Therefore DolphinDB doesn't have performance bottlenecks at the leader node. 
 
@@ -19,7 +41,7 @@ As the distributed file system provides excellent partition management, fault to
 
 ![](images/DolphinDBvMPP.PNG)
 
-#### 3. Partition Domains
+## 3. Partition Domains
 
 DolphinDB supports range, hash, value, list and composite partitions. 
   *  Range partitions use ranges to form partitions. Each range is defined by 2 adjacent elements of a partition scheme vector. It is the most commonly used partition type.
@@ -34,7 +56,7 @@ When we use aggregate functions on a partitioned table, we can achieve optimal p
 
 The following examples are executed on local drives in Windows. To run in Linux servers or DFS clusters, just change the directory of the databases accordingly. 
 
-#### 3.1 RANGE Domain
+### 3.1 RANGE Domain
 
 In a range domain (RANGE), partitions are determined by ranges whose boundaries are two adjacent elements of the partition scheme vector. The starting value is inclusive and the ending value is exclusive.
 
@@ -58,7 +80,7 @@ select count(x) from pt;
 The partition scheme of a range domain can be appended after it is created. Please check function `addRangePartitions` in user manual for details. 
 
 
-#### 3.2 HASH Domain
+### 3.2 HASH Domain
 
 In a hash domain (HASH), partitions are determined by a hash function on the partitioning column. Hash partition is a convenient way to generate a given number of partitions. However, there might be significant differences between the partition sizes if the distribution of the partitioning column values is skewed. To locate observations on a continuous range in the partitioning column, it is more efficient to use range partitions or value partitions than hash partitions.     
 
@@ -78,7 +100,7 @@ pt=loadTable(db,`pt)
 select count(x) from pt
 ```
 
-#### 3.3  VALUE Domain
+### 3.3  VALUE Domain
 
 In a value domain (VALUE), each element of the partition scheme vector corresponds to a partition. 
 ```
@@ -100,7 +122,7 @@ The example above defines a database db with 204 partitions. Each of these parti
 
 The partition scheme of a value domain can be appended with new values after it is created. Please check function `addValuePartitions` in user manual for details. 
 
-#### 3.4 LIST Domain
+### 3.4 LIST Domain
 
 In a list domain, each element of a vector represents a partition. The difference between a list domain and a value domain is that all the elements in a value domain partition scheme are scalars, whereas each element in a list domain partition scheme may be a vector.
 
@@ -122,7 +144,7 @@ The database above has 2 partitions. The first partition contains 3 tickers and 
 
 ![](images/database/list.png)
 
-#### 3.5 COMPO Domain
+### 3.5 COMPO Domain
 
 A composite domain (COMPO) can have 2 or 3 partitioning columns. Each partitioning column can be of range, value, or list domain. The order of the partitioning columns is irrelevant.
 
@@ -155,11 +177,11 @@ Click on a date partition, we can see the range domain has 2 partitions:
 
 If one of the partitioning columns of a composite domain is of value domain, it can be appended with new values after it is created. Please check function `addValuePartitions` in user manual for details. 
 
-#### 4. Partition guidelines
+## 4. Partition guidelines
 
 A good partition scheme can reduce latency and improve query performance and throughput. In this section we discuss the issues to consider in determining the optimal partitioning scheme. 
 
-#### 4.1 Select appropriate partitioning columns
+### 4.1 Select appropriate partitioning columns
 
 In DolphinDB, the data types that can be used for partitioning columns include integers (CHAR, SHORT, INT), temporal (DATE, MONTH, TIME, SECOND, MINUTE, DATETIME, DATEHOUR), STRING and SYMBOL. The HASH domain also supports LONG, UUID, IPADDR and INT128 types. Although a partitioning column can be of STRING type, for optimal performance, we recommend converting a STRING type column into SYMBOL type to be used as a partitioning column. 
 
@@ -175,7 +197,7 @@ The partitioning columns should be relevant in most database transactions, espec
 
 A partitioning column is equivalent to a physical index on a table. If a query uses a partition column in **where** conditions, the system can quickly load the target data instead of scanning the entire table. Therefore, partitioning columns should be the columns that are frequently used in **where** conditions for optimal performance.
 
-#### 4.2 Partition size should not be too large
+### 4.2 Partition size should not be too large
 
 The columns in a partition are stored as separate files on disk after compression. When a query reads the partition, the system loads the necessary columns into memory after decompression. Too large partitions may slow down the system, as they may cause insufficient memory with multiple threads running in parallel, or they may make the system swap data between disk and memory too frequently. As a rule of thumb, assume the available memory of a data node is S and the number of workers is W, then it is recommended that a partition is less than S/8W in memory after decompression，For example, with available memory of 32GB and 8 workers, a single partition should be smaller than 32GB/8/8=512MB.
 
@@ -188,7 +210,7 @@ Considering all the factors mentioned above, we recommend the size of a partitio
 To reduce partitions sizes, we can (1) use composite partitions (COMPO); (2) increase the number of partitions; (3) use value partitions instead of range partitions.
 
 
-#### 4.3 Partition size should not be too small
+### 4.3 Partition size should not be too small
 
 If partition size is too small, a query or computing job may generate a large number of subtasks. This increases the time and resources in communicating between the controller node and data nodes, and between different controller nodes. Too small partitions also result in innefficient reading/writing of small files on disk and therefore. Lastly, the metadata of all partitions are stored in the memory of the controller node. Too many small partitions may make the controller node run out of memory. We recommend that the partition size is larger than 100 MB on average before compression.
 
@@ -197,7 +219,7 @@ Based on the analysis in section 4.2 and 4.3, we recommend the size of a partiti
 The distribution of trading activities of stocks is highly skewed. Some stocks are extremely active but a majority of stocks are much less active. For a composite partition with partitioning columns of trading days and stock tickers, if we use value partitions on both partitioning columns, we will have many extremely small partitions for illiquid stocks. In this case we recommend range partitions on stock tickers where many illiquid stocks can be grouped into one partition, resulting a more evenly partitioned dataset for better performance.
 
 
-#### 4.4 How to partition data evenly
+### 4.4 How to partition data evenly
 
 Significant differences among partition sizes may cause load imbalance. Some nodes may have heavy workloads while other nodes idle. If a task is divided into multiple subtasks, it returns the final result only after the last subtask is finished. As each subtask works on a different partition, if data is not distributed evenly among partitions, it may increase the execution time.
 
@@ -214,7 +236,7 @@ symDomain = database("", RANGE, buckets)
 stockDB = database("dfs://stockDBTest", COMPO, [dateDomain, symDomain]);
 ```
 
-#### 4.5 Partitions on temporal variables
+### 4.5 Partitions on temporal variables
 
 In the following example, we create a distributed database with a value partition on date. The partitioning scheme extends to the year 2030 to accommodate updates in future time periods.
 
@@ -225,7 +247,7 @@ dateDB = database("dfs://testDate", VALUE, 2000.01.01 .. 2030.01.01)
 When using temporal variables as a partition column, the data type of the partition scheme does not need to be the same as the data type of a partitioning column. For example, if we use month as the partition scheme in a value partition, the data type of the partitioning column can be month, date, datetime, timestamp, or nanotimestamp. 
 
 
-#### 4.6 Partition colocation
+### 4.6 Partition colocation
 
 It may be time consuming to join multiple tables in a distributed database, as the partitions that need to be joined with may be located on different nodes and therefore data need to be copied and moved across nodes. DolphinDB ensures that the same partitions of all the tables in the same distributed database are stored at the same node. This makes it highly efficient to join these tables. DolphinDB does not support joining tables from different partitioned databases.
 
@@ -242,11 +264,11 @@ stockDB.createPartitionedTable(tradeSchema, "trades", `date`sym)
 ```
 In the examples above, the distributed tables quotes and trades are located in the same distributed database. 
 
-#### 5. Import data into distributed databases
+## 5. Import data into distributed databases
 
 DolphinDB is an OLAP database system. It is designed for fast storage and query/computing of massive structured data and for high performance data processing with the in-memory database and streaming functionalities. It is not an OLTP system for frequent updates. When appending new data to a database on disk in DolphinDB, compressed data is inserted at the end of partitions or files in batches, similar to Hadoop HDFS. To update or delete existing rows, entire partitions that contain these rows need to be deleted first and then rewritten. 
 
-#### 5.1 Replicas
+### 5.1 Replicas
 
 We can make multiple replicas for each partition in DolphinDB. The number of replicas is 2 by default and can be changed by setting the configuration parameter "dfsReplicationFactor". 
 
@@ -258,7 +280,7 @@ DolphinDB adopts two-phase commit protocol to ensure strong consistency of all r
 
 The configuration parameter "dfsReplicaReliabilityLevel" in the controller configuration file (controller.cfg) determines whether multiple replicas are allowed to reside on nodes of the same physical server. In development stage, we can set it to 0 allowing multiple replicas on the same machine. In production stage, however, we should set it to 1 to ensure fault tolerance.
 
-#### 5.2 Transactions
+### 5.2 Transactions
 
 The DFS table engine in DolphinDB supports transactions, i.e., it gaurantees ACID (atomicity, consistency, isolation and durability). The DFS table engine uses MVCC for transactions and supports snapshot isolation. With snapshot isolation, reading and writing do not block each other, therefore read operations in a data warehouse is optimized. 
 
@@ -266,7 +288,7 @@ To optimize the performance of queries and computing tasks in the data warehouse
 + A transaction cannot involve both read operations and write operations. 
 + A write transaction can write to multiple partitions, but a partition cannot be written to by multiple transactions simultaneously. If transaction A attempts to lock a partition while the partition is locked by another transaction, the system will immediately throw an exception and transaction A will be rolled back. 
 
-#### 5.3 Parallel data writing
+### 5.3 Parallel data writing
 
 In DolphinDB, a single table can have millions of partitions. This facilitates fast parallel data loading. Parallel data loading is especially important when huge amount of data is imported into DolphinDB, or when real-time data is persisted to the data warehouse with low latency.
 
@@ -294,7 +316,7 @@ pnodeRun(loadJob);
 ```
 When multiple writers load data in parallel, we must make sure they wouldn't write data to the same partition simultaneously. Otherwise, at leat one transaction will fail. In the aforementioned example, different data files represent different partitions. Therefore, none of the writing jobs write to the same partition as another job.  
 
-#### 5.4 Import data
+### 5.4 Import data
 
 We can also use function `append!` to import data into DolphinDB databases. 
 
@@ -311,7 +333,7 @@ quotes = table(rand(syms, n) as sym, 2018.05.04 as date, time, bid, bidSize, ask
 loadTable("dfs://stockDB", "quotes").append!(quotes);
 ```
 
-##### 5.4.1 Import data from text files
+#### 5.4.1 Import data from text files
 
 DolphinDB provides 3 function to load text files: `loadText`, `ploadText`, and `loadTextEx`. 
 ```
@@ -331,7 +353,7 @@ db = database("dfs://stockDB")
 loadTextEx(db, "quotes", `date`sym, workDir + "/quotes.csv")
 ```
 
-##### 5.4.2 Subscibe to a stream table and import data in batches
+#### 5.4.2 Subscibe to a stream table and import data in batches
 
 In the following example we subscribe to a stream table quotes_stream. The streaming data from quotes_stream will be inserted to table quotes if the incoming data reaches 10,000 rows or if 6 seconds have elapsed since the last time streaming data were inserted into table quotes, whichever occurs first.
 
@@ -341,7 +363,7 @@ saveQuotesToDFS=def(mutable t, msg): t.append!(select today() as date,* from msg
 subscribeTable(, "quotes_stream", "quotes", -1, saveQuotesToDFS{dfsQuotes}, true, 10000, 6)
 ```
 
-##### 5.4.3 Import from databases of other vendors via ODBC
+#### 5.4.3 Import from databases of other vendors via ODBC
 
 The following example imports table TAQquotes from MySQL. 
 
@@ -352,7 +374,7 @@ t=odbc::query(conn,"select * from quotes")
 loadTable("dfs://stockDB", "quotes").append!(t)
 ```
 
-##### 5.4.4 Import data with programming APIs
+#### 5.4.4 Import data with programming APIs
 
 DolphinDB provides APIs for Python, Java, C++, C#, R and JavaScript. After getting data with these languages, we can call function `append!` to import data into distributed databases in DolphinDB. The following script is an example for Java API.
 
@@ -378,7 +400,7 @@ args.add(quotes);
 conn.run("saveQuotes", args);
 ```
 
-#### 6. Queries on partitioned tables
+## 6. Queries on partitioned tables
 
 Most distributed queries do not involve all partitions of a distributed table. It could save a significant amount of time if the system can narrow down relevant partitions before loading and processing data. 
 
