@@ -46,6 +46,7 @@
     - [HDF5](../../../DolphinDBPlugin/blob/release200/hdf5/README.md)
     - [HTTPClient](../../../DolphinDBPlugin/blob/release200/httpClient/README_EN.md)
     - [Kafka](../../../DolphinDBPlugin/blob/release200/kafka/README.md)
+    - [mat](../../../DolphinDBPlugin/blob/release200/mat/README_EN.md)
     - [MQTT](../../../DolphinDBPlugin/blob/release200/mqtt/README.md)
     - [MySQL](../../../DolphinDBPlugin/blob/release200/mysql/README.md)
     - [ODBC](../../../DolphinDBPlugin/blob/release200/odbc/README.md)
