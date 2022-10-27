@@ -59,6 +59,7 @@
     - [Use the HTTPClient Plugin to Send Emails](Use%20the%20HTTP%20Client%20Plugin%20to%20Send%20Emails.md)
 - Modules
     - [Technical Analysis Indicator Library](ta.md)
+    - [WorldQuant 101 Alphas](wq101alpha.md)
 - Application Scenarios
     - [Calculating ETF IOPV in DolphinDB](streaming_IOPV.md)
     - [High Frequency Data Analysis: Pivoting](hi_freq_data_analysis_pivoting.md)
