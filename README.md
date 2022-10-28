@@ -62,5 +62,6 @@
     - [WorldQuant 101 Alphas](wq101alpha.md)
 - Application Scenarios
     - [Calculating ETF IOPV in DolphinDB](streaming_IOPV.md)
+    - [Feature Engineering for Stock Volatility Prediction](metacode_derived_features.md)
     - [High Frequency Data Analysis: Pivoting](hi_freq_data_analysis_pivoting.md)
  
