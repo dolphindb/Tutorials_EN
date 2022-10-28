@@ -48,6 +48,7 @@
     - [Kafka](../../../DolphinDBPlugin/blob/release200/kafka/README.md)
     - [kdb+](../../../DolphinDBPlugin/blob/release200/kdb/README.md)
     - [mat](../../../DolphinDBPlugin/blob/release200/mat/README_EN.md)
+    - [MongoDB](../../../DolphinDBPlugin/blob/release200/mongodb/README_EN.md)
     - [MQTT](../../../DolphinDBPlugin/blob/release200/mqtt/README.md)
     - [MySQL](../../../DolphinDBPlugin/blob/release200/mysql/README.md)
     - [ODBC](../../../DolphinDBPlugin/blob/release200/odbc/README.md)
