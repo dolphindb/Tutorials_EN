@@ -78,7 +78,7 @@ In DolphinDB, the scripting language is fully integrated with SQL statements.
 * SQL query can be assigned directly to a variable or as a function parameter.
 * SQL query statements can quote variables or functions. If a SQL query involves a distributed table, the variables and functions in the SQL query can be automatically serialized to the corresponding nodes.
 * SQL statements can be dynamically generated script.
-* Database table is a data form. Other data forms include scalar, vector, matrix, set and dictionary. Database table can be converted into other data forms.
+* SQL statements can operate not only on a table, but also on other data forms (including scalar, vector, matrix, set and dictionary). Tables can be converted into other data forms.
 
 ``` TXT
 //generate a table of employee wages
