@@ -79,4 +79,7 @@
 - [Calculating ETF IOPV in DolphinDB](streaming_IOPV.md)
 - [Feature Engineering for Stock Volatility Prediction](metacode_derived_features.md)
 - [High Frequency Data Analysis: Pivoting](hi_freq_data_analysis_pivoting.md)
+
+## Function Mappings
+- [Function Mappings: From Python to DolphinDB](function_mapping_python.md)
  
