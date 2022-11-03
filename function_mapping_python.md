@@ -2,7 +2,7 @@
 
 This page shows the corresponding DolphinDB functions for selected Python functions. 
 
-The DolphinDB functions listed below are supported in version 2.00 (refer to [user guide](https://www.dolphindb.com/help200/Introduction/index.html) for more information).
+The DolphinDB functions listed below are supported in version 2.00 (refer to [DolphinDB manual](https://www.dolphindb.com/help200/Introduction/index.html) for more information).
 
 The following python libraries are covered:
 
