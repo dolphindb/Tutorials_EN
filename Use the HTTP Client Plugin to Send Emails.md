@@ -4,8 +4,8 @@
   - [1. Load the HTTP Client Plugin in DolphinDB](#1-load-the-http-client-plugin-in-dolphindb)
     - [Linux](#linux)
   - [2. Send Email](#2-send-email)
-    - [**2.1 Prerequisites**](#21-prerequisites)
-    - [**2.2 httpClient::sendEmail(user,psw,recipient,subject,text)**](#22-httpclientsendemailuserpswrecipientsubjecttext)
+    - [2.1 Prerequisites](#21-prerequisites)
+    - [2.2 httpClient::sendEmail(user,psw,recipient,subject,text)](#22-httpclientsendemailuserpswrecipientsubjecttext)
 
 DolphinDB supports dynamic loading of external plugins written in C++ to enable additional script functions, thus extending system functionality.
 
