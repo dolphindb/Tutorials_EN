@@ -275,4 +275,4 @@ The following python libraries are covered:
 > The functions listed above are DolphinDB built-in functions. More TA-lib functions are provided in DolphinDB ta module. Refer to [DolphinDB tutorial: Technical Analysis Indicator Library](https://github.com/dolphindb/Tutorials_EN/blob/master/ta.md) for more information.
 
 **Note:**
-Contact us or comment below to send us feedback or report any problems you find. 
+Contact us via support@dolphindb.com or comment below to send us feedback or report any problems you find. 
