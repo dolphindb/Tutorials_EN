@@ -359,9 +359,7 @@ In this example, the address is http://3.227.20.112:31268/dolphindb-cloud/
 
    ![version](images/aws/version.png)
 
-Please refer to [Deploy DolphinDB on Kubernetes](https://github.com/dolphindb/Tutorials_EN/blob/master/k8s_deployment.md#23-deploy-and-connect-to-dolphindb-clusters) for detailed instructions on how to deploy DolphinDB on K8s.
-
-
+Please refer to [Deploy DolphinDB on Kubernetes](https://github.com/dolphindb/dolphindb-k8s/blob/master/k8s_deployment_EN.md#23-deploy-and-connect-to-dolphindb-clusters) for detailed instructions on how to deploy DolphinDB on K8s.
 
 ## 6. Clean up the Environment
 
