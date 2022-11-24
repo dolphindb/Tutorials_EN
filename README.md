@@ -6,7 +6,7 @@
 - [DolphinDB ARM Standalone Deployment](ARM_standalone_deployment.md)
 - [DolphinDB Single-Server Cluster Deployment](single_machine_cluster_deploy.md)
 - [DolphinDB Multi-Machine Cluster Deployment](multi_machine_cluster_deployment.md)
-- [Deploy DolphinDB on Kubernetes](k8s_deployment.md)
+- [Deploy DolphinDB on Kubernetes](https://github.com/dolphindb/dolphindb-k8s/blob/master/k8s_deployment_EN.md)
 - [High Availability for DolphinDB](ha_cluster_deployment.md)
 - [Scale out a DolphinDB Cluster](cluster_scaleout.md)
 - [GUI Tutorial](gui_tutorial.md)
