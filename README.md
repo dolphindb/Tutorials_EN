@@ -58,7 +58,7 @@
 - [Kafka](../../../DolphinDBPlugin/blob/release200/kafka/README.md)
 - [kdb+](../../../DolphinDBPlugin/blob/release200/kdb/README.md)
 - [mat](../../../DolphinDBPlugin/blob/release200/mat/README_EN.md)
-- [MongoDB](../../../DolphinDBPlugin/blob/release200/mongodb/README_EN.md)
+- [MongoDB](../../../DolphinDBPlugin/blob/release200/mongodb/README.md)
 - [MQTT](../../../DolphinDBPlugin/blob/release200/mqtt/README.md)
 - [MySQL](../../../DolphinDBPlugin/blob/release200/mysql/README.md)
 - [ODBC](../../../DolphinDBPlugin/blob/release200/odbc/README.md)
@@ -67,6 +67,7 @@
 - [py](../../../DolphinDBPlugin/blob/release200/py/README.md)
 - [XGBoost](../../../DolphinDBPlugin/blob/release200/xgboost/README.md)
 - [ZeroMQ](../../../DolphinDBPlugin/blob/release200/zmq/README_EN.md)
+- [zip](../../../DolphinDBPlugin/blob/release200/zip/README_EN.md)
 - [Visual Studio Code DolphinDB Extension](vscode_extension.md)
 - [Use the HTTPClient Plugin to Send Emails](Use%20the%20HTTP%20Client%20Plugin%20to%20Send%20Emails.md)
 
