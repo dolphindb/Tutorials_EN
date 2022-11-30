@@ -1,17 +1,18 @@
 # DolphinDB GUI 
 
-DolphinDB GUI is a full-fledged graphical interface based on Java for programming and data-browsing. It can be used on any operating system that supports Java, such as Windows, Linux, and Mac. The GUI is fast, functional, and user-friendly. It is suitable for managing and developing DolphinDB scripts and modules, interacting with database, and checking execution results.
+DolphinDB GUI is a full-fledged graphical interface based on Java for programming and data-browsing. It can be used on any operating system that supports Java, such as Windows, Linux, and Mac. The GUI is fast and user-friendly. You can use it to manage and develop DolphinDB scripts and modules, interact with databases, and check the execution results of these scripts.
 
 - [DolphinDB GUI](#dolphindb-gui)
   - [Features](#features)
-  - [Getting Started](#getting-started)
-    - [1. Download GUI and Java](#1-download-gui-and-java)
-    - [2. Launch GUI](#2-launch-gui)
-    - [3. Setup Workspace and project, develop DolphinDB scripts](#3-setup-workspace-and-project-develop-dolphindb-scripts)
-    - [4. Connect to servers and login](#4-connect-to-servers-and-login)
-    - [5. Execute code](#5-execute-code)
-    - [6. View variables and databases](#6-view-variables-and-databases)
-  - [User Manual](#user-manual)
+  - [1. Getting Started](#1-getting-started)
+    - [1.1 Prerequisites](#11-prerequisites)
+    - [1.2 Download and Launch the GUI](#12-download-and-launch-the-gui)
+  - [2. Work With GUI](#2-work-with-gui)
+    - [2.1 Create Workspace and Project](#21-create-workspace-and-project)
+    - [2.2 Connect to Servers](#22-connect-to-servers)
+    - [2.3 Execute Scripts](#23-execute-scripts)
+    - [2.4 View Variables and Databases](#24-view-variables-and-databases)
+  - [See Also](#see-also)
 
 
 ## Features
@@ -25,33 +26,19 @@ DolphinDB GUI is a full-fledged graphical interface based on Java for programmin
 - Database browser 
 
 
-## Getting Started
+## 1. Getting Started
 
-### 1. Download GUI and Java
-You can download GUI [here](https://www.dolphindb.com/downloads/DolphinDB_GUI_V1.30.15.zip). Java Runtime Environment (JRE) 8 or above is required to run the GUI. You can download JRE 8 at https://www.java.com/en/download. For the specific requirements of Java version, please see [Common reasons why GUI fails to start](#common-reasons-why-gui-fails-to-start) in Chap 2.
+### 1.1 Prerequisites
 
+- Install 64-bit Java version
 
-### 2. Launch GUI
+Java Runtime Environment (JRE) 8 or above is required to run the GUI. Download JRE 8 at https://www.java.com/en/download and install 64-bit Java version.
 
-Unzip the downloaded file to a local folder, and go to gui.2021.12.30.15 sub-directory. On Windows, double click gui.bat to launch the DolphinDB GUI. On Linux/Mac, run the following command in the terminal: 
-
-``` 
-cd /your/gui/folder
-./gui.sh 
-```
-
-#### **Common reasons why GUI fails to start**
-
-If the GUI fails to start, it may be due to one of the following:
-- Java not installed. 
-- Java not added to system path. Check *Path* environment variable
-- Unsupported Java version. Note that only 64-bit version is supported. Use the command `java -version` to check the version.
-
-Below is an example of a compatible version:
+Use command `java -version` to check the version. Below is an example of a compatible version:
 
 ```
 java -version
-
+​
 java version "1.8.0_121"
 Java(TM) SE Runtime Environment (build 1.8.0_121-b13)
 Java HotSpot(TM) 64-Bit Server VM (build 25.121-b13, mixed mode)
@@ -63,32 +50,54 @@ The GUI cannot start properly if the following information is shown:
 Java HotSpot(TM) Client VM
 ```
 
-### 3. Setup Workspace and project, develop DolphinDB scripts
+- Add Java to your system path
 
-After starting the GUI, please first specify the workspace directory for project management. Note that a user can only use one workspace at the same time, and there can be multiple projects under a single workspace.
+### 1.2 Download and Launch the GUI
 
-After specifying the workspace directory, right-click your new workspace in the *Project Explorer* panel. You can either create a new project by clicking *New Project* or import an existing project by clicking *Import Folder*.
+(1) Download the DolphinDB GUI from http://www.dolphindb.com/downloads/.
+
+(2) Unzip to a local folder.
+
+(3) Start a DolphinDB server first, then launch the GUI under the local folder.
+
+- Windows: Double-click the *gui.bat*;
+
+- Linux: Execute the following command:
+
+```
+sh gui.sh
+```
+
+## 2. Work With GUI
+
+### 2.1 Create Workspace and Project
+
+When initializing the GUI, you will be asked to specify the workspace directory for project management. 
+
+There can be multiple projects under a single workspace. Note that a user can only use one workspace at a time. After specifying the workspace directory, right-click your new workspace in the **Project Explorer** panel. You can either create a new project by clicking **New Project**, or import an existing project by clicking **Import Folder**.
 
 ![](images/gui_tutorial/new_project.png) 
 
-Click the icon before a project to expand in the *Project Explorer* panel, and you will see 2 folders: *modules* and *scripts*. Right-click the *scripts* folder, and you can add sub-folders and scripts by clicking *New Folder* and *New File*. After a script is created, you can write, modify, or execute DolphinDB code in GUI's *Editor*. 
+After creating a project, click the node before your new project in the **Project Explorer** panel, and you will see 2 folders: modules and scripts. Right-click the **scripts** folder, and add sub-folders and scripts by clicking **New Folder** and **New File**. After a script is created, you can write, modify, or execute DolphinDB scripts in GUI's editor.
 
 ![](images/gui_tutorial/new_script.png) 
 
-### 4. Connect to servers and login
+### 2.2 Connect to Servers
 
-The *Server* in GUI menu refers to connection to DolphinDB server. You can add or manage server connections. Click *Server* and *Add Server* to open a new dialog to add a new server connection. There is a default server connection called 'local8848', which connects to port 8848 of localhost.   
+The **Server** in GUI menu refers to DolphinDB server.
+
+- Click **Server** and then select **Add Server** to add a server in the pop-up dialog. A default server already exists at port 8848 on localhost.
 
 ![](images/gui_tutorial/add_edit_server.png) 
 </br>
 
 ![](images/gui_tutorial/add_server.png)
 
-Once added, the server connection will appear in drop-down menu in the toolbar. To connect to a specific server, choose the corresponding connection in the menu.
+Once a server is added, it appears in the drop-down menu in the toolbar.
 
 ![](images/gui_tutorial/server_dropdown.png) 
 
-To edit or delete server connections, click *Edit Server*. Double-click the field to make modifications, or click the checkbox to delete a server connection.
+- To manage (edit or delete) servers, click **Server** and then select **Edit Server**. Double-click the field to modify, or click the checkbox to delete certain server. To connect to a specific server, select it in the drop-down menu.
 
 ![](images/gui_tutorial/edit_server.png) 
 
@@ -96,35 +105,37 @@ The GUI provides 3 ways to login:
 
 - Specify the username and password when adding server connection, and you will be automatically logged in every time you use this connection.
 - Click on ![](images/gui_tutorial/login_icon.png) in tool bar to specify username and password after you choose a connection.
-- Run login() function in *Editor* after you choose a connection. 
+- Run `login()` function in **Editor** after you choose a connection. 
 
-### 5. Execute code
+### 2.3 Execute Scripts
 
-You can select part of the code, then press `Ctrl + E` to send the code to the DolphinDB Server for execution. If no code is selected,  you can click File and Preferences to choose the execution mode you prefer:
+In the GUI's editor, you can select part of the code, then use keyboard shortcut `Ctrl + E` to send the code to the DolphinDB server for execution. If no code is selected, the GUI offers 2 execution modes:
 
 - The line where the current cursor is on will be sent to DolphinDB server for execution
 - The whole script will be sent to DolphinDB server for execution 
 
-You can find the output or error message in the *Log Browser* Panel, along with execution start time, end time, and elapsed time.
+Click **File** and then select **Preferences** to switch the execution mode in the pop-up dialog. 
+
+After code is executed, the output or error message is displayed in the **Log** tab, along with execution start time, end time, and running time.
 
 ![](images/gui_tutorial/Log_browser.png)
 
-If the final statement executed returns a vector, matrix or table, the result will be displayed in the form of a table in the *Data Browser* panel. 
+If the final statement executed returns a vector, matrix or table, the result will be displayed in the form of a table in the **Data Browser** tab. 
 
 ![](images/gui_tutorial/data_browser.png)
 
-### 6. View variables and databases
+### 2.4 View Variables and Databases
 
-You can view all variables in the *Variable Explorer* panel.
+You can view all variables in tree view of **Variable Explorer**.
 
 ![](images/gui_tutorial/variables_explorer.png) 
 
-If the variable is a vector, matrix, or table, double-click it and a data browser window will pop up.
+If a variable is a vector, matrix or table, double-click it to check the complete data in the data browser.
 
 ![](images/gui_tutorial/variable_data.png) 
 
-You can also view the column names and data types of all DFS tables on the server under *Database Explorer*. 
+View schemata of all DFS databases and their partition tables under **Database Explorer**. 
 
-## User Manual
+## See Also
 
-For details on the GUI features, please refer to [DolphinDB GUI Manual](https://dolphindb.com/gui_help/index.html).
+For detailed instructions on DolphinDB's client tools, see [Client User Guide](https://dolphindb.com/gui_help/index.html).
