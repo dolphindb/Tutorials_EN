@@ -38,7 +38,7 @@ where
 
 ### 2.1 Procedure
 
-1. Create a table in MySQL (see [script](https://github.com/dolphindb/Tutorials_CN/blob/master/script/cachedTable/mysql_data.txt)).
+1. Create a table in MySQL (see [script](https://github.com/dolphindb/Tutorials_EN/blob/master/script/cachedTable/mysql_data.txt)).
 2. Install the [DolphinDB MySQL plugin](https://github.com/dolphindb/DolphinDBPlugin/tree/release200/mysql).
 3. Synchronize the data from MySQL to DolphinDB (see script below).
 
