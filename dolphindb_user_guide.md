@@ -4,7 +4,7 @@
   - [Install DolphinDB](#install-dolphindb)
     - [Download from](#download-from)
     - [DolphinDB Community Trial](#dolphindb-community-trial)
-    - [DolphinDB GUI (recommended)](#dolphindb-gui-recommended)
+    - [DolphinDB VS Code Extension (Recommended)](#dolphindb-vs-code-extension-recommended)
     - [Python/Java/C# API](#pythonjavac-api)
   - [Configuration](#configuration)
     - [Single Node](#single-node)
@@ -31,13 +31,11 @@ http://www.dolphindb.com/downloads.html
 
 Unzip DolphinDB package. It has DolphinDB executable, license file, and web-based cluster manager, etc. No need to install after unzipping. To request Enterprise Trial, click "Request" to apply for an enterprise license. 
 
-### DolphinDB GUI (recommended)
+### DolphinDB VS Code Extension (Recommended)
 
-DolphinDB GUI supports syntax colorizing, autoprompt, data visualization, data browse, etc. DolphinDB GUI requires 64-bit Java Runtime Environment (JRE) 8 or more recent versions.
+DolphinDB provides VS Code Extension that supports DolphinDB programming language, enabling users to manage DolphinDB scripts in VS Code and send them to the DolphinDB server for execution. You can install the extension in VS Code at lower use-cost. For detailed instructions on VS Code extension, see [VS Code Extension tutorial](https://github.com/dolphindb/Tutorials_EN/blob/master/vscode_extension.md).
 
-After unzipping DolphinDB GUI, to start GUI:
-* Windows: double click *gui.bat*
-* Linux: sh gui.sh
+You can also connect to the DolphinDB server and manage scripts using the DolphinDB GUI client. For detailed instructions on GUI, see [DolphinDB GUI tutorial](https://github.com/dolphindb/Tutorials_EN/blob/master/gui_tutorial.md).
 
 ### Python/Java/C# API
 Please check [User Manual](https://dolphindb.com/help/ProgrammingAPIs/index.html) for how to install and use Python/Java/C# API. 
