@@ -43,11 +43,6 @@ As the distributed file system provides excellent partition management, fault to
 ![](images/DolphinDBvMPP.PNG)
 
 ## 3. Partition Domains
-To call the function database, you must log in as an administrator, or a user with granted privilege **DB_MANAGE** or **DB_OWNER**. For example, you can log in using the default admin account:
-
-```
-login(userId=`admin, password=`123456)
-```
 
 DolphinDB supports range, hash, value, list and composite partitions. 
   *  Range partitions use ranges to form partitions. Each range is defined by 2 adjacent elements of a partition scheme vector. It is the most commonly used partition type.
@@ -59,6 +54,12 @@ DolphinDB supports range, hash, value, list and composite partitions.
 When we create a new distributed database, we need to specify parameters "partitionType" and "partitionScheme". When we reopen an existing distributed database, we only need to specify "directory". We cannot overwrite an existing distributed database with a different "partitionType" or "partitionScheme". 
 
 When we use aggregate functions on a partitioned table, we can achieve optimal performance if **group by** columns are also the partitioning columns. 
+
+To call the function database, you must log in as an administrator, or a user with granted privilege **DB_MANAGE** or **DB_OWNER**. For example, you can log in using the default admin account:
+
+```
+login(userId=`admin, password=`123456)
+```
 
 The following examples are executed on local drives with an admin already logged in on Windows. To run in Linux servers or DFS clusters, just change the directory of the databases accordingly. 
 
