@@ -23,6 +23,7 @@
 		- [5.4 Import data](#54-import-data)
 	- [6. Queries on partitioned tables](#6-queries-on-partitioned-tables)
 
+
 ## 1. Benefits of partitioned databases
 
 Partitioned databases can significantly reduce latency and improve throughput. 
@@ -42,19 +43,24 @@ As the distributed file system provides excellent partition management, fault to
 ![](images/DolphinDBvMPP.PNG)
 
 ## 3. Partition Domains
+To call the function database, you must log in as an administrator, or a user with granted privilege **DB_MANAGE** or **DB_OWNER**. For example, you can log in using the default admin account:
+
+```
+login(userId=`admin, password=`123456)
+```
 
 DolphinDB supports range, hash, value, list and composite partitions. 
   *  Range partitions use ranges to form partitions. Each range is defined by 2 adjacent elements of a partition scheme vector. It is the most commonly used partition type.
   *  Hash partitions use a hash function on a partitioning column. Hash partition is a convenient way to generate a given number of partitions. 
   *  In a value domain, each element of the partition scheme vector corresponds to a partition. 
-  *  A partitions data according to a list. It is more flexible than a range domain.
+  *  A list domain partitions data according to a list. It is more flexible than a range domain.
   *  The composite domain is suitable for situations where multiple columns are frequently used in SQL **where** or **group by** clauses on large tables. A composite domain can have 2 or 3 partitioning columns. Each column can be of range, hash, value or list domain. For example, we can use a value domain on trading days, and a range domain on stock symbols. The order of the partitioning columns is irrelevant. 
 
 When we create a new distributed database, we need to specify parameters "partitionType" and "partitionScheme". When we reopen an existing distributed database, we only need to specify "directory". We cannot overwrite an existing distributed database with a different "partitionType" or "partitionScheme". 
 
 When we use aggregate functions on a partitioned table, we can achieve optimal performance if **group by** columns are also the partitioning columns. 
 
-The following examples are executed on local drives in Windows. To run in Linux servers or DFS clusters, just change the directory of the databases accordingly. 
+The following examples are executed on local drives with an admin already logged in on Windows. To run in Linux servers or DFS clusters, just change the directory of the databases accordingly. 
 
 ### 3.1 RANGE Domain
 
@@ -78,7 +84,6 @@ select count(x) from pt;
 ![](images/database/range.png)
 
 The partition scheme of a range domain can be appended after it is created. Please check function `addRangePartitions` in user manual for details. 
-
 
 ### 3.2 HASH Domain
 
