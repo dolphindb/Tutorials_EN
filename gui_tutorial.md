@@ -32,7 +32,7 @@ DolphinDB GUI is a full-fledged graphical interface based on Java for programmin
 
 - Install 64-bit Java version
 
-Java Runtime Environment (JRE) 8 or above is required to run the GUI. Download JRE 8 at https://www.java.com/en/download and install 64-bit Java version.
+Java Runtime Environment (JRE) 8 or above is required to run the GUI. Download JRE 8 at https://www.oracle.com/java/technologies/downloads/ and install 64-bit Java version.
 
 Use command `java -version` to check the version. Below is an example of a compatible version:
 
@@ -60,12 +60,21 @@ Java HotSpot(TM) Client VM
 
 (3) Start a DolphinDB server first, then launch the GUI under the local folder.
 
-- Windows: Double-click the *gui.bat*;
+- Windows: Double click *gui.bat*;
 
 - Linux: Execute the following command:
 
+
 ```
-sh gui.sh
+  $ chmod +x gui.sh
+  $ ./gui.sh
+```
+
+- Mac: Execute the following command:
+
+```
+  $ chmod +x gui.sh
+  $ ./gui.sh
 ```
 
 ## 2. Work With GUI
