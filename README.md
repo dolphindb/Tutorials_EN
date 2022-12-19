@@ -55,6 +55,7 @@
 - [Excel](../../../excel-add-in)
 - [Grafana Data Source Plugin](https://github.com/dolphindb/grafana-datasource/blob/master/README.md)
 - [HDF5](../../../DolphinDBPlugin/blob/release200/hdf5/README.md)
+- [HDFS](../../../DolphinDBPlugin/blob/release200/hdfs/README_EN.md)
 - [HTTPClient](../../../DolphinDBPlugin/blob/release200/httpClient/README_EN.md)
 - [Kafka](../../../DolphinDBPlugin/blob/release200/kafka/README.md)
 - [kdb+](../../../DolphinDBPlugin/blob/release200/kdb/README.md)
