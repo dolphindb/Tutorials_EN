@@ -53,6 +53,7 @@
 ## Plugins
 - [AWS S3](../../../DolphinDBPlugin/blob/release200/aws/README_EN.md)
 - [Excel](../../../excel-add-in)
+- [Feather](../../../DolphinDBPlugin/blob/release200/feather/README_EN.md)
 - [Grafana Data Source Plugin](https://github.com/dolphindb/grafana-datasource/blob/master/README.md)
 - [HDF5](../../../DolphinDBPlugin/blob/release200/hdf5/README.md)
 - [HDFS](../../../DolphinDBPlugin/blob/release200/hdfs/README_EN.md)
