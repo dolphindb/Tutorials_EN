@@ -37,7 +37,7 @@ dfsReplicationFactor=2
 By default, DolphinDB allows replicas of the same data chunk to be stored on the same machine. To ensure high availability of data nodes, replicas of the same data chunk must be stored on different machines. We need to add the following configuration parameter in controller.cfg:
 
 ```
-dfsReplicaReliabilityLevel=0
+dfsReplicaReliabilityLevel=1
 ```
 
 For Example:
