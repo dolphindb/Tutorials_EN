@@ -43,7 +43,7 @@
     
     
 ## API
-- [Python API](python_api.md)
+- [Python API](https://github.com/dolphindb/api_python3/blob/master/README.md)
 - [Java API](https://github.com/dolphindb/api-java/blob/master/README.md)
 - [C# API](https://github.com/dolphindb/api-csharp/blob/master/README.md)
 - [C++ API](https://github.com/dolphindb/api-cplusplus/blob/master/README.md)
