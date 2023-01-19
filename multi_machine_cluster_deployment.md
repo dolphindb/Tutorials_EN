@@ -114,17 +114,17 @@ lanCluster=0
 
 The parameters are described in the table below.
 
-| Parameter Configuration        | Description          |
-|:------------- |:-------------|
-|localSite=10.1.1.7:8990:master|     Node LAN information in the format of IP address:port number:alias of the local node. All fields are mandatory.|
-|localExecutors=3          |         The number of local executors. The default value is the number of cores of the CPU - 1.|
-|maxConnections=512     |            The maximum number of inward connections.|
-|maxMemSize=16          |            The maximum memory (in terms of GB) allocated to DolphinDB. If set to 0, it means no limit on memory usage.|
-|webWorkerNum=4              |       The number of workers to process HTTP requests. The default value is 1.|
-|workerNum=4        |                The number of workers for regular interactive jobs. The default value is the number of cores of the CPU.|
-|dfsReplicationFactor=2         |    The number of replicas for each table partition or file block. The default value is 2.|
-|dfsReplicaReliabilityLevel=1     |  Whether multiple replicas can reside on the same server. 0: Yes; 1: No. The default value is 0.|
-|dataSync=1         |   Whether to enable the redo log. 0: Enable; 1: Disable. When dataSync=1, chunkCacheEngineMemSize must also be specified in the file cluster.cfg.|
+| Configuration Parameter | Description |
+|---|---|
+| localSite=10.1.1.7:8990:master | Node LAN information in the format of IP address:port number:alias of the local node. |
+| localExecutors=3 | The number of local executors. The default value is the number of cores of the CPU - 1. |
+| maxConnections=512 | The maximum number of connections (from GUI, API, other nodes, etc.) to the local node. |
+| maxMemSize=8 | The maximum memory (in GB) allocated to DolphinDB. If set to 0, it means no limits on memory usage. |
+| webWorkerNum=4 | The size of the web worker pool to process HTTP requests. The default value is 1. |
+| workerNum=4 | The size of worker pool for regular interactive jobs. The default value is the number of cores of the CPU cores. |
+| dfsReplicationFactor=2 | The number of replicas for each data chunk. The default value is 2. |
+| dfsReplicaReliabilityLevel=2 | Whether multiple replicas can reside on the same server. 0 (default): Yes; 1: No; 2: replicas are allocated to multiple servers if possible. |
+| dataSync=1 | Whether database logs are forced to persist to disk before the transaction is committed. <br>If dataSync = 1, the database log (including redo log, undo log, edit log of data nodes, and edit log of controller nodes) must be written to disk before each transaction is committed. This guarantees that data written to the database is not lost in case of system crash or power outage. <br>If dataSync = 0 (default), the log files are written to cache before a transaction is committed. The operating system will write the log files to disk at a later time. We may experience loss of data or corruption of the database in case of system crash or power outage.|
 
 
 #### 5.1.2 cluster.nodes
