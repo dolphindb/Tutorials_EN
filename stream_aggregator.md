@@ -231,7 +231,7 @@ step | alignmentSize
 1200001~1800000|1800000 (30 minutes)
 > 1800000 | 3600000 (1 hour)
 
-Temporal data is stored as integers in DolphinDB. For example, 13:30:10 is stored as 13*60*60+30*60+10=48610. The system adjusts the starting time of the first window to be the largest value that is divisible by alignmentSize before the time of the first record.
+Temporal values are stored as integers in DolphinDB. For example, 13:30:10 is stored as 13*60*60+30*60+10=48610. The system adjusts the starting time of the first window to be the largest value that is divisible by alignmentSize before the time of the first record.
 
 If the time of the first record is x with data type of TIMESTAMP, then the starting time of the first window is adjusted to be timestamp(x/alignmentSize\*alignmentSize), where / produces only the integer part after division. For example, if the time of the first record is 2018.10.08T01:01:01.365 and step=60000, then alignmentSize=60000, and the starting time of the first window is timestamp(2018.10.08T01:01:01.365/60000*60000)=2018.10.08T01:01:00.000.
 
