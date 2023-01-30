@@ -173,7 +173,7 @@ We can use the same method to modify column names.
 
 ### 2.3 Specify the format of temporal types
 
-For temporal data, if the automatically inferred data types do not meet expectations, we need to specify not only the data type, but also the format (represented by a string) in column 'format' of the schema table, such as "MM/dd/yyyy". For more details please refer to [Parsing and Format of Temporal Variables](https://www.dolphindb.com/help/DataManipulation/TemporalObjects/ParsingandFormatofTemporalVariables.html).
+For temporal values, if the automatically inferred data types do not meet expectations, we need to specify not only the data type, but also the format (represented by a string) in column 'format' of the schema table, such as "MM/dd/yyyy". For more details please refer to [Parsing and Format of Temporal Variables](https://www.dolphindb.com/help/DataManipulation/TemporalObjects/ParsingandFormatofTemporalVariables.html).
 
 Execute the following script in DolphinDB to generate the data file for this example.
 ```
