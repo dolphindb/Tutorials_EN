@@ -16,7 +16,7 @@
 - [Import Data](import_data.md)
 - [Partitioned In-Memory Tables](partitioned_in_memory_table.md)
 - [Import Text Files](import_csv.md)
-- [Backup and Recovery](backup_and_recovery.md)
+- [Backup and Restore](backup_and_restore.md)
 - [Cluster-to-Cluster Synchronization in DolphinDB](cluster_to_cluster_synchronization.md)
 - [Introduction to DolphinDB TSDB Storage Engine](tsdb_engine.md)
 
