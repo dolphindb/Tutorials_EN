@@ -1,6 +1,6 @@
 # Backup and Restore
 
-**This tutorial applies to versions prior to DolphinDB 1.30.20/2.00.8.**
+> **This tutorial applies to versions prior to DolphinDB 1.30.20/2.00.8.**
 
 With DolphinDB built-in functions, users can back up and restore partitions in a database.
 
