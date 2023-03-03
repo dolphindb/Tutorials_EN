@@ -25,7 +25,6 @@ init=dolphindb.dos
 startup=/home/streamtest/init/server/startup.dos
 postStart=D://dolphindb/server/postStart.dos
 ```
-
  
 
 ### 2.1 Init Script
@@ -38,20 +37,22 @@ The init script is specified by the configuration parameter *init*. The default 
 
 The startup script is specified by the configuration parameter *startup*. The default value is *\<homeDir>/startup.dos*. It can be used to execute reusable modules, define user-defined functions, or even access remote clusters. Note that the startup script is executed by an administrator without access to clusters. To remotely implement the functionalities of controller or access a DFS table in a cluster, you need to log in as an administrator or a user with granted privileges in the script.
 
-You can also call function views in the startup script. If the definition of a function view contains a plugin function, the plugin must be first loaded in the init script. However, as the function view is stored on the controller, using a plugin function requires the plugin be loaded in the init scripts on all nodes in the cluster, which is not recommended.
+You can also call function views in a startup script. If the definition of a function view contains a plugin function, the plugin should be preloaded in the initscript or with configuration parameter *preloadModules*. However, as the function view is stored on the controller, using a plugin function requires the plugin be loaded in the init scripts on all nodes in the cluster, which is not recommended.
 
-To debug the startup script, you can write functions such as `print` and `writeLog` in the script. The system will output the execution information of startup script to the log. You can use the `try-catch` statement to capture the exceptions so as to prevent a startup failure.
+Note:
+- The following jobs cannot be executed in the startup script:
 
-The following jobs cannot be executed in the startup script:
+  - Functions related to scheduled jobs, including `scheduleJob`, `getScheduledJobs` and `deleteScheduledJob`. The scheduled jobs are initialized after the startup script is executed, so functions that are related to scheduled jobs cannot be executed in this step.
+  - Definitions on system-level functions. These functions can only be defined in the init script *dolphindb.dos*. 
 
-- Functions related to scheduled jobs, including `scheduleJob`, `getScheduledJobs` and `deleteScheduledJob`. The scheduled jobs are initialized after the startup script is executed, so functions that are related to scheduled jobs cannot be executed in this step.
-- Definitions on system-level functions. These functions can only be defined in the init script *dolphindb.dos*. 
+- The execution of jobs that need to access other nodes may fail as other nodes have not yet initialized.
+- If error occurs when executing the startup script, the subsequent execution will be skipped and the system will proceed to the next step.
 
-Note: The execution of jobs that need to access other nodes may fail as other nodes have not yet initialized.
+Usage Tips:
 
-If error occurs when executing the startup script, the subsequent execution will be skipped and the system will proceed to the next step.
-
- 
+- To debug the startup script, you can write functions such as `print` and `writeLog` in the script. The system will output the execution information of startup script to the log. 
+- You can use the `try-catch` statement to capture the exceptions so as to prevent a startup failure.
+- You can use the `include` statement in the init and startup scripts to for modular programming. 
 
 ### 2.3 postStart Script
 
@@ -66,7 +67,6 @@ if(getScheduledJobs().jobDesc.find("daily resub") == -1){
     scheduleJob(jobId=`daily, jobDesc="daily resub", jobFunc=run{"/home/appadmin/server/resubJob.dos"}, scheduleTime=08:30m, startDate=2021.08.30, endDate=2023.12.01, frequency='D')   
 } 
 ```
-
 
 
 ## 3. Application Scenarios
@@ -103,9 +103,35 @@ tb=loadTable("dfs://db1","tb")
 subscribeTable(tableName="st1",actionName="subst",offset=-1,handler=append!{tb},msgAsTable=true)
 ```
 
+**Note**:
+
+If a shared in-memory table or shared stream table is defined and referenced in the startup script, you need to use a `go` statement after function `share` or `enableTableShareAndPersisten`. Otherwise, the system throws an exception indicating undefined variables when parsing the code.
+
+For example, to write data from a stream table to a shared keyed table, the following code is defined in the startup script:
+
+```
+def saveT(tb,st){tb.append!(st)}
+n=1000000
+colNames = `time`sym`vwap
+colTypes = [DATETIME,SYMBOL,DOUBLE]
+share streamTable(n:0, colNames, colTypes) as test_stream
+opt=keyedTable(`sym, n:0, colNames, colTypes)
+share(opt, `optShared)
+go
+subscribeTable(tableName="test_stream", actionName="test1", offset=0, handler=saveT{optShared}, msgAsTable=true, batchSize=100000, throttle=60)
+```
+
+A shared variable optShared is dynamically registered during the execution of `share(opt, `optShared)`, rather than during the code parsing phase. Since the subsequent subscription `handler=saveT{optShared}` references this variable, a go statement must be used. Otherwise, an exception will be thrown as the system cannot recognize the variable optShared. 
+
+Alternatively, to avoid such exception in parsing phase, you can replace the `share` function above with a `share` statement like:
+
+```
+share opt as optShared
+```
+
 **Example 3**: load plugins before loading scheduled jobs
 
-If a scheduled job references a plugin function, the plugin must be preloaded in the startup script, otherwise the server startup may fail due to deserialization issues. 
+If a scheduled job references a plugin function, the plugin must be preloaded, otherwise the server startup may fail due to deserialization issues. 
 
 The scheduled job “jobDemo” calls a function provided by the plugin “odbc“.
 
