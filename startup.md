@@ -52,7 +52,7 @@ Usage Tips:
 
 - To debug the startup script, you can write functions such as `print` and `writeLog` in the script. The system will output the execution information of startup script to the log. 
 - You can use the `try-catch` statement to capture the exceptions so as to prevent a startup failure.
-- You can use the `include` statement in the init and startup scripts to for modular programming. 
+- You can use the `include` statement in the init and startup scripts for modular programming. 
 
 ### 2.3 postStart Script
 
