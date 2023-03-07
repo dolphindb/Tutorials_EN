@@ -161,7 +161,7 @@ You can refer to [Configuration](https://prometheus.io/docs/alerting/latest/conf
 - Start Prometheus with the following command:
 
 ```
-demo@zhiyu:~/prometheus-2.26.0.linux-amd64$ nohup ./prometheus --config.file=promethes.yml &
+demo@zhiyu:~/prometheus-2.26.0.linux-amd64$ nohup ./prometheus --config.file=prometheus.yml &
 ```
 
 By default, you can browse to a status page about Prometheus at [http://localhost:9090](http://localhost:9090/).
