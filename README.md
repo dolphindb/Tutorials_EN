@@ -25,6 +25,7 @@
 - [DolphinDB Programming Guide](DolphinDB_Programming_Guide.md)
 - [Calculate OHLC bars in DolphinDB](OHLC.md)
 - [DolphinDB Tutorial: Just-in-time (JIT) Compilation](jit.md)
+- [User-Defined Aggregate Functions](udaf.md)
     
     
 ## Streaming
