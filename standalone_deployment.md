@@ -117,13 +117,13 @@ Follow the prompts to select a folder as the workspace.
 
 Click "Server" in the menu bar to add a server or edit servers:
 
-![Sever](images/single_GUI_server.png)
+![Server](images/single_GUI_server.png)
 
-![AddSever](images/single_GUI_addserver.PNG)
+![AddServer](images/single_GUI_addserver.PNG)
 
 Use the drop-down box at the right side of the toolbar to select the DolphinDB server where the script is to be executed:
 
-![SwitchSever](images/single_GUI_tool.png)
+![SwitchServer](images/single_GUI_tool.png)
 
 
 ## 4. Run DolphinDB Script in GUI
