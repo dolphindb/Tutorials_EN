@@ -296,9 +296,9 @@ If 'updateTime' is specified, 'outputTable' must be a keyed table (created with 
 
 In the following example, we calculate 1-minute OHLC bars. Calculations for the current window are triggered no later than 2 seconds after a new message arrives. 
 
-First, create a stream table as the output table and use columns 'datetime' and 'Symbol' as primary keys. 
+First, create a keyed stream table as the output table and use columns 'datetime' and 'Symbol' as primary keys. 
 ```
-share keyedTable(`datetime`Symbol, 100:0, `datetime`Symbol`open`high`low`close`volume,[DATETIME,SYMBOL,DOUBLE,DOUBLE,DOUBLE,DOUBLE,LONG]) as OHLC
+share keyedStreamTable(`datetime`Symbol, 100:0, `datetime`Symbol`open`high`low`close`volume,[DATETIME,SYMBOL,DOUBLE,DOUBLE,DOUBLE,DOUBLE,LONG]) as OHLC
 ```
 
 In the time-series aggregator, parameter 'updateTime' is set to 1 (second); parameter 'useWindowStartTime' is set to true which means the first column of the output table is the starting time of the windows.
