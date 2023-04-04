@@ -53,7 +53,7 @@ To configure a cluster on multiple physical servers, please check [DolphinDB Mul
 
 ## Use DolphinDB
 
-1. On the web-based cluster manager, we can configure the cluster, start or close data nodes and compute nodes, , monitor performance of the nodes, check the partition schemes of distributed databases, and browse data. 
+1. On the web-based cluster manager, we can configure the cluster, start or close data nodes and compute nodes, monitor performance of the nodes, check the partition schemes of distributed databases, and browse data. 
 
 2. For how to use DolphinDB GUI, please check [DolphinDB GUI Help](http://www.dolphindb.com/gui_help/).
 
