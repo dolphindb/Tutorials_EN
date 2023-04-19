@@ -1,5 +1,7 @@
 # DolphinDB Database Security and User Access Control
 
+> This tutorial applies to versions prior to DolphinDB 1.30.21/2.00.9.
+
 DolphinDB provides users with a powerful, flexible and secure access control system. 
 
 - [DolphinDB Database Security and User Access Control](#dolphindb-database-security-and-user-access-control)
