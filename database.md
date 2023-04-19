@@ -55,7 +55,7 @@ When we create a new distributed database, we need to specify parameters "partit
 
 When we use aggregate functions on a partitioned table, we can achieve optimal performance if **group by** columns are also the partitioning columns. 
 
-To call the function database, you must log in as an administrator, or a user with granted privilege **DB_MANAGE** or **DB_OWNER**. For example, you can log in using the default admin account:
+To call the function database, you must log in as an administrator, or a user with granted privilege **DB_OWNER**. For example, you can log in using the default admin account:
 
 ```
 login(userId=`admin, password=`123456)
