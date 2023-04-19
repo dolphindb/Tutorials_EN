@@ -1,240 +1,418 @@
 # DolphinDB Standalone Deployment
 
+This tutorial describes how to deploy the DolphinDB server standalone, and update the server and license file. It is served as a quick start guide for you. A frequently asked questions list is also provided.
+
 - [DolphinDB Standalone Deployment](#dolphindb-standalone-deployment)
-  - [1. Update License File](#1-update-license-file)
-  - [2. Run DolphinDB Server](#2-run-dolphindb-server)
-  - [3. Connect to DolphinDB Server in DolphinDB GUI](#3-connect-to-dolphindb-server-in-dolphindb-gui)
-    - [3.1 Download DolphinDB GUI](#31-download-dolphindb-gui)
-    - [3.2 Start GUI](#32-start-gui)
-    - [3.3 After Starting GUI](#33-after-starting-gui)
-  - [4. Run DolphinDB Script in GUI](#4-run-dolphindb-script-in-gui)
-  - [5. Change Configuration](#5-change-configuration)
-  - [6. Update DolphinDB Server](#6-update-dolphindb-server)
+  - [1. Standalone Deployment on Linux OS](#1-standalone-deployment-on-linux-os)
+    - [Step 1: Download](#step-1-download)
+    - [Step 2: Update License File](#step-2-update-license-file)
+    - [Step 3: Run DolphinDB Server](#step-3-run-dolphindb-server)
+    - [Step 4: Check the Node Status on DolphinDB Web](#step-4-check-the-node-status-on-dolphindb-web)
+  - [2. Standalone Deployment on Windows OS](#2-standalone-deployment-on-windows-os)
+    - [Step 1: Download](#step-1-download-1)
+    - [Step 2: Update License File](#step-2-update-license-file-1)
+    - [Step 3: Run DolphinDB Server](#step-3-run-dolphindb-server-1)
+    - [Step 4: Check the Node Status on DolphinDB Web](#step-4-check-the-node-status-on-dolphindb-web-1)
+  - [3. Update DolphinDB Server](#3-update-dolphindb-server)
+    - [3.1 Update on Linux](#31-update-on-linux)
+    - [3.2 Update on Windows](#32-update-on-windows)
+  - [4. Update License File](#4-update-license-file)
+    - [Step 1: Replace the License File](#step-1-replace-the-license-file)
+    - [Step 2: Update License File](#step-2-update-license-file-2)
+  - [5. FAQ](#5-faq)
+    - [5.1 Failed to Start the Server for the Port is Occupied by Other Programs](#51-failed-to-start-the-server-for-the-port-is-occupied-by-other-programs)
+    - [5.2 Failed to Access the Web Interface](#52-failed-to-access-the-web-interface)
+    - [5.3 Roll Back a Failed Upgrade on Linux](#53-roll-back-a-failed-upgrade-on-linux)
+    - [5.4 Roll Back a Failed Upgrade on Windows](#54-roll-back-a-failed-upgrade-on-windows)
+    - [5.5 Failed to Update the License File](#55-failed-to-update-the-license-file)
+    - [5.6 Change Configuration](#56-change-configuration)
+  - [6. See Also](#6-see-also)
 
 
-Download DolphinDB from [DolphinDB](http://www.dolphindb.com/downloads.html) website and extract it to a directory. For example, extract it to the following directory:
+## 1. Standalone Deployment on Linux OS
 
+### Step 1: Download
+
+- Official website: https://www.dolphindb.com/alone/alone.php?id=75
+- Download DolphinDB with a shell command. Take version 2.00.9.1 for example:
+
+```sh
+wget "https://www.dolphindb.cn/downloads/DolphinDB_Linux64_V2.00.9.1.zip"
 ```
-/DolphinDB
+
+Then extract the installation package to the specified directory (e.g., to */DolphinDB*):
+
+```sh
+unzip DolphinDB_Linux64_V2.00.9.1.zip -d /DolphinDB
 ```
 
-> Please note that the directory name cannot contain any space characters, otherwise it will fail to start the data node. For example, please do not extract it to the *Program Files* folder on Windows.
+> ❗️ The directory name cannot contain any space characters, otherwise it will fail to start the data node. 
 
-## 1. Update License File 
+### Step 2: Update License File
 
-If you have obtained the Enterprise Edition license, please use it to replace the following file:
+If you have obtained the Enterprise Edition license, use it to replace the following file:
 
-```
+```sh
 /DolphinDB/server/dolphindb.lic
 ```
 
 Otherwise, you can continue to use the community version of DolphinDB, which allows up to 8GB of memory use for 20 years.
 
+### Step 3: Run DolphinDB Server
 
-## 2. Run DolphinDB Server
-
-Go to folder /DolphinDB/server/ and run dolphindb executable. 
-
-- Linux:
-
-First, modify the file permissions:
+Navigate to the folder */DolphinDB/server/*. The file permissions need to be modified for the first startup. Execute the following shell command:
 
 ```sh
 chmod +x dolphindb
 ```
 
-Linux console mode: 
+- Linux console mode:
 
-```
+```sh
 ./dolphindb
 ```
 
-Linux background mode: 
-
-```
-./startSingle.sh
-```
-
-<!--
-In Linux, we recommend starting in the background mode with Linux command **nohup** (header) and **&** (tail). Even if the terminal is disconnected, DolphinDB will keep running. "-console" is set to 1 by default. To run in the background mode, please set it to 0 ("-console 0"). Otherwise, the system will quit after running for a while. 
--->
-
-In console mode, you can execute DolphinDB code from the command line. Otherwise, you can execute scripts via a user interface such as GUI or VS Code Extension.
-
-- Windows: 
-
-Execute dolphindb.exe
-
 The default port number of the system is 8848. To change it (e.g., to 8900), use the following command line:
 
-Linux:
-```
+```sh
 ./dolphindb -localSite localhost:8900:local8900
 ```
-Windows:
-```
-dolphindb.exe -localSite localhost:8900:local8900
-```
 
-The license file specifies the maximum amount of memory that DolphinDB can use. Users can lower the limit by specifying the configuration parameter *maxMemSize* (in units of GB) when starting DolphinDB. 
-
-Linux:
-
-```
-./dolphindb -localSite localhost:8900:local8900 -maxMemSize 32
-```
-
-Windows:
-
-```
-dolphindb.exe -localSite localhost:8900:local8900 -maxMemSize 32
-```
-
-## 3. Connect to DolphinDB Server in DolphinDB GUI
-
-### 3.1 Download DolphinDB GUI
-
-You can download GUI [here](https://www.dolphindb.com/downloads/DolphinDB_GUI_V1.30.15.zip) and unzip the package to a directory. For example, unzip it to /DolphinDB_GUI. 64-bit Java Runtime Environment (JRE) 8 or above is required to run the GUI. You can download JRE 8 at https://www.java.com/en/download. 
-
-### 3.2 Start GUI 
-
-In Linux,  execute the following command to start GUI:
+- Linux background mode:
 
 ```sh
-sh gui.sh
+sh startSingle.sh
 ```
-In Windows, double click gui.bat to start GUI. 
 
-If DolphinDB GUI cannot start normally, most likely it's because of one of the following 2 reasons:
-
-- Java not installed. 
-- Java not added to system path. Check *Path* environment variable
-- Unsupported Java version. Note that only 64-bit version is supported. Use the command `java -version` to check the version.
-
-### 3.3 After Starting GUI
-
-Follow the prompts to select a folder as the workspace. 
-
-Click "Server" in the menu bar to add a server or edit servers:
-
-![Server](images/single_GUI_server.png)
-
-![AddServer](images/single_GUI_addserver.PNG)
-
-Use the drop-down box at the right side of the toolbar to select the DolphinDB server where the script is to be executed:
-
-![SwitchServer](images/single_GUI_tool.png)
-
-
-## 4. Run DolphinDB Script in GUI
-
-In the "Project Explorer" panel on the left side of the DolphinDB GUI, right click "workspace" and select "New Project" to create a new project:
-
-![New Project](images/single_GUI_newproject.PNG)
-
-Click on the small dot to the left of the newly created project to expand folders, then right click on the folder "scripts", choose "New File", enter the new file name demo.txt. 
-
-Now we are ready to write DolphinDB script. Enter the following script in the editor panel:
-
-```txt
-n=1000000
-date=take(2006.01.01..2006.01.31, n);
-x=rand(10.0, n); 
-t=table(date, x);
-
-login("admin","123456")
-db=database("dfs://valuedb", VALUE, 2006.01.01..2006.01.31)
-pt = db.createPartitionedTable(t, `pt, `date);
-pt.append!(t);
-
-pt=loadTable("dfs://valuedb","pt")
-select top 100 * from pt
-```
-Click the ![execute](images/execute.JPG) button in the toolbar to execute the script. The following figure shows the result of the operation:
-![result](images/single_GUI.PNG)
-
-By default, database files are stored under the directory of /server/local8848. To change the directory, please specify the configuration parameter 'volumes'. 
-
-> Note:
-> 1. Starting from version 0.98, distributed databases are supported in DolphinDB standalone server.
-> 2. All sessions remain open in GUI until terminated by users. 
-> 3. For deployment on Linux, mounting NAS partitions as volumes via LAN or WAN is not recommended. If a user has to do that, the volumes mounted in NFS protocol can only be read or written by a DolphinDB process started by ROOT instead of common or SUDO users.
-
-
-## 5. Change Configuration 
-
-There are 2 ways to change single-node mode configuration parameters:
-
-- update the configuration file dolphindb.cfg. 
-
-- Specify configuration parameters in the command line when starting the node. For example, change the port number to be 8900 and the maximum memory to be 8 GB:
-
-Linux:
+To check whether the node was successfully started, execute the following shell command:
 
 ```sh
-./dolphindb -localSite localhost:8900:local8900 -maxMemSize 8
+ps aux|grep dolphindb
 ```
 
-Windows:
+The following information indicates a successful startup:
+
+![SingleNodeValidation](images/deploy_standalone/start_singlenode_linux_backend_success.png)
+
+### Step 4: Check the Node Status on DolphinDB Web
+
+Enter the deployment server IP address and port number (8848 by default) in the browser to navigate to the DolphinDB Web. The server address (*ip*:*port*) used in this tutorial is 10.0.0.82:8848. Below is the web interface.
+
+![SingleNodeStatusWeb](images/deploy_standalone/checknode_status_singlenode_web.png)
+
+> ❗️ If the browser and DolphinDB are not deployed on the same server, you should turn off the firewall or open the corresponding port beforehand.
+
+## 2. Standalone Deployment on Windows OS
+
+### Step 1: Download
+
+- Official website: https://www.dolphindb.com/alone/alone.php?id=75
+
+- Extract the installation package to the specified directory:
 
 ```sh
-dolphindb.exe -localSite localhost:8900:local8900 -maxMemSize 8
+C:\DolphinDB
 ```
 
-For more details on configuration parameters, please see [Configuration](https://www.dolphindb.com/help/DatabaseandDistributedComputing/Configuration/index.html).
+> ❗️ The directory name cannot contain any space characters, otherwise it will fail to start the data node. For example, do not extract it to the Program Files folder on Windows.
 
-## 6. Update DolphinDB Server
+### Step 2: Update License File
 
-<!--
-For Linux users, you can execute upgrade.sh under the subdirectory clusterDemo to update the server. Or you can follow the steps:
+If you have obtained the Enterprise Edition license, use it to replace the following file:
 
--->
+```sh
+C:\DolphinDB\server\dolphindb.lic
+```
 
-Please follow the steps to update the server:
+Otherwise, you can continue to use the community version of DolphinDB, which allows up to 8GB of memory use for 20 years.
 
-1. Close the server.
+### Step 3: Run DolphinDB Server
 
-2. Backup the metadata. The default directory to save the metadata for a standalone mode is:
+Navigate to the folder *C:\DolphinDB\server*:
 
-   ```sh
-   /DolphinDB/server/local8900/dfsMeta/
-   ```
-   ```sh
-   /DolphinDB/server/local8900/storage/CHUNK_METADATA/
-   ```
+![start_singlenode_win_folder](images/deploy_standalone/start_singlenode_win_folder.png)
 
-   You can execute the following command on Linux to back up the metadata:
+- Windows console mode:
 
-   ```sh
-   mkdir backup
-   cp -r local8900/dfsMeta/ backup/dfsMeta
-   cp -r local8900/storage/CHUNK_METADATA/ backup/CHUNK_METADATA
-   ```
-   
->  If the backup files are not in the above default directories, please check the directories specified by the configuration parameters *dfsMetaDir* and *chunkMetaDir*. If the configuration parameters are not modified but the configuration parameter *volumes* is specified, then you can find the CHUNK_METADATA under the *volumes* directory.
+Double click to execute *dolphindb.exe*:
 
-3. Download a new version of server package from [DolphinDB website](https://dolphindb.com). You can also download a 1.30.6 server using the following Linux command:
+![singlenode_win_dbclickddbexe](images/deploy_standalone/singlenode_win_dbclickddbexe.png)
 
-   ```sh
-   wget https://www.dolphindb.cn/downloads/DolphinDB_Linux64_V1.30.6.zip
-   ```
+The default port number of the system is 8848. You can change it by modifying the *localSite* parameter in config file *dolphindb.cfg*.
 
->  Note the file name changes with different version number.
+- Windows background mode:
 
-4. Unzip the package. Execute the following Linux command to unzip the package to the directory v1.30.6:
+Double click to execute *backgroundSingle.vbs*, and check DolphinDB process in your Task Manager.
 
-   ```sh
-   unzip DolphinDB_Linux64_V1.30.6.zip -d v1.30.6
-   ```
+![singlenode_win_backend_vbs](images/deploy_standalone/singlenode_win_backend_vbs.png)
 
-5. Replace the files under the server directory except for config, data, log folders and dolphindb.cfg.
+Or you can check the process in Command Prompt with the following command.
 
->  Note: Please do not overwrite the existing server folder. If you have customized the parameters in the file *dolphindb.cfg*,  added scripts to the init file *dolphindb.dos*, or updated the license *dolphindb.lic*, make sure not to overwrite those files. Otherwise, you will lose your changes.
+```sh
+tasklist|findstr "dolphindb"
+```
 
-6. Restart the server and GUI. Execute the following command to check the version information:
+![singlenode_win_findstr](images/deploy_standalone/singlenode_win_findstr.png)
 
-   ```sh
-   version()
-   ```
+### Step 4: Check the Node Status on DolphinDB Web
 
-For more information, please see [DolphinDB help](https://www.dolphindb.com/help/index.html).
+Enter the deployment server IP address and port number (8848 by default) in the browser to navigate into the DolphinDB Web. The server address (*ip*:*port*) used in this tutorial is 10.0.0.82:8848. Below is the web interface.
+
+![singlenode_win_web_checknode](images/deploy_standalone/singlenode_win_web_checknode.png)
+
+> ❗️ If the browser and DolphinDB are not deployed on the same server, you should turn off the firewall or open the corresponding port beforehand.
+
+## 3. Update DolphinDB Server
+
+### 3.1 Update on Linux
+
+**Step 1: Close the Server**
+
+Navigate to the folder */DolphinDB/server/clusterDemo* to execute the following command:
+
+```sh
+./stopAllNode.sh
+```
+
+**Step 2: Backup the Metadata**
+
+The default directory to save the metadata for a standalone mode is:
+
+```sh
+/DolphinDB/server/local8848/dfsMeta/
+```
+
+```sh
+/DolphinDB/server/local8848/storage/CHUNK_METADATA/
+```
+
+You can execute the following command to back up the metadata:
+
+```sh
+mkdir backup
+cp -r local8848/dfsMeta/ backup/dfsMeta
+cp -r local8848/storage/CHUNK_METADATA/ backup/CHUNK_METADATA
+```
+
+> ❗️ If the backup files are not in the above default directories, check the directories specified by the configuration parameters *dfsMetaDir* and *chunkMetaDir*. If the configuration parameters are not modified but the configuration parameter *volumes* is specified, then you can find the CHUNK_METADATA under the *volumes* directory.
+
+**Step 3: Update**
+
+- Online Update
+
+Navigate to the folder */DolphinDB/server/clusterDemo* to execute the following command:
+
+```sh
+./upgrade.sh
+```
+
+The following prompt is returned:
+
+![singlenode_linux_upgrade_online_tip1](images/deploy_standalone/singlenode_linux_upgrade_online_tip1.png)
+
+Type "y" and press Enter:
+
+![singlenode_linux_upgrade_online_tip2](images/deploy_standalone/singlenode_linux_upgrade_online_tip2.png)
+
+Type "1" and press Enter:
+
+![singlenode_linux_upgrade_online_tip3](images/deploy_standalone/singlenode_linux_upgrade_online_tip3.png)
+
+Type the version number you require and press Enter. To update to version 2.00.9.1, for example, enter 2.00.9.1 and press Enter. The following prompt indicates a successful upgrade.
+
+![singlenode_linux_upgrade_online_success](images/deploy_standalone/singlenode_linux_upgrade_online_success.png)
+
+- Offline Update
+
+Download a new version of server package from [DolphinDB website](https://www.dolphindb.com/alone/alone.php?id=75)
+
+Upload the installation package to */DolphinDB/server/clusterDemo*. Take version 2.00.9.1 as an example.
+
+![singlenode_linux_upgrade_offline_1](images/deploy_standalone/singlenode_linux_upgrade_offline_1.png)
+
+Navigate to the folder */DolphinDB/server/clusterDemo* to execute the following command:
+
+```sh
+./upgrade.sh
+```
+
+The following prompt is returned:
+
+![singlenode_linux_upgrade_offline_2](images/deploy_standalone/singlenode_linux_upgrade_offline_2.png)
+
+Type "y" and press Enter:
+
+![singlenode_linux_upgrade_offline_3](images/deploy_standalone/singlenode_linux_upgrade_offline_3.png)
+
+Type "1" and press Enter:
+
+![singlenode_linux_upgrade_offline_4](images/deploy_standalone/singlenode_linux_upgrade_offline_4.png)
+
+Type the version number you require and press Enter. To update to version 2.00.9.1, for example, enter 2.00.9.1 and press Enter. The following prompt indicates a successful upgrade.
+
+![singlenode_linux_upgrade_offline_5](images/deploy_standalone/singlenode_linux_upgrade_offline_5.png)
+
+**Step 4: Restart the Server**
+
+Navigate to the folder */DolphinDB/server* to start the server with the following command:
+
+```sh
+sh startSingle.sh
+```
+
+Open the web interface and execute the following script to check the current version of DolphinDB.
+
+```sh
+version()
+```
+
+### 3.2 Update on Windows
+
+**Step 1: Close the Server**
+
+- In console mode, close the foreground process.
+- In background mode, close DolphinDB process from Task Manager.
+
+**Step 2: Back up the Metadata**
+
+The default directory to save the metadata for a standalone mode is:
+
+```sh
+C:\DolphinDB\server\local8848\dfsMeta\
+```
+
+```sh
+C:\DolphinDB\DolphinDB\server\local8848\storage\CHUNK_METADATA\
+```
+
+Create a new folder *backup* under *C:\DolphinDB*, and copy the following files to it:
+
+- file *dfsMeta* under *C:\DolphinDB\server\local8848*
+- file *CHUNK_METADATA* under *C:\DolphinDB\server\local8848\storage*
+
+![singlenode_win_upgade_1](images/deploy_standalone/singlenode_win_upgade_1.png)
+
+> ❗️ If the backup files are not in the above default directories, check the directories specified by the configuration parameters *dfsMetaDir* and *chunkMetaDir*. If the configuration parameters are not modified but the configuration parameter *volumes* is specified, then you can find the *CHUNK_METADATA* under the *volumes* directory.
+
+**Step 3: Update**
+
+- Download a new version of server package from [DolphinDB website](https://www.dolphindb.com/alone/alone.php?id=75)
+- Replace the old server with all files (except *dolphindb.cfg* and *dolphindb.lic*) in the current *\DolphinDB\server* folder.
+
+**Step 4: Restart the Server**
+
+Double click to execute *dolphindb.exe*.
+
+Open the web interface and execute the following script to check the current version of DolphinDB.
+
+```sh
+version()
+```
+
+## 4. Update License File
+
+### Step 1: Replace the License File
+
+Replace the old license file with a new one.
+
+License file path on Linux:
+
+```sh
+/DolphinDB/server/dolphindb.lic
+```
+
+License file path on Windows:
+
+```sh
+C:\DolphinDB\server\dolphindb.lic
+```
+
+### Step 2: Update License File
+
+- Online Update
+
+Execute the following script in web interface:
+
+```sh
+updateLicense()
+```
+
+**Note:**
+> * The client name of the license cannot be changed. 
+> * The number of nodes, memory size, and the number of CPU cores cannot be smaller than the original license. 
+> * The update takes effect only on the node where the function is executed. Therefore, in a cluster mode, the function needs to be run on all controllers, agents, data nodes, and compute nodes. 
+> * The license type must be either commercial (paid) or free.
+
+- Offline Update
+
+Restart DolphinDB server to complete the updates.
+
+## 5. FAQ
+
+### 5.1 Failed to Start the Server for the Port is Occupied by Other Programs
+
+The default port number of the system is 8848. If you cannot start the server, you can first check the log file *dolphindb.log* under */DolphinDB/server*.
+
+If the following error occurs, it indicates that the specified port is occupied by other programs. 
+
+```sh
+<ERROR> :Failed to bind the socket on port 8848 with error code 98
+```
+
+In such case, you can change to another free port in the config file.
+
+### 5.2 Failed to Access the Web Interface
+
+Despite the server running and the server address (*ip*:*port*) being correct, the web interface remains inaccessible.
+
+![singlenode_faq_1](images/deploy_standalone/singlenode_faq_1.jpg)
+
+The common reason for the above problem is that the browser and DolphinDB are not deployed on the same server, and the server where DolphinDB is deployed has a firewall on. You can solve this issue by turning off the firewall or by opening the corresponding port.
+
+### 5.3 Roll Back a Failed Upgrade on Linux
+
+If you cannot start DolphinDB server after upgrade, you can follow steps below to roll back to the previous version.
+
+**Step 1: Restore Metadata Files**
+
+Navigate to the folder */DolphinDB/server* to restore metadata files from backup with the following commands:
+
+```sh
+cp -r backup/dfsMeta/ local8848/dfsMeta
+cp -r backup/CHUNK_METADATA/ local8848/storage/CHUNK_METADATA
+```
+
+**Step 2: Restore Program Files**
+
+Download the previous version of server package from the official website. Replace the server that failed to update with all files (except *dolphindb.cfg* and *dolphindb.lic*) just downloaded.
+
+### 5.4 Roll Back a Failed Upgrade on Windows
+
+If you cannot start DolphinDB server after upgrade, you can follow steps below to roll back to the previous version.
+
+**Step 1: Restore Metadata Files**
+
+Use metadata files from folder backup to replace the following files:
+
+- file *dfsMeta* under *local8848*
+- file *CHUNK_METADATA* under *local8848/storage*
+
+**Step 2: Restore Program Files**
+
+Download the previous version of server package from the official website. Replace the server that failed to update with all files (except *dolphindb.cfg* and *dolphindb.lic*) just downloaded.
+
+### 5.5 Failed to Update the License File
+
+Updating the license file online has to meet the requirements listed in [Step 2, Chapter 4](#step-2-update-license-file-2). 
+
+If not, you can choose to update offline or apply for an [Enterprise Edition License](https://www.dolphindb.com/mx_form/mx_form.php?id=98)。
+
+### 5.6 Change Configuration
+
+For more details on configuration parameters, refer to [Configuration](https://www.dolphindb.com/help/DatabaseandDistributedComputing/Configuration/index.html)。
+
+If you encounter performance problems, you can contact our team on [Slack](https://dolphindb.slack.com/) for technical support.
+
+## 6. See Also
+
+For more information, refer to [DolphinDB User Manual](https://www.dolphindb.com/help/index.html).
