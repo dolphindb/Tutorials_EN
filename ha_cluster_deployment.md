@@ -18,7 +18,7 @@ Metadata is stored on controllers in DolphinDB. To ensure high availability of m
 
 DolphinDB APIs also support high availability. When the data node an API is connecting with becomes unavailable, the API will attempt to reconnect to the data node. If the reconnecting attempt fails, the API will automatically connect to another data node that is available. 
 
-High availability is offered in clusters but not in standalone mode. Regarding how to deploy a multi-machine cluster please refer to [DolphinDB Multi-Machine Cluster Deployment]([multi_machine_cluster_deployment.md](https://github.com/dolphindb/Tutorials_EN/blob/master/multi_machine_cluster_deployment.md)).
+High availability is offered in clusters but not in standalone mode. Regarding how to deploy a multi-machine cluster please refer to [DolphinDB Multi-Machine Cluster Deployment](/multi_machine_cluster_deployment.md).
 
 ![images](images/ha_cluster/arc.png?raw=true)
 
