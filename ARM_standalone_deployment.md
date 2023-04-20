@@ -1,23 +1,42 @@
 # DolphinDB ARM Standalone Deployment
 
+This tutorial describes how to deploy the DolphinDB ARM standalone, and update the server and license file. It is served as a quick start guide for you. A frequently asked questions list is also provided.
+
 - [DolphinDB ARM Standalone Deployment](#dolphindb-arm-standalone-deployment)
   - [1. System Requirements](#1-system-requirements)
-  - [2. Download DolphinDB Database](#2-download-dolphindb-database)
-  - [3. Update License File](#3-update-license-file)
-  - [4. Run DolphinDB Server](#4-run-dolphindb-server)
-  - [5. Connect to DolphinDB Server from Web](#5-connect-to-dolphindb-server-from-web)
-  - [6. Run DolphinDB Script from Web](#6-run-dolphindb-script-from-web)
-  - [7. Update DolphinDB Server](#7-update-dolphindb-server)
+  - [2. Deploy DolphinDB ARM Standalone](#2-deploy-dolphindb-arm-standalone)
+    - [Step 1: Download](#step-1-download)
+    - [Step 2: Update License File](#step-2-update-license-file)
+    - [Step 3: Run DolphinDB Server](#step-3-run-dolphindb-server)
+    - [Step 4: Check the Node Status on DolphinDB Web](#step-4-check-the-node-status-on-dolphindb-web)
+  - [3. Update DolphinDB Server](#3-update-dolphindb-server)
+    - [Step 1: Close the Server](#step-1-close-the-server)
+    - [Step 2: Back up the Metadata](#step-2-back-up-the-metadata)
+    - [Step 3: Update](#step-3-update)
+    - [Step 4: Restart the Server](#step-4-restart-the-server)
+  - [4. Update License File](#4-update-license-file)
+    - [Step 1: Replace the License File](#step-1-replace-the-license-file)
+    - [Step 2: Update License File](#step-2-update-license-file-1)
+  - [5. FAQ](#5-faq)
+    - [5.1 Failed to Start the Server for the Port is Occupied by Other Programs](#51-failed-to-start-the-server-for-the-port-is-occupied-by-other-programs)
+    - [5.2 Failed to Access the Web Interface](#52-failed-to-access-the-web-interface)
+    - [5.3 Roll Back a Failed Upgrade on Linux](#53-roll-back-a-failed-upgrade-on-linux)
+    - [5.4 Failed to Update the License File](#54-failed-to-update-the-license-file)
+    - [5.5 Change Configuration](#55-change-configuration)
+  - [6. See Also](#6-see-also)
+
 
 ## 1. System Requirements
 
-Operating system: Linux (kernel 3.10 or above)
+These are basic requirements for installing DolphinDB:
 
-RAM: 2 GB or above
+**Operating system**: Linux (kernel 3.10 or above)
 
-Flash memory: 8 GB or above
+**RAM**: 2 GB or above
 
-Supported ARM CPU: 
+**Flash memory**: 8 GB or above
+
+**Supported ARM CPU**: 
 
 - CORTEXA15
 - CORTEXA9
@@ -32,148 +51,245 @@ Supported ARM CPU:
 - THUNDERX2T99  
 - TSV110
 
-The cross compiler used in DolphinDB ARM is arm-linux-gnueabihf4.9 for 32-bit systems and aarch64-linux-gnu_4.9.3 for 64-bit systems. 
+**Cross compiler for 32-bit systems**: arm-linux-gnueabihf4.9
 
-## 2. Download DolphinDB Database
+**Cross compiler for 64-bit systems**: aarch64-linux-gnu_4.9.3
 
-Download DolphinDB for ARM from [DolphinDB](http://www.dolphindb.com/downloads.html) website and extract it to a directory. For example, extract it to the following directory:
+If you encounter any problems, contact us (support@dolphindb.com) for technical support.
 
+## 2. Deploy DolphinDB ARM Standalone
+
+### Step 1: Download
+
+- Official website: [DolphinDB](https://www.dolphindb.com/alone/alone.php?id=75)
+- Download DolphinDB for ARM with a shell command. Take version 2.00.9.1 for example:
+
+```sh
+wget "https://www.dolphindb.cn/downloads/DolphinDB_ARM64_V2.00.9.1.zip"
 ```
-/DolphinDB
+
+Then extract the installation package to the specified directory (e.g., to */DolphinDB*):
+
+```sh
+unzip DolphinDB_ARM64_V2.00.9.1.zip -d /DolphinDB
 ```
 
-## 3. Update License File 
+**Note**: The directory name cannot contain any space characters, otherwise it will fail to start the data node.
 
-If the user has obtained the Enterprise Edition license, please use it to replace the following file:
+### Step 2: Update License File
 
-```
+If you have obtained the Enterprise Edition license, use it to replace the following file:
+
+```sh
 /DolphinDB/server/dolphindb.lic
 ```
 
-## 4. Run DolphinDB Server
+Otherwise, you can continue to use the community version of DolphinDB, which allows up to 8GB RAM use for 20 years.
 
-Go to folder /DolphinDB/server/ and run the executable file *dolphindb* 
+### Step 3: Run DolphinDB Server
 
-Before running the executable, please change its access permissions:
+Navigate to the folder */DolphinDB/server* . The file permissions need to be modified for the first startup. Execute the following shell command:
 
+```sh
+chmod +x dolphindb
 ```
-chmod 777 dolphindb
+
+Due to the limited memory of the system, you need to modify the memory-related configuration parameters according to your device for the first startup. Execute the following shell command:
+
+```sh
+vim dolphindb.cfg
 ```
 
-Then modify configuration parameters in the file *dolphindb.cfg*:
+The default port number of the system is 8848. You can change it (e.g., to 8900) with the parameter *localSite*:
 
-The default port number is 8848. Set the port number with parameter *localSite* to 8900:
-
-```
+```sh
 localSite=localhost:8900:local8900
 ```
 
-Specify the maximum amount of memory allocated to DolphinDB with parameter *maxMemSize* (in terms of GB). To set it to 0.8 GB：
+Specify the maximum amount of memory (in GB) allocated to DolphinDB with parameter maxMemSize, e.g., to set it to 0.8 GB:
 
-```
-maxMemSize=0.8 
+```sh
+maxMemSize=0.8
 ```
 
-Specify the maximum amount of memory allocated to an array with parameter *regularArrayMemoryLimit* (in terms of MB). It must be the exponential power of 2 with the default value of 2048. To set it to 64 MB:
+Specify the maximum amount of memory (in MB) allocated to an array with parameter regularArrayMemoryLimit. It must be the exponential power of 2 with the default value of 512. To set it to 64 MB:
 
-```
+```sh
 regularArrayMemoryLimit=64
 ```
 
-It's recommended to set the parameter *maxLogSize* based on your RAM size (in terms of MB). When the log file reaches this size it will be archived. The default value is 1024 MB and the minimum permissible value is 100 MB. To set it to 100MB:
+Set the parameter *maxLogSize*. When the log file reaches the specified size it will be archived. The default value is 1024 MB and the minimum value is 100 MB. To set it to 100MB: 
 
-```
+```sh
 maxLogSize=100
 ```
 
-Run DolphinDB server:
+- Linux console mode:
 
-- Linux console mode: 
-
-```
+```sh
 ./dolphindb
 ```
 
-- Linux background mode: 
+- Linux background mode:
+
+```sh
+sh startSingle.sh
+```
+
+To check whether the node was started, execute the following shell command:
+
+```sh
+ps aux|grep dolphindb
+```
+
+The following information indicates a successful startup:
+
+![image](./images/arm_standalone_deploy/chap2_step3_result.png)
+
+### Step 4: Check the Node Status on DolphinDB Web
+
+Enter the deployment server IP address and port number (8848 by default) in the browser to navigate to the DolphinDB Web. The server address (*ip*:*port*) used in this tutorial is 10.0.0.82:8848. Below is the web interface.
+
+![image](./images/arm_standalone_deploy/chap2_step4_nodestatus.png)
+
+**Note**: If the browser and DolphinDB are not deployed on the same server, you should turn off the firewall or open the corresponding port beforehand.
+
+## 3. Update DolphinDB Server
+
+### Step 1: Close the Server
+
+Navigate to the folder */DolphinDB/server/clusterDemo* to execute the following command:
+
+```sh
+./stopAllNode.sh
+```
+
+### Step 2: Back up the Metadata
+
+The default directory to save the metadata for a standalone mode is:
+
+```sh
+/DolphinDB/server/local8848/dfsMeta/
+```
+
+```sh
+/DolphinDB/server/local8848/storage/CHUNK_METADATA/
+```
+
+Back up the metadata with the following command:
 
 ```
-./startSingle.sh
+mkdir backup
+cp -r local8848/dfsMeta/ backup/dfsMeta
+cp -r local8848/storage/CHUNK_METADATA/ backup/CHUNK_METADATA
 ```
 
-<!--
-In Linux, we recommend starting in the background mode with Linux command **nohup** (header) and **&** (tail). Even if the terminal is disconnected, DolphinDB will keep running. "-console" is set to 1 by default. To run in the background mode, please set it to 0 ("-console 0"). Otherwise, the system will quit after running for a while. 
--->
+**Note**:
+If the backup files are not in the above default directories, check the directories specified by the configuration parameters *dfsMetaDir* and *chunkMetaDir*. If the configuration parameters are not modified but the configuration parameter *volumes* is specified, then you can find the *CHUNK_METADATA* under the *volumes* directory.
 
-In console mode, you can execute DolphinDB code from the command line. Otherwise, you can execute scripts via a user interface such as GUI or VS Code Extension.
+### Step 3: Update
 
+Download a new version of server package from [DolphinDB website](https://www.dolphindb.com/alone/alone.php?id=75).
 
-## 5. Connect to DolphinDB Server from Web
+Replace the old server with all files (except *dolphindb.cfg* and *dolphindb.lic*) in the current *\DolphinDB\server* folder.
 
-Go to your browser (currently supporting Chrome and Firefox) and enter localhost:8848 in the address bar to open DolphinDB notebook. If you have started DolphinDB server with another port number, change 8848 to the port number you have used. Please note that if there is no execution on the web for 10 minutes, the session will be automatically closed to release resources on the server. We recommend users to work on DolphinDB GUI where all sessions remain open until terminated by users. 
+### Step 4: Restart the Server
 
-## 6. Run DolphinDB Script from Web
+Navigate to the folder */DolphinDB/server* to start the server with the following command:
 
-Run the following DolphinDB script in the editor window of DolphinDB notebook. The figure below shows the output. 
+```sh
+sh startSingle.sh
+```
+
+Open the web interface and execute the following script to check the current version of DolphinDB.
+
+```sh
+version()
+```
+
+## 4. Update License File
+
+### Step 1: Replace the License File
+
+Replace the old license file with a new one.
+
+License file path:
+
+```sh
+/DolphinDB/server/dolphindb.lic
+```
+
+### Step 2: Update License File
+
+- Online Update
+
+Execute the following script in web interface:
+
+```sh
+updateLicense()
+```
+
+**Note**:
+* The client name of the license cannot be changed.
+* The number of nodes, memory size, and the number of CPU cores cannot be smaller than the original license.
+* The update takes effect only on the node where the function is executed. Therefore, in a cluster mode, the function needs to be run on all controllers, agents, data nodes, and compute nodes.
+* The license type must be either commercial (paid) of free.
+
+- Offline Update
+
+Restart DolphinDB server to complete the updates.
+
+## 5. FAQ
+
+### 5.1 Failed to Start the Server for the Port is Occupied by Other Programs
+
+The default port number of the system is 8848. If you cannot start the server, you can first check the log file *dolphindb.log* under */DolphinDB/server*.
+
+If the following error occurs, it indicates that the specified port is occupied by other programs.
 
 ```
-table(1..5 as id, 6..10 as v)
+<ERROR> :Failed to bind the socket on port 8848 with error code 98
 ```
-![](images/single_web.JPG)
 
-## 7. Update DolphinDB Server
+In such case, you can change to another free port in the config file.
 
-<!--
-For Linux users, you can execute upgrade.sh under the subdirectory clusterDemo to update the server. Or you can follow the steps:
+### 5.2 Failed to Access the Web Interface
 
--->
+Despite the server running and the server address being correct, the web interface remains inaccessible.
 
-Please follow the steps to update the server:
+![image](./images/arm_standalone_deploy/chap5_q2.jpg)
 
-1. Close the server.
+The common reason for the above problem is that the browser and DolphinDB are not deployed on the same server, and the server where DolphinDB is deployed has a firewall on. You can solve this issue by turning off the firewall or by opening the corresponding port.
 
-2. Backup the metadata. The default directory to save the metadata for a standalone mode is:
+### 5.3 Roll Back a Failed Upgrade on Linux
 
-   ```sh
-   /DolphinDB/server/local8900/dfsMeta/
-   ```
-   ```sh
-   /DolphinDB/server/local8900/storage/CHUNK_METADATA/
-   ```
+If you cannot start DolphinDB server after upgrade, you can follow steps below to roll back to the previous version.
 
-   You can execute the following command on Linux to back up the metadata:
+**Step 1: Restore Metadata Files**
 
-   ```sh
-   mkdir backup
-   cp -r local8900/dfsMeta/ backup/dfsMeta
-   cp -r local8900/storage/CHUNK_METADATA/ backup/CHUNK_METADATA
-   ```
-   
->  If the backup files are not in the above default directories, please check the directories specified by the configuration parameters *dfsMetaDir* and *chunkMetaDir*. If the configuration parameters are not modified but the configuration parameter *volumes* is specified, then you can find the CHUNK_METADATA under the *volumes* directory.
+Navigate to the folder */DolphinDB/server* to restore metadata files from backup with the following commands:
 
-3. Download a new version of server package from [DolphinDB website](https://dolphindb.com). You can also download a 1.30.6 server using the following Linux command:
+```sh
+cp -r backup/dfsMeta/ local8848/dfsMeta
+cp -r backup/CHUNK_METADATA/ local8848/storage/CHUNK_METADATA
+```
 
-   ```sh
-   wget https://www.dolphindb.cn/downloads/DolphinDB_Linux64_V1.30.6.zip
-   ```
+**Step 2: Restore Program Files**
 
->  Note the file name changes with different version number.
+Download the previous version of server package from the official website. Replace the server that failed to update with all files (except *dolphindb.cfg* and *dolphindb.lic*) just downloaded.
 
-4. Unzip the package. Execute the following Linux command to unzip the package to the directory v1.30.6:
+### 5.4 Failed to Update the License File
 
-   ```sh
-   unzip DolphinDB_Linux64_V1.30.6.zip -d v1.30.6
-   ```
+Updating the license file online has to meet the requirements listed in [Step 2, Chapter 4](#step-2-update-license-file-1). 
 
-5. Replace the files under the server directory except for config, data, log folders and dolphindb.cfg.
+If not, you can choose to update offline or apply for an [Enterprise Edition License](https://www.dolphindb.com/mx_form/mx_form.php?id=98).
 
->  Note: Please do not overwrite the existing server folder. If you have customized the parameters in the file *dolphindb.cfg*,  added scripts to the init file *dolphindb.dos*, or updated the license *dolphindb.lic*, make sure not to overwrite those files. Otherwise, you will lose your changes.
+### 5.5 Change Configuration
 
-6. Restart the server and GUI. Execute the following command to check the version information:
+For more details on configuration parameters, refer to [Configuration](https://www.dolphindb.com/help/DatabaseandDistributedComputing/Configuration/index.html).
 
-   ```sh
-   version()
-   ```
+If you encounter performance problems, you can contact our team on [Slack](https://dolphindb.slack.com/) for technical support.
 
+## 6. See Also
 
-For more details about configuration parameters, please refer to DolphinDB [help](http://dolphindb.com/help/).
-
+For more information, refer to [DolphinDB User Manual](https://www.dolphindb.com/help/index.html).
