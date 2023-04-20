@@ -33,7 +33,7 @@ This tutorial describes how to deploy the DolphinDB server standalone, and updat
 
 ### Step 1: Download
 
-- Official website: https://www.dolphindb.com/alone/alone.php?id=75
+- Official website: [DolphinDB](https://www.dolphindb.com/alone/alone.php?id=75)
 - Download DolphinDB with a shell command. Take version 2.00.9.1 for example:
 
 ```sh
@@ -46,7 +46,7 @@ Then extract the installation package to the specified directory (e.g., to */Dol
 unzip DolphinDB_Linux64_V2.00.9.1.zip -d /DolphinDB
 ```
 
-> ❗️ The directory name cannot contain any space characters, otherwise it will fail to start the data node. 
+**Note**: The directory name cannot contain any space characters, otherwise it will fail to start the data node. 
 
 ### Step 2: Update License File
 
@@ -100,13 +100,13 @@ Enter the deployment server IP address and port number (8848 by default) in the 
 
 ![SingleNodeStatusWeb](images/deploy_standalone/checknode_status_singlenode_web.png)
 
-> ❗️ If the browser and DolphinDB are not deployed on the same server, you should turn off the firewall or open the corresponding port beforehand.
+**Note**: If the browser and DolphinDB are not deployed on the same server, you should turn off the firewall or open the corresponding port beforehand.
 
 ## 2. Standalone Deployment on Windows OS
 
 ### Step 1: Download
 
-- Official website: https://www.dolphindb.com/alone/alone.php?id=75
+- Official website: [DolphinDB](https://www.dolphindb.com/alone/alone.php?id=75)
 
 - Extract the installation package to the specified directory:
 
@@ -114,7 +114,7 @@ Enter the deployment server IP address and port number (8848 by default) in the 
 C:\DolphinDB
 ```
 
-> ❗️ The directory name cannot contain any space characters, otherwise it will fail to start the data node. For example, do not extract it to the Program Files folder on Windows.
+**Note**: The directory name cannot contain any space characters, otherwise it will fail to start the data node. For example, do not extract it to the Program Files folder on Windows.
 
 ### Step 2: Update License File
 
@@ -160,7 +160,7 @@ Enter the deployment server IP address and port number (8848 by default) in the 
 
 ![singlenode_win_web_checknode](images/deploy_standalone/singlenode_win_web_checknode.png)
 
-> ❗️ If the browser and DolphinDB are not deployed on the same server, you should turn off the firewall or open the corresponding port beforehand.
+**Note**: If the browser and DolphinDB are not deployed on the same server, you should turn off the firewall or open the corresponding port beforehand.
 
 ## 3. Update DolphinDB Server
 
@@ -194,7 +194,7 @@ cp -r local8848/dfsMeta/ backup/dfsMeta
 cp -r local8848/storage/CHUNK_METADATA/ backup/CHUNK_METADATA
 ```
 
-> ❗️ If the backup files are not in the above default directories, check the directories specified by the configuration parameters *dfsMetaDir* and *chunkMetaDir*. If the configuration parameters are not modified but the configuration parameter *volumes* is specified, then you can find the CHUNK_METADATA under the *volumes* directory.
+**Note**: If the backup files are not in the above default directories, check the directories specified by the configuration parameters *dfsMetaDir* and *chunkMetaDir*. If the configuration parameters are not modified but the configuration parameter *volumes* is specified, then you can find the *CHUNK_METADATA* under the *volumes* directory.
 
 **Step 3: Update**
 
@@ -292,7 +292,7 @@ Create a new folder *backup* under *C:\DolphinDB*, and copy the following files 
 
 ![singlenode_win_upgade_1](images/deploy_standalone/singlenode_win_upgade_1.png)
 
-> ❗️ If the backup files are not in the above default directories, check the directories specified by the configuration parameters *dfsMetaDir* and *chunkMetaDir*. If the configuration parameters are not modified but the configuration parameter *volumes* is specified, then you can find the *CHUNK_METADATA* under the *volumes* directory.
+**Note**: If the backup files are not in the above default directories, check the directories specified by the configuration parameters *dfsMetaDir* and *chunkMetaDir*. If the configuration parameters are not modified but the configuration parameter *volumes* is specified, then you can find the *CHUNK_METADATA* under the *volumes* directory.
 
 **Step 3: Update**
 
@@ -338,10 +338,10 @@ updateLicense()
 ```
 
 **Note:**
-> * The client name of the license cannot be changed. 
-> * The number of nodes, memory size, and the number of CPU cores cannot be smaller than the original license. 
-> * The update takes effect only on the node where the function is executed. Therefore, in a cluster mode, the function needs to be run on all controllers, agents, data nodes, and compute nodes. 
-> * The license type must be either commercial (paid) or free.
+* The client name of the license cannot be changed. 
+* The number of nodes, memory size, and the number of CPU cores cannot be smaller than the original license. 
+* The update takes effect only on the node where the function is executed. Therefore, in a cluster mode, the function needs to be run on all controllers, agents, data nodes, and compute nodes. 
+* The license type must be either commercial (paid) or free.
 
 - Offline Update
 
