@@ -7,6 +7,7 @@
 - [DolphinDB Single-Server Cluster Deployment](single_machine_cluster_deploy.md)
 - [DolphinDB Multi-Machine Cluster Deployment](multi_machine_cluster_deployment.md)
 - [Deploy DolphinDB on Kubernetes](https://github.com/dolphindb/dolphindb-k8s/blob/master/k8s_deployment_EN.md)
+- [Grayscale Upgrade for High-availability Clusters](gray_scale_upgrade_ha.md)
 - [High Availability for DolphinDB](ha_cluster_deployment.md)
 - [Scale out a DolphinDB Cluster](cluster_scaleout.md)
 - [GUI Tutorial](gui_tutorial.md)
