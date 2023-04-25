@@ -255,6 +255,6 @@ In this tutorial we explore the optimization of ETL process in DolphinDB using a
 
 ## Appendices
 
-- [Data Preparation]()
-- [Script Before Optimization]()
-- [Optimized Script]()
+- [Data Preparation](./script/data_etl/dataPreparation.dos)
+- [Script Before Optimization](./script/data_etl/scriptBeforeOptimization.dos)
+- [Optimized Script](./script/data_etl/scriptAfterOptimization.dos)
