@@ -50,26 +50,25 @@
 - [Json API](../../api-json/blob/master/README.md)
 
 ## Plugins
-- [AWS S3](https://github.com/dolphindb/DolphinDBPlugin/blob/release200/aws/README_EN.md)
-- Excel
+- [AWS S3](../../../DolphinDBPlugin/blob/release200/aws/README_EN.md)
 - [Grafana Data Source Plugin](https://github.com/dolphindb/grafana-datasource/blob/master/README.md)
-- [HDF5](https://github.com/dolphindb/DolphinDBPlugin/blob/release200/hdf5/README.md)
-- [HTTPClient](https://dolphindb.net/dzhou/DolphinDBPlugin/-/blob/release200/httpClient/README_EN.md)
-- [kdb](https://github.com/dolphindb/DolphinDBPlugin/blob/release200/kdb/README.md)
-- [Feather](https://github.com/dolphindb/DolphinDBPlugin/blob/release200/feather/README_EN.md)
-- Kafka
-- mat
-- [MongoDB](https://github.com/dolphindb/DolphinDBPlugin/blob/release200/mongodb/README_EN.md)
-- MQTT
-- MySQL
-- [ODBC](https://github.com/dolphindb/DolphinDBPlugin/blob/release200/odbc/README.md)
-- OPC
-- [Parquet](https://dolphindb.net/dzhou/DolphinDBPlugin/-/tree/release200/parquet)
-- py
+- [HDF5](../../../DolphinDBPlugin/blob/release200/hdf5/README.md)
+- [HTTPClient](../../../DolphinDBPlugin/blob/release200/httpClient/README_EN.md)
+- [kdb](../../../DolphinDBPlugin/blob/release200/kdb/README.md)
+- [Feather](../../../DolphinDBPlugin/blob/release200/feather/README_EN.md)
+- [Kafka](../../../DolphinDBPlugin/blob/release200/kafka/README.md)
+- [mat](../../../DolphinDBPlugin/blob/release200/mat/README_EN.md)
+- [MongoDB](../../../DolphinDBPlugin/blob/release200/mongodb/README_EN.md)
+- [MQTT](../../../DolphinDBPlugin/blob/release200/mqtt/README.md)
+- [MySQL](../../../DolphinDBPlugin/blob/release200/mysql/README.md)
+- [ODBC](../../../DolphinDBPlugin/blob/release200/odbc/README.md)
+- [OPC](../../../DolphinDBPlugin/blob/release200/opc/README.md)
+- [Parquet](../../../DolphinDBPlugin/blob/release200/parquet/README.md)
+- [py](../../../DolphinDBPlugin/blob/release200/py/README.md)
 - [XGBoost](../../../DolphinDBPlugin/blob/release200/xgboost/README.md)
 - [ZeroMQ](../../../DolphinDBPlugin/blob/release200/zmq/README_EN.md)
 - [Visual Studio Code DolphinDB Extension](vscode_extension.md)
-- [Use the HTTPClient Plugin to Send Emails](Use the HTTP Client Plugin to Send Emails.md)
+- [Use the HTTPClient Plugin to Send Emails](Use%20the%20HTTP%20Client%20Plugin%20to%20Send%20Emails.md)
 
 ## Modules
 - [Technical Analysis Indicator Library](ta.md)
