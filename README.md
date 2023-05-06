@@ -45,7 +45,7 @@
 - [Python API](python_api.md)
 - [Java API](../../api-java/blob/master/README.md)
 - [C# API](../../api-csharp/blob/master/README.md)
-- [C++ API](../../api-cplusplus/blob/master/README.md)
+- [C++ API](../../api-cplusplus/blob/release200/README.md)
 - [R API](../../api-r/blob/master/README.md)
 - [Json API](../../api-json/blob/master/README.md)
 
