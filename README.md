@@ -42,12 +42,12 @@
 - [Overview of Threading Model in DolphinDB](thread_model_SQL.md)
 
 ## API
-- [Python API](python_api.md)
-- [Java API](../../api-java/blob/master/README.md)
-- [C# API](../../api-csharp/blob/master/README.md)
-- [C++ API](../../../api-cplusplus/blob/release200/README.md)
-- [R API](../../api-r/blob/master/README.md)
-- [Json API](../../api-json/blob/master/README.md)
+- [Python API](../../../api_python3/blob/master/README.md)
+- [Java API](../../../api-java/blob/master/README.md)
+- [C# API](../../../api-csharp/blob/master/README.md)
+- [C++ API](../../../api-cplusplus/blob/master/README.md)
+- [R API](../../../api-r/blob/master/README.md)
+- [Json API](../../../api-json/blob/master/README.md)
 
 ## Plugins
 - [AWS S3](../../../DolphinDBPlugin/blob/release200/aws/README_EN.md)
