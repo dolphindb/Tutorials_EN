@@ -1,6 +1,6 @@
 # DolphinDB ARM Standalone Deployment
 
-This tutorial describes how to deploy the DolphinDB ARM standalone, and update the server and license file. It is served as a quick start guide for you. A frequently asked questions list is also provided.
+This tutorial is a quick start guide describing how to deploy the DolphinDB ARM standalone, and update the server and license file. You can also find solutions to common issues in the FAQ section.
 
 - [DolphinDB ARM Standalone Deployment](#dolphindb-arm-standalone-deployment)
   - [1. System Requirements](#1-system-requirements)
@@ -18,11 +18,6 @@ This tutorial describes how to deploy the DolphinDB ARM standalone, and update t
     - [Step 1: Replace the License File](#step-1-replace-the-license-file)
     - [Step 2: Update License File](#step-2-update-license-file-1)
   - [5. FAQ](#5-faq)
-    - [5.1 Failed to Start the Server for the Port is Occupied by Other Programs](#51-failed-to-start-the-server-for-the-port-is-occupied-by-other-programs)
-    - [5.2 Failed to Access the Web Interface](#52-failed-to-access-the-web-interface)
-    - [5.3 Roll Back a Failed Upgrade on Linux](#53-roll-back-a-failed-upgrade-on-linux)
-    - [5.4 Failed to Update the License File](#54-failed-to-update-the-license-file)
-    - [5.5 Change Configuration](#55-change-configuration)
   - [6. See Also](#6-see-also)
 
 
@@ -74,7 +69,7 @@ Then extract the installation package to the specified directory (e.g., to */Dol
 unzip DolphinDB_ARM64_V2.00.9.1.zip -d /DolphinDB
 ```
 
-**Note**: The directory name cannot contain any space characters, otherwise it will fail to start the data node.
+**Note**: The directory name cannot contain any space characters, otherwise the startup of the data node will fail. 
 
 ### Step 2: Update License File
 
@@ -211,7 +206,7 @@ version()
 
 ### Step 1: Replace the License File
 
-Replace the old license file with a new one.
+Replace an existing license file with a new one.
 
 License file path:
 
@@ -241,7 +236,7 @@ Restart DolphinDB server to complete the updates.
 
 ## 5. FAQ
 
-### 5.1 Failed to Start the Server for the Port is Occupied by Other Programs
+**Q1: Failed to start the server for the port is occupied by other programs**
 
 The default port number of the system is 8848. If you cannot start the server, you can first check the log file *dolphindb.log* under */DolphinDB/server*.
 
@@ -253,7 +248,7 @@ If the following error occurs, it indicates that the specified port is occupied 
 
 In such case, you can change to another free port in the config file.
 
-### 5.2 Failed to Access the Web Interface
+**Q2: Failed to access the web interface**
 
 Despite the server running and the server address being correct, the web interface remains inaccessible.
 
@@ -261,11 +256,11 @@ Despite the server running and the server address being correct, the web interfa
 
 The common reason for the above problem is that the browser and DolphinDB are not deployed on the same server, and the server where DolphinDB is deployed has a firewall on. You can solve this issue by turning off the firewall or by opening the corresponding port.
 
-### 5.3 Roll Back a Failed Upgrade on Linux
+**Q3: Roll back a failed upgrade on Linux**
 
 If you cannot start DolphinDB server after upgrade, you can follow steps below to roll back to the previous version.
 
-**Step 1: Restore Metadata Files**
+- Step 1: Restore Metadata Files
 
 Navigate to the folder */DolphinDB/server* to restore metadata files from backup with the following commands:
 
@@ -274,17 +269,17 @@ cp -r backup/dfsMeta/ local8848/dfsMeta
 cp -r backup/CHUNK_METADATA/ local8848/storage/CHUNK_METADATA
 ```
 
-**Step 2: Restore Program Files**
+- Step 2: Restore Program Files
 
 Download the previous version of server package from the official website. Replace the server that failed to update with all files (except *dolphindb.cfg* and *dolphindb.lic*) just downloaded.
 
-### 5.4 Failed to Update the License File
+**Q4: Failed to update the license file**
 
 Updating the license file online has to meet the requirements listed in [Step 2, Chapter 4](#step-2-update-license-file-1). 
 
 If not, you can choose to update offline or apply for an [Enterprise Edition License](https://www.dolphindb.com/mx_form/mx_form.php?id=98).
 
-### 5.5 Change Configuration
+**Q5: Change configuration**
 
 For more details on configuration parameters, refer to [Configuration](https://www.dolphindb.com/help/DatabaseandDistributedComputing/Configuration/index.html).
 
