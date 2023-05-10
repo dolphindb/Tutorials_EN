@@ -35,6 +35,7 @@
 
 ## System Management
 - [Security and User Access Control](ACL_and_Security.md)
+- [Job Management](job_management_tutorial.md)
 - [Memory Management](memory_management.md)
 - [DolphinDB Startup Scripts](startup.md)
 - [Monitoring with Prometheus](monitoring_with_prometheus.md)
