@@ -103,7 +103,7 @@ tmpfs                   tmpfs      800872       0   800872    0% /run/user/0
 
 The */home* folder is formatted in xfs, and the DolphinDB data file can be put under this directory.
 
-> **Note**: The XFS file system is recommended only for the folder string data files. The installation, metadata, and log folder can be ext4 or other file systems.
+**Note**: The XFS file system is recommended only for the folder string data files. The installation, metadata, and log folder can be ext4 or other file systems.
 
 If the */home* folder is formatted in ext4 or other file systems that cannot change the number of inodes, follow steps below to format it with the XFS file system:
 
