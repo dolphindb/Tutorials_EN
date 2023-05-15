@@ -6,6 +6,7 @@
 - [DolphinDB ARM Standalone Deployment](ARM_standalone_deployment.md)
 - [DolphinDB Single-Server Cluster Deployment](single_machine_cluster_deploy.md)
 - [DolphinDB Multi-Machine Cluster Deployment](multi_machine_cluster_deployment.md)
+- [DolphinDB Deployment on a New Server](deploy_dolphindb_on_new_server.md)
 - [Deploy DolphinDB on Kubernetes](k8s_deployment.md)
 - [Grayscale Upgrade for High-availability Clusters](gray_scale_upgrade_ha.md)
 - [High availability for DolphinDB](ha_cluster_deployment.md)
