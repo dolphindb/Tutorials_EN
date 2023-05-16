@@ -238,7 +238,7 @@ Type "y" and press Enter:
 
 ![singlenode_linux_upgrade_offline_3](images/deploy_standalone/singlenode_linux_upgrade_offline_3.png)
 
-Type "1" and press Enter:
+Type "2" and press Enter:
 
 ![singlenode_linux_upgrade_offline_4](images/deploy_standalone/singlenode_linux_upgrade_offline_4.png)
 
