@@ -12,6 +12,8 @@
 - [High availability for DolphinDB](ha_cluster_deployment.md)
 - [Scale out a DolphinDB Cluster](cluster_scaleout.md)
 - [GUI Tutorial](gui_tutorial.md)
+- [Best Practices for Using HAProxy in DolphinDB](haproxy_best_practices.md)
+
 
 ## Database
 - [Partitioned Databases](database.md)
