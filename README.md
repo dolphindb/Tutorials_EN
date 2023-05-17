@@ -76,6 +76,7 @@
 - [Technical Analysis Indicator Library](ta.md)
 - [WorldQuant 101 Alphas]( wq101alpha.md)
 - [The ops Module](https://github.com/dolphindb/DolphinDBModules/blob/master/ops/README_EN.md)
+- [Trading Calendar](https://github.com/dolphindb/DolphinDBModules/blob/master/MarketHoliday/README_EN.md)
 
 ## Application Scenarios
 - [Calculating ETF IOPV in DolphinDB](streaming_IOPV.md)
