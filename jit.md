@@ -38,29 +38,33 @@ JIT in DolphinDB significantly improves the execution speed of for- loops, while
 
 Next, we use a very simple example to compare the performance with and without JIT for a do-while loop that calculates the sum of all integers from 1 to 1,000,000 100 times.
 ``` 
-def sum_without_jit(n) {
+def sum_without_jit(v) {
   s = 0l
   i = 1
+  n = size(v)
   do {
-    s += i
+    s += v[i]
     i += 1
   } while(i <= n)
   return s
 }
 
 @jit
-def sum_with_jit(n) {
+def sum_with_jit(v) {
   s = 0l
   i = 1
+  n = size(v)
   do {
-    s += i
+    s += v[i]
     i += 1
   } while(i <= n)
   return s
 }
 
-timer(100) sum_without_jit(1000000) //  91017 ms
-timer(100) sum_with_jit(1000000)    //    217 ms
+vec = 1..1000000
+
+timer(100) sum_without_jit(vec)     //  91017 ms
+timer(100) sum_with_jit(vec)        //    217 ms
 ```
 
 It takes more than 400 times longer without JIT than with JIT.
@@ -132,9 +136,9 @@ t20 = 30
 t2 = 20
 signal = rand(100.0, n)
 
-timer (iif(signal >t1, 1h, iif(signal < t10, 0h, 00h)) - iif(signal <t2, 1h, iif(signal > t20, 0h, 00h))).ffill().nullFill(0h) // 410.920 ms
-timer signal_with_jit(calculate, signal, size(signal), t1, t10, t20, t2)       //    170.751 ms
-timer signal_without_jit(signal, size(signal), t1, t10, t20, t2)               //  14044.064 ms
+timer ffill!(iif(signal>t1, 1h, iif(signal<t10, 0h, 00h)) - iif(signal<t2, 1h, iif(signal>t20, 0h, 00h))).nullFill(0h) // 410.920 ms
+timer calculate_with_jit(signal, size(signal), t1, t10, t20, t2)        //    170.7513 ms
+timer calculate_without_jit(signal, size(signal), t1, t10, t20, t2)               //  14044.0641 ms
 ```
 
 In this example, for-loop with JIT is 2.4 times as fast as vectorized calculation and 82 times faster than for-loop without JIT. Here JIT is faster than vectorized calculation, as the vectorized calculation calls the built-in functions of DolphinDB many times. This involves memory allocation and virtual function calls for many times and produces a large number of intermediate results. In comparison, JIT-generated machine code does not have these additional overhead.
@@ -245,9 +249,17 @@ Currently the following operators are supported in JIT: add (+), sub (-), multip
 
 Currently the following mathematical functions are supported in JIT: `exp`,` log`, `sin`,`asin`, `cos`,`acos`, `tan`,` atan`, `abs`,`ceil`,`floor` and `sqrt`. When these mathematical functions appear in the JIT, if the function parameter is a scalar, the corresponding function in glibc or the optimized C-implemented function is called in the machine code; if function parameter is an array, these DolphinDB built-in mathematical functions will be called in the machine code. The advantage of this approach is that the code implemented by directly calling C improves efficiency and reduces unnecessary virtual function calls and memory allocation.
 
-Currently the following built-in functions are supported in JIT: `take`, `seq` , `array`, `size`, `isValid`, `rand`, `cdfNormal`, `cdfBeta`, `cdfBinomial`, `cdfChiSquare`, `cdfExp`, `cdfF`, `cdfGamma`, `cdfKolmogorov`, `cdfcdfLogistic`, `cdfNormal`, `cdfUniform`, `cdfWeibull`, `cdfZipf`, `invBeta`, `invBinomial`, `invChiSquare`, `invExp`, `invF`, `invGamma`, `invLogistic`, `invNormal`, `invPoisson`, `invStudent`, `invUniform`, `invWeibull`, `cbrt`, `deg2rad`, `rad2deg`, `det`, `dot` and `flatten`. 
+Currently the following built-in functions are supported in JIT: `take`, `seq` , `array`, `size`, `isValid`, `rand`, `cdfNormal`, `cdfBeta`, `cdfBinomial`, `cdfChiSquare`, `cdfExp`, `cdfF`, `cdfGamma`, `cdfKolmogorov`, `cdfcdfLogistic`, `cdfNormal`, `cdfUniform`, `cdfWeibull`, `cdfZipf`, `invBeta`, `invBinomial`, `invChiSquare`, `invExp`, `invF`, `invGamma`, `invLogistic`, `invNormal`, `invPoisson`, `invStudent`, `invUniform`, `invWeibull`, `cbrt`, `deg2rad`, `rad2deg`, `det`, `dot`, `flatten`, `sum`, `avg`, `count`, `size`, `min`, `max`, `iif`, and `round`.
 
-Please note that the first parameter of function `array` must be a constant indicating a data type and cannot be a variable. This is because JIT compilation must know the data types of all variables before compilation. 
+**Note**
+- The first parameter of function `array` must be a constant indicating a data type and cannot be a variable. This is because JIT compilation must know the data types of all variables before compilation. 
+- The second parameter of [round](https://dolphindb.com/help200/FunctionsandCommands/FunctionReferences/r/round.html) must be specified, and the value must be greater than 0.
+
+Currently the following cumulative functions are supported (the parameters must be vectors): 
+
+  - Unary functions: `cummax`, `cummin`, `cummed`, `cumfirstNot`, `cumlastNot`, `cumrank`, `cumcount`, `cumpercentile`, `cumstd`, `cumstdp`, `cumvar`, `cumvarp`, `cumsum`, `cumsum2`, `cumsum3`, `cumsum4`, `cumavg`, `cumprod`, and `cumPositiveStreak`. 
+
+  - Binary functions: `cumbeta`, `cumwsum`, `cumwavg`, `cumcovar`, and `cumcorr`.
 
 ### 3.4 Null values
 
@@ -356,21 +368,21 @@ Starting from version 1.2.0, DolphinDB JIT supports the use of matrices as funct
 ```
 @jit
 def foo(a, b) {
-  c = a**b
+  c = a.dot(b)
   d = c.transpose()
-  e = d * 2.0
-  f = e / 3.0
-  g = e + f
+  h = d * 2.0
+  f = h / 3.0
+  g = h + f
   return g
 }
 
-g(1..100$10:10, 100..1$10:10)
+foo(1..100$10:10, 100..1$10:10)
 ```
 
 ### 3.9 Limitations
 
 - JIT only supports user-defined functions.
-- JIT functions only accept parameters with data forms of scalar, array or matrix. Other data forms such as pair, dictionary or table are not supported. 
+- JIT functions only accept parameters with data forms of scalar, array, pair or matrix. Other data forms such as dictionary, table, string, symbol or tuple are not supported.
 
 ## 4 Type Inference
 
@@ -404,19 +416,10 @@ def foo(x) {
   return x + 1
 }
 
-foo (123)             // executed successfully
-foo ("abc")           // throws an exception because STRING is not supported in JIT
-foo (1:2)             // throws an exception because pair is not supported in JIT
-foo ((1 2, 3 4, 5 6)) // throws an exception because tuple is not supported in JIT
-
-@jit
-def foo(x) {
-  y = cumprod(x)
-  z = y + 1
-  return z
-}
-
-foo (1..10)          // throws an exception. As function cumprod is not currently supported, the data type of the result is unknown, resulting in type inference failure
+foo(123)             // executed successfully
+foo(1:2)             // executed successfully
+foo("abc")           // throws an exception because STRING is not supported in JIT
+foo((1 2, 3 4, 5 6)) // throws an exception because tuple is not supported in JIT
 ```
 
 In JIT, please avoid using unsupported data form/type in functions or parameters such as tuple, string, etc., or functions that are not yet supported in JIT.
