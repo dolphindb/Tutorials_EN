@@ -2,7 +2,7 @@
 
 This tutorial is a quick start guide describing how to deploy the DolphinDB server standalone, and update the server and license file. You can also find solutions to common issues in the FAQ section.
 
-- [DolphinDB Standalone Deployment](#dolphindb-standalone-deployment)
+
   - [1. Standalone Deployment on Linux OS](#1-standalone-deployment-on-linux-os)
     - [Step 1: Download](#step-1-download)
     - [Step 2: Update License File](#step-2-update-license-file)
@@ -13,14 +13,16 @@ This tutorial is a quick start guide describing how to deploy the DolphinDB serv
     - [Step 2: Update License File](#step-2-update-license-file-1)
     - [Step 3: Run DolphinDB Server](#step-3-run-dolphindb-server-1)
     - [Step 4: Check the Node Status on DolphinDB Web](#step-4-check-the-node-status-on-dolphindb-web-1)
-  - [3. Update DolphinDB Server](#3-update-dolphindb-server)
-    - [3.1 Update on Linux](#31-update-on-linux)
-    - [3.2 Update on Windows](#32-update-on-windows)
+  - [3. Upgrade DolphinDB Server](#3-upgrade-dolphindb-server)
+    - [3.1 Upgrade on Linux](#31-upgrade-on-linux)
+    - [3.2 Upgrade on Windows](#32-upgrade-on-windows)
   - [4. Update License File](#4-update-license-file)
     - [Step 1: Replace the License File](#step-1-replace-the-license-file)
     - [Step 2: Update License File](#step-2-update-license-file-2)
   - [5. FAQ](#5-faq)
   - [6. See Also](#6-see-also)
+
+
 
 
 ## 1. Standalone Deployment on Linux OS
@@ -156,9 +158,9 @@ Enter the deployment server IP address and port number (8848 by default) in the 
 
 **Note**: If the browser and DolphinDB are not deployed on the same server, you should turn off the firewall or open the corresponding port beforehand.
 
-## 3. Update DolphinDB Server
+## 3. Upgrade DolphinDB Server
 
-### 3.1 Update on Linux
+### 3.1 Upgrade on Linux
 
 **Step 1: Close the Server**
 
@@ -190,9 +192,10 @@ cp -r local8848/storage/CHUNK_METADATA/ backup/CHUNK_METADATA
 
 **Note**: If the backup files are not in the above default directories, check the directories specified by the configuration parameters *dfsMetaDir* and *chunkMetaDir*. If the configuration parameters are not modified but the configuration parameter *volumes* is specified, then you can find the *CHUNK_METADATA* under the *volumes* directory.
 
-**Step 3: Update**
+**Step 3: Upgrade**  
+**Note**: When the server is upgraded to a certain version, the plugin should also be upgraded to the corresponding version.
 
-- Online Update
+- Online Upgrade
 
 Navigate to the folder */DolphinDB/server/clusterDemo* to execute the following command:
 
@@ -212,11 +215,11 @@ Type "1" and press Enter:
 
 ![singlenode_linux_upgrade_online_tip3](images/deploy_standalone/singlenode_linux_upgrade_online_tip3.png)
 
-Type a version number and press Enter. To update to version 2.00.9.1, for example, enter 2.00.9.1 and press Enter. The following prompt indicates a successful upgrade.
+Type a version number and press Enter. To upgrade to version 2.00.9.1, for example, enter 2.00.9.1 and press Enter. The following prompt indicates a successful upgrade.
 
 ![singlenode_linux_upgrade_online_success](images/deploy_standalone/singlenode_linux_upgrade_online_success.png)
 
-- Offline Update
+- Offline Upgrade
 
 Download a new version of server package from [DolphinDB website](https://www.dolphindb.com/alone/alone.php?id=75)
 
@@ -242,7 +245,7 @@ Type "2" and press Enter:
 
 ![singlenode_linux_upgrade_offline_4](images/deploy_standalone/singlenode_linux_upgrade_offline_4.png)
 
-Type a version number and press Enter. To update to version 2.00.9.1, for example, enter 2.00.9.1 and press Enter. The following prompt indicates a successful upgrade.
+Type a version number and press Enter. To upgrade to version 2.00.9.1, for example, enter 2.00.9.1 and press Enter. The following prompt indicates a successful upgrade.
 
 ![singlenode_linux_upgrade_offline_5](images/deploy_standalone/singlenode_linux_upgrade_offline_5.png)
 
@@ -260,7 +263,7 @@ Open the web interface and execute the following script to check the current ver
 version()
 ```
 
-### 3.2 Update on Windows
+### 3.2 Upgrade on Windows
 
 **Step 1: Close the Server**
 
@@ -288,10 +291,12 @@ Create a new folder *backup* under *C:\DolphinDB*, and copy the following files 
 
 **Note**: If the backup files are not in the above default directories, check the directories specified by the configuration parameters *dfsMetaDir* and *chunkMetaDir*. If the configuration parameters are not modified but the configuration parameter *volumes* is specified, then you can find the *CHUNK_METADATA* under the *volumes* directory.
 
-**Step 3: Update**
+**Step 3: Upgrade**
 
 - Download a new version of server package from [DolphinDB website](https://www.dolphindb.com/alone/alone.php?id=75)
-- Replace the old server with all files (except *dolphindb.cfg* and *dolphindb.lic*) in the current *\DolphinDB\server* folder.
+- Replace the existing server with all files (except *dolphindb.cfg* and *dolphindb.lic*) in the current *\DolphinDB\server* folder.
+
+**Note**: When the server is upgraded to a certain version, the plugin should also be upgraded to the corresponding version.
 
 **Step 4: Restart the Server**
 

@@ -23,7 +23,8 @@ Grayscale upgrades requires in-memory data formats, including transmission proto
 
 Therefore, before a major upgrade, it is recommended to contact our technical support for a risk assessment.
 
-## 3. Procedure
+## 3. Procedure  
+**Note**: When the server is upgraded to a certain version, the plugin should also be upgraded to the corresponding version.
 
 In the following example, the cluster of version 2.00.7.4 is upgraded to version 2.00.8.12.
 

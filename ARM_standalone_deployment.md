@@ -2,7 +2,6 @@
 
 This tutorial is a quick start guide describing how to deploy the DolphinDB ARM standalone, and update the server and license file. You can also find solutions to common issues in the FAQ section.
 
-- [DolphinDB ARM Standalone Deployment](#dolphindb-arm-standalone-deployment)
   - [1. System Requirements](#1-system-requirements)
   - [2. Deploy DolphinDB ARM Standalone](#2-deploy-dolphindb-arm-standalone)
     - [Step 1: Download](#step-1-download)
@@ -12,13 +11,14 @@ This tutorial is a quick start guide describing how to deploy the DolphinDB ARM 
   - [3. Update DolphinDB Server](#3-update-dolphindb-server)
     - [Step 1: Close the Server](#step-1-close-the-server)
     - [Step 2: Back up the Metadata](#step-2-back-up-the-metadata)
-    - [Step 3: Update](#step-3-update)
+    - [Step 3: Upgrade](#step-3-upgrade)
     - [Step 4: Restart the Server](#step-4-restart-the-server)
   - [4. Update License File](#4-update-license-file)
     - [Step 1: Replace the License File](#step-1-replace-the-license-file)
     - [Step 2: Update License File](#step-2-update-license-file-1)
   - [5. FAQ](#5-faq)
   - [6. See Also](#6-see-also)
+
 
 
 ## 1. System Requirements
@@ -182,11 +182,12 @@ cp -r local8848/storage/CHUNK_METADATA/ backup/CHUNK_METADATA
 **Note**:
 If the backup files are not in the above default directories, check the directories specified by the configuration parameters *dfsMetaDir* and *chunkMetaDir*. If the configuration parameters are not modified but the configuration parameter *volumes* is specified, then you can find the *CHUNK_METADATA* under the *volumes* directory.
 
-### Step 3: Update
+### Step 3: Upgrade  
+**Note**: When the server is upgraded to a certain version, the plugin should also be upgraded to the corresponding version.
 
 Download a new version of server package from [DolphinDB website](https://www.dolphindb.com/alone/alone.php?id=75).
 
-Replace the old server with all files (except *dolphindb.cfg* and *dolphindb.lic*) in the current *\DolphinDB\server* folder.
+Replace the existing server with all files (except *dolphindb.cfg* and *dolphindb.lic*) in the current *\DolphinDB\server* folder.
 
 ### Step 4: Restart the Server
 
