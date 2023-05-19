@@ -816,7 +816,7 @@ Download the previous version of server package from the official website. Repla
 
 ### Q5: Failed to update the license file
 
-Updating the license file online has to meet the requirements listed in Step 2, Chapter 4.
+Updating the license file online has to meet the requirements listed in [Step 2, Chapter 4](#step-2-update-license-file-2).
 
 If not, you can choose to update offline or apply for an [Enterprise Edition License](https://www.dolphindb.com/mx_form/mx_form.php?id=98).
 
