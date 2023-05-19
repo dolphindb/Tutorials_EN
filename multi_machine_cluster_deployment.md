@@ -1,107 +1,112 @@
 # DolphinDB Multi-Machine Cluster Deployment
 
-This tutorial introduces how to deploy a multi-machine cluster in DolphinDB and the common reasons for node startup failures. 
+A DolphinDB cluster consists of 4 types of nodes: controller, agent，data node, and compute node.
 
-- [DolphinDB Multi-Machine Cluster Deployment](#dolphindb-multi-machine-cluster-deployment)
-  - [1. Cluster Architecture](#1-cluster-architecture)
-  - [2. Download DolphinDB](#2-download-dolphindb)
-  - [3. Update the License](#3-update-the-license)
-  - [4. Upgrade DolphinDB Server](#4-upgrade-dolphindb-server)
-  - [5. Initial Configuration](#5-initial-configuration)
-    - [5.1 Cluster Configuration Files](#51-cluster-configuration-files)
-    - [5.2 Agent Configuration Files](#52-agent-configuration-files)
-    - [5.3 Start a DolphinDB Cluster](#53-start-a-dolphindb-cluster)
-  - [6. Common Reasons Why Nodes Cannot Start](#6-common-reasons-why-nodes-cannot-start)
-  - [7. Web-Based Cluster Management](#7-web-based-cluster-management)
-    - [7.1 Configuration Parameters for Controller](#71-configuration-parameters-for-controller)
-    - [7.2 Add/Remove Data Node](#72-addremove-data-node)
-    - [7.3 Configuration Parameters for Data Nodes](#73-configuration-parameters-for-data-nodes)
-    - [7.4 Access Cluster Manager via External Address](#74-access-cluster-manager-via-external-address)
-    - [7.5 Specify Volume Path](#75-specify-volume-path)
-  - [8. Cloud Deployment](#8-cloud-deployment)
+- Controller: The controllers are the core of a DolphinDB cluster. They collect heartbeats of agents and data nodes, monitor the status of each node, and manage metadata and transactions of the distributed file system. There is only one controller in a multi-machine cluster (except a high-availability cluster) .
+- Agent: An agent executes the commands issued by a controller to start/stop local data nodes. Each physical server has one and only one agent within a cluster.
+- Data node: Data are stored and queries (or more complex computations) are executed on data nodes. A physical server can be configured with multiple data nodes.
+- Compute node: The compute node is used for queries and computation, including historical data queries, distributed joins, batch processing, streaming, and machine learning model training. A physical server can be configured with multiple compute nodes. Since data is not stored on a compute node, you can use `loadTable` to load data from a data node to a compute node for computational work. On a compute node, you can create the database and partitioned tables, and write data to the partitioned tables by calling a write interface. However, writing data on a compute node will lead to more network overhead than a data node as the compute node need to send data to data nodes for storage.
+
+This tutorial describes how to deploy the DolphinDB multi-machine cluster, and update the cluster and license file on Linux OS Distros. It serves as a quick start guide for you.
+
+  - [1. Deploy Multi-machine Cluster on Linux Distros](#1-deploy-multi-machine-cluster-on-linux-distros)
+    - [Step 1: Download](#step-1-download)
+    - [Step 2: Update License File](#step-2-update-license-file)
+    - [Step 3: Configure a DolphinDB Cluster](#step-3-configure-a-dolphindb-cluster)
+    - [Step 4: Start DolphinDB Cluster](#step-4-start-dolphindb-cluster)
+    - [Step 5: Create Databases and Partitioned Tables on Data Nodes](#step-5-create-databases-and-partitioned-tables-on-data-nodes)
+    - [Step 6: Perform Queries and Computation on Compute Nodes](#step-6-perform-queries-and-computation-on-compute-nodes)
+  - [2. Web-Based Cluster Management](#2-web-based-cluster-management)
+    - [2.1 Controller Configuration](#21-controller-configuration)
+    - [2.2 Data Nodes and Compute Nodes Configuration](#22-data-nodes-and-compute-nodes-configuration)
+    - [2.3 Access Cluster Manager via External Address](#23-access-cluster-manager-via-external-address)
+  - [3. Upgrade DolphinDB Cluster](#3-upgrade-dolphindb-cluster)
+    - [Step 1: Close all nodes](#step-1-close-all-nodes)
+    - [Step 2: Back up the Metadata](#step-2-back-up-the-metadata)
+    - [Step 3: Upgrade](#step-3-upgrade)
+    - [Step 4: Restart the Cluster](#step-4-restart-the-cluster)
+  - [4. Update License File](#4-update-license-file)
+    - [Step 1: Replace the License File](#step-1-replace-the-license-file)
+    - [Step 2: Update License File](#step-2-update-license-file-1)
+  - [5. FAQ](#5-faq)
+    - [Q1: Common causes of node startup failure](#q1-common-causes-of-node-startup-failure)
+    - [Q2: Use the systemd command to start DolphinDB cluster](#q2-use-the-systemd-command-to-start-dolphindb-cluster)
+    - [Q3: Failed to access the web interface](#q3-failed-to-access-the-web-interface)
+    - [Q4: Roll back a failed upgrade on Linux](#q4-roll-back-a-failed-upgrade-on-linux)
+    - [Q5. Failed to update license file online](#q5-failed-to-update-license-file-online)
+    - [Q6: Failed to start nodes on a cloud server](#q6-failed-to-start-nodes-on-a-cloud-server)
+    - [Q7: Specify volume path](#q7-specify-volume-path)
+    - [Q8: Change configuration](#q8-change-configuration)
+  - [6. See Also](#6-see-also)
 
 
-## 1. Cluster Architecture
 
-A DolphinDB cluster has 4 types of nodes: data node, compute node, agent and controller.
+## 1. Deploy Multi-machine Cluster on Linux Distros
 
-- The data node is used for data storage and computation. We can create distributed databases and tables on a data node.
+The cluster architecture in this tutorial is as follows:
 
-- The compute node is only used for computation, including stream computing, distributed join and machine learning. Data is not stored on a compute node, and therefore we cannot create a database or table on it. 
+<img src="./images/multi_machine_cluster_deployment/1_1.png" width=50%>
 
-- The agent starts or stops the local data nodes.
+The internal IP addresses of the 3 servers are:
 
-- The controller manages the cluster metadata and coordinates tasks among data nodes. 
+```
+P1：10.0.0.80
+P2：10.0.0.81
+P3：10.0.0.82
 
-This tutorial uses a DolphinDB cluster with 5 physical servers: **P1**, **P2**, **P3**, **P4**, **P5**.
-
-The internal IP addresses of the 5 physical servers are:
-
-```txt
-P1: 10.1.1.1
-P2: 10.1.1.3
-P3: 10.1.1.5
-P4: 10.1.1.7
-P5: 10.1.1.9
 ```
 
-The controller is set on **P4**. We set up an agent node and a data node on each of the other servers.
+Requirements and preparation before deployment:
 
-Note:
-- **The IP address of a node must be an internal address. If an external address is used, the performance of network communication between nodes cannot be guaranteed.**
+- The number of nodes in the sample cluster of this tutorial exceeds the limit of the Community Edition License. So you must apply for [Enterprise Edition License](https://www.dolphindb.com/mx_form/mx_form.php?id=98) and update the license as described in [Step 2, Chapter 1](#step-2-update-license-file).
+- The IP address of nodes should be an internal address with 10 Gigabit Ethernet. Using an external address may have an impact on the network communication between nodes.
+- A DolphinDB cluster can only have one controller.
+- Each server must have an agent to start or close the local data nodes.
 
-- Each physical server must have an agent to start or close the local data nodes.
+### Step 1: Download
 
-- A DolphinDB cluster (except a high-availability cluster) can only have one controller.
+Download DolphinDB installation package and unzip it on each physical server.
 
-## 2. Download DolphinDB
+- Official website: [DolphinDB](https://www.dolphindb.com/alone/alone.php?id=75)
+- Download DolphinDB with a shell command. Take version 2.00.9.1 for example:
 
-Download DolphinDB from [DolphinDB](http://www.dolphindb.com/downloads.html) website and extract it to a given directory. For example, extract it to the following directory:
-
-```sh
-/DolphinDB
+```
+wget "https://www.dolphindb.cn/downloads/DolphinDB_Linux64_V2.00.9.1.zip"
 ```
 
-Please note that the installation path cannot contain space characters, otherwise the data node will fail to start.
+Then extract the installation package to the specified directory (e.g., to */DolphinDB*):
 
-## 3. Update the License
+```
+unzip DolphinDB_Linux64_V2.00.9.1.zip -d /DolphinDB
+```
 
-Compared with the Community Edition, the Enterprise version allows more nodes, CPU cores and memory. If you have an Enterprise Trial license, please use it to replace the following license file on each physical server. 
+> ❗ The directory name cannot contain any space characters, otherwise the startup of the data node will fail.
 
-```sh
+### Step 2: Update License File
+
+With a license for Enterprise edition, you can deploy DolphinDB across multiple nodes with more CPU cores and memory. If you have an Enterprise License, please use it to replace the following license file **on each physical server**.
+
+```
 /DolphinDB/server/dolphindb.lic
 ```
 
-## 4. Upgrade DolphinDB Server 
+### Step 3: Configure a DolphinDB Cluster
 
-After downloading a new version, please make sure not to overwrite `dolphindb.lic` and `dolphindb.cfg` to keep your license and customized configuration.
+**(1) Configuration Files of P1 Server**
 
-## 5. Initial Configuration
+Log in the **P1** server and then navigate to */DolphinDB/server/clusterDemo/config*.
 
-To start a cluster, we must configure the controller and the agents. Data nodes can be configured either before the cluster is started via configuration files, or afterwards via the web-based manager.
+- ***controller.cfg***
 
-### 5.1 Cluster Configuration Files
+Execute the following shell command to modify *controller.cfg*:
 
-Please make sure the number of nodes and the number of cores per node do not exceed the limits set in the license file. Otherwise the cluster will not start properly and the errors can be found in the log files.
-
-DolphinDB by default uses the server directory as home directory and all configuration and log files are stored under it.
-
-The default paths for configuration files, data files and log files are: 
-
-```sh
-cd /DolphinDB/server/clusterDemo/config
-cd /DolphinDB/server/clusterDemo/data
-cd /DolphinDB/server/clusterDemo/log
+```
+vim ./controller.cfg
 ```
 
-
-#### 5.1.1 controller.cfg
-
-Log in server **P4**, open `controller.cfg` under the `config` directory to specify the following commonly used parameters. Only the parameter *localSite* is mandatory. All other parameters are optional.
-
-```txt
-localSite=10.1.1.7:8990:master
+```
 mode=controller
+localSite=10.0.0.80:8900:controller8900
 dfsReplicationFactor=1
 dfsReplicaReliabilityLevel=2
 dataSync=1
@@ -112,117 +117,583 @@ maxMemSize=8
 lanCluster=0
 ```
 
-The parameters are described in the table below.
+Parameter *localSite* must be configured to specify IP address, port number, and alias of the controller. All other parameters can be modified as needed.
 
-| Configuration Parameter | Description |
-|---|---|
-| localSite=10.1.1.7:8990:master | Node LAN information in the format of IP address:port number:alias of the local node. |
-| localExecutors=3 | The number of local executors. The default value is the number of cores of the CPU - 1. |
-| maxConnections=512 | The maximum number of connections (from GUI, API, other nodes, etc.) to the local node. |
-| maxMemSize=8 | The maximum memory (in GB) allocated to DolphinDB. If set to 0, it means no limits on memory usage. |
-| webWorkerNum=4 | The size of the web worker pool to process HTTP requests. The default value is 1. |
-| workerNum=4 | The size of worker pool for regular interactive jobs. The default value is the number of cores of the CPU cores. |
-| dfsReplicationFactor=2 | The number of replicas for each data chunk. The default value is 2. |
-| dfsReplicaReliabilityLevel=2 | Whether multiple replicas can reside on the same server. 0 (default): Yes; 1: No; 2: replicas are allocated to multiple servers if possible. |
-| dataSync=1 | Whether database logs are forced to persist to disk before the transaction is committed. <br>If dataSync = 1, the database log (including redo log, undo log, edit log of data nodes, and edit log of controller nodes) must be written to disk before each transaction is committed. This guarantees that data written to the database is not lost in case of system crash or power outage. <br>If dataSync = 0 (default), the log files are written to cache before a transaction is committed. The operating system will write the log files to disk at a later time. We may experience loss of data or corruption of the database in case of system crash or power outage.|
+- ***cluster.nodes*** 
 
+*cluster.nodes* stores detailed configuration details about agents, data nodes and compute nodes. The cluster configuration file in this tutorial contains 3 agents, 2 data nodes and 1 compute node. You can configure the number of nodes as required. The configuration file is divided into two columns (*localSite* and *mode*). The parameter *localSite* contains the node IP address, port number and alias, which are separated by colons ":". The parameter *mode* specifies the node type.
 
-#### 5.1.2 cluster.nodes
+> ❗ Node aliases are case sensitive and must be unique in a cluster.
 
-Specify the following information in the file `cluster.nodes` under the `config` directory of P4. This file stores information on the agent nodes and data nodes. It has two columns: *localSite* and *mode*, separated by a comma. The parameter *localSite* contains the node IP address, port number and node alias, separated by a colon ":". Node aliases are case sensitive and must be unique in a cluster. The parameter *mode* specifies the node type.
+Execute the following shell command to modify *cluster.nodes* of servers **P1**, **P2**, and **P3**:
 
-This tutorial uses 4 agent nodes and 4 data nodes on **P1**, **P2**, **P3** and **P5**.
+```
+vim ./cluster.nodes
+```
 
-```txt
+```
 localSite,mode
-10.1.1.1:8960:P1-agent,agent
-10.1.1.1:8961:P1-NODE1,datanode
-10.1.1.3:8960:P2-agent,agent
-10.1.1.3:8961:P2-NODE1,datanode
-10.1.1.5:8960:P3-agent,agent
-10.1.1.5:8961:P3-NODE1,datanode
-10.1.1.9:8960:P5-agent,agent
-10.1.1.9:8961:P5-NODE1,datanode
+10.0.0.80:8901:P1-agent,agent
+10.0.0.80:8902:P1-datanode,datanode
+10.0.0.81:8901:P2-agent,agent
+10.0.0.81:8902:P2-datanode,datanode
+10.0.0.82:8901:P3-agent,agent
+10.0.0.82:8902:P3-computenode,computenode
 ```
 
-#### 5.1.3 cluster.cfg
+- ***cluster.cfg***
 
-In the `config` directory of P4, open the configuration file `cluster.cfg` and specify the following configuration parameters. These configuration parameters apply to each data node and compute node in the cluster. For details of these parameters, see [Standalone Mode](https://www.dolphindb.com/help/DatabaseandDistributedComputing/Configuration/StandaloneMode.html) in the user guide.
+Execute the following shell command to modify *cluster.cfg*:
 
-```txt
-maxConnections=512
+```
+vim ./cluster.cfg
+```
+
+```
 maxMemSize=32
-workerNum=8
-localExecutors=7
-webWorkerNum=2
-newValuePartitionPolicy=add
+maxConnections=512
+workerNum=4
+localExecutors=3
+maxBatchJobWorker=4
 chunkCacheEngineMemSize=2
-
+TSDBCacheEngineSize=1
+newValuePartitionPolicy=add
+maxPubConnections=64
+subExecutors=4
+lanCluster=0
+enableChunkGranularityConfig=true
 ```
 
-### 5.2 Agent Configuration Files
+These configuration parameters apply to each data node and compute node in the cluster. You can modify them based on your own device.
 
-Log in the servers **P1**, **P2**, **P3** and **P5** and go to the `config` directory of each server, open the file `agent.cfg` and specify the following configuration parameters. Only *localSite* and *controllerSite* are mandatory in `agent.cfg`. All others are optional. 
+- ***agent.cfg***
 
-#### P1
+Execute the following shell command to modify *agent.cfg*:
 
-```txt
+```
+vim ./agent.cfg
+```
+
+```
 mode=agent
+localSite=10.0.0.80:8901:P1-agent
+controllerSite=10.0.0.80:8900:controller8900
 workerNum=4
 localExecutors=3
 maxMemSize=4
 lanCluster=0
-localSite=10.1.1.1:8960:P1-agent
-controllerSite=10.1.1.7:8990:master
 ```
 
-#### P2
+For the agent to interact the controller, the parameter *controllerSite* in the file *agent.cfg* must match with the parameter *localSite* in *controller.cfg* of the server **P1**. In addition, the parameter *localSite* must be configured to specify IP address, port number, and alias of the controller. All other parameters are optional. 
 
-```txt
+**(2) Configuration Files of P2 Server**
+
+Log in the **P2** server and then navigate to */DolphinDB/server/clusterDemo/config*.
+
+- ***agent.cfg***
+
+Execute the following shell command to modify *agent.cfg*:
+
+```
+vim ./agent.cfg
+```
+
+```
 mode=agent
+localSite=10.0.0.81:8901:P2-agent
+controllerSite=10.0.0.80:8900:controller8900
 workerNum=4
 localExecutors=3
 maxMemSize=4
 lanCluster=0
-localSite=10.1.1.3:8960:P2-agent
-controllerSite=10.1.1.7:8990:master
 ```
 
-#### P3
+For the agent to interact the controller, the parameter *controllerSite* in the file *agent.cfg* must match with the parameter *localSite* in *controller.cfg* of the server **P2**. In addtion, the parameter *localSite* must be configured to specify IP address, port number, and alias of the controller. All other parameters are optional.
 
-```txt
+**(3) Configuration Files of P3 Server**
+
+Log in the **P3** server and then navigate to */DolphinDB/server/clusterDemo/config*.
+
+- ***agent.cfg***
+
+Execute the following shell command to modify *agent.cfg*:
+
+```
+vim ./agent.cfg
+```
+
+```
 mode=agent
+localSite=10.0.0.82:8901:P3-agent
+controllerSite=10.0.0.80:8900:controller8900
 workerNum=4
 localExecutors=3
 maxMemSize=4
 lanCluster=0
-localSite=10.1.1.5:8960:P3-agent
-controllerSite=10.1.1.7:8990:master
 ```
 
-#### P5
+For the agent to interact the controller, the parameter *controllerSite* in the file *agent.cfg* must match with the parameter *localSite* in *controller.cfg* of the server **P3**. In addtion, the parameter *localSite* must be configured to specify IP address, port number, and alias of the controller. All other parameters are optional.
 
-```txt
-mode=agent
-workerNum=4
-localExecutors=3
-maxMemSize=4
-lanCluster=0
-localSite=10.1.1.9:8960:P5-agent
-controllerSite=10.1.1.7:8990:master
+### Step 4: Start DolphinDB Cluster
+
+Log in the servers **P1**, **P2**, and **P3** and then navigate to */DolphinDB/server* of each server. The file permissions need to be modified for the first startup. Execute the following shell command:
+
+```
+chmod +x dolphindb
 ```
 
-Parameter *localSite* in `controller.cfg` should have the same value as parameter *controllerSite* in `agent.cfg` for all agents, as agent nodes looks for the controller at the address specified by parameter *controllerSite* in `agent.cfg`. If *localSite* in `controller.cfg` is modified (even if just an alias change), *controllerSite* in `agent.cfg` of all agents must be changed accordingly.
+- **Start Controller**
 
-### 5.3 Start a DolphinDB Cluster
+Navigate to  */DolphinDB/server/clusterDemo* of **P1**. Execute the following shell command:
 
-There are two ways to start a DolphinDB cluster: One is to use systemd on Linux and the other is to start from command line.
+```
+sh startController.sh
+```
 
-#### 5.3.1 Use systemd to Start DolphinDB
+> ❗ Start the controller on P1 since it is only deployed on this server.
 
-- **Add Scripts**
+To check whether the node was started, execute the following shell command:
 
-First, add the scripts `controller.sh` and `agent.sh` to \<dolphindbServer>/server/clusterDemo with the following content: 
+```
+ps aux|grep dolphindb
+```
+
+The following information indicates a successful startup:
+
+<img src="./images/multi_machine_cluster_deployment/1_2.png" width=80%>
+
+- **Start Agent**
+
+Navigate to */DolphinDB/server/clusterDemo* of each server. Execute the following shell command:
+
+```
+sh startagent.sh
+```
+
+To check whether the node was started, execute the following shell command:
+
+```
+ps aux|grep dolphindb
+```
+
+The following information indicates a successful startup:
+
+<img src="./images/multi_machine_cluster_deployment/1_3.png" width=80%>
+
+- **Start Data Nodes and Compute Nodes**
+
+You can start or stop data nodes and compute nodes, and modify cluster configuration parameters on DolphinDB cluster management web interface. Enter the IP address and port number of the controller in the browser to navigate to the DolphinDB Web. The server address (*ip:port*) used in this tutorial is 10.0.0.80:8900. Below is the web interface. Log in with the default administrator account (username: admin, password: 123456). Then select the required data nodes and compute nodes, and click on the **execute**/**stop** button.
+
+Click on the **refresh** button to check the status of the nodes. The following green check marks mean all the selected nodes have been turned on:
+
+<img src="./images/multi_machine_cluster_deployment/1_4.png" width=70%>
+
+### Step 5: Create Databases and Partitioned Tables on Data Nodes
+
+Data nodes can be used for data storage, queries and computation. The following example shows how to create databases and write data on data nodes. 
+
+First, open the web interface of the **Controller**, and click on the corresponding **Data node** to open its **Shell** interface (e.g. P1-datanode):
+
+<img src="./images/multi_machine_cluster_deployment/1_5.png" width=70%>
+
+<img src="./images/multi_machine_cluster_deployment/1_6.png" width=70%>
+
+You can also enter IP address and port number of the data nodes in your browser to navigate to the **Shell** interface.
+
+Execute the following script to create a database and a partitioned table：
+
+```
+// create a database and a partitioned table
+login("admin", "123456")
+dbName = "dfs://testDB"
+tbName = "testTB"
+if(existsDatabase(dbName)){
+        dropDatabase(dbName)
+}
+db = database(dbName, VALUE, 2021.01.01..2021.12.31)
+colNames = `SecurityID`DateTime`PreClosePx`OpenPx`HighPx`LowPx`LastPx`Volume`Amount
+colTypes = [SYMBOL, DATETIME, DOUBLE, DOUBLE, DOUBLE, DOUBLE, DOUBLE, INT, DOUBLE]
+schemaTable = table(1:0, colNames, colTypes)
+db.createPartitionedTable(table=schemaTable, tableName=tbName, partitionColumns=`DateTime)
+
+```
+
+Then, run the following scripts to generate 1-minute OHLC bars and append the data to the created partitioned table “tbName”:
+
+```
+// simulate OHLC data and append it to the partitioned table
+n = 1210000
+randPrice = round(10+rand(1.0, 100), 2)
+randVolume = 100+rand(100, 100)
+SecurityID = lpad(string(take(0..4999, 5000)), 6, `0)
+DateTime = (2023.01.08T09:30:00 + take(0..120, 121)*60).join(2023.01.08T13:00:00 + take(0..120, 121)*60)
+PreClosePx = rand(randPrice, n)
+OpenPx = rand(randPrice, n)
+HighPx = rand(randPrice, n)
+LowPx = rand(randPrice, n)
+LastPx = rand(randPrice, n)
+Volume = int(rand(randVolume, n))
+Amount = round(LastPx*Volume, 2)
+tmp = cj(table(SecurityID), table(DateTime))
+t = tmp.join!(table(PreClosePx, OpenPx, HighPx, LowPx, LastPx, Volume, Amount))
+dbName = "dfs://testDB"
+tbName = "testTB"
+loadTable(dbName, tbName).append!(t)
+
+```
+
+For more details about the above functions, see [DolphinDB user manual](https://www.dolphindb.com/help/FunctionsandCommands/index.html) or the function documentation popup on the web interface.
+
+<img src="./images/multi_machine_cluster_deployment/1_7.png" width=80%>
+
+You can check the created database and table in the **Database** on the left side of the web interface.
+
+<img src="./images/multi_machine_cluster_deployment/1_8.png" width=30%>
+
+Variables you created can be checked in **Local Variables**. You can click on the corresponding variable name to preview the related information (including data type, size, and occupied memory size).
+
+<img src="./images/multi_machine_cluster_deployment/1_9.png" width=80%>
+
+Return to the **DFS** file page of the controller to check the created partitions under the databases.
+
+<img src="./images/multi_machine_cluster_deployment/1_10.png" width=70%>
+
+### Step 6: Perform Queries and Computation on Compute Nodes
+
+Compute nodes are used for queries and computation. The following example shows how to perform these operations in partitioned tables on a compute node. 
+
+First, open the web interface of the **Controller**, and then click the corresponding **Compute node** to open its **Shell** interface:
+
+<img src="./images/multi_machine_cluster_deployment/1_11.png" width=70%>
+
+<img src="./images/multi_machine_cluster_deployment/1_12.png" width=70%>
+
+You can also enter IP address and port number of a compute node in your browser to navigate to the **Shell** interface.
+
+Execute the following script to load the partitioned table: 
+
+```
+// load the partitioned table
+pt = loadTable("dfs://testDB", "testTB")
+
+```
+
+Note that only metadata of the partitioned table is loaded here. Then execute the following script to count the records for each day in table “pt“:
+
+```
+// If the result contains a small amount of data, you can download it to display on the client directly.
+select count(*) from pt group by date(DateTime) as Date
+
+```
+
+The result will be displayed at the bottom of the web interface:
+
+<img src="./images/multi_machine_cluster_deployment/1_13.png" width=25%>
+
+Execute the following script to caculate OHLC bars for each stock per day:
+
+```
+// If the result contains a large amount of data, you can assign it to a variable that occupies the server memory, and download it to display in separate pages on the client.
+result = select first(LastPx) as Open, max(LastPx) as High, min(LastPx) as Low, last(LastPx) as Close from pt group by date(DateTime) as Date, SecurityID
+
+```
+
+The result is assigned to the variable `result`. It will not be displayed on the client directly, thus reducing the memory of the client. To check the results, click `result` in the **Local Variables**.
+
+<img src="./images/multi_machine_cluster_deployment/1_14.png" width=80%>
+
+## 2. Web-Based Cluster Management
+
+After completing the deployment, you can modify the cluster configuration through the Web interface of the controller.
+
+### 2.1 Controller Configuration
+
+Click **Controller Config** to modify the configuration parameters of controller. The following parameters are specified in *controller.cfg*. You can add, remove, and modify them in this web interface, and they will take effect after the controller is restarted.
+
+> ❗ If the parameter *localSite* of the controller is modified, the parameter *controllerSite* in all *agent.cfg*s must be changed accordingly. Otherwise, the cluster will fail to run.
+
+<img src="./images/multi_machine_cluster_deployment/2_1.png" width=80%>
+
+ 
+
+### 2.2 Data Nodes and Compute Nodes Configuration
+
+Click **Nodes Config** to modify the configuration parameters of data nodes and compute nodes. The following parameters are specified in *cluster.cfg*. You can add, remove, and modify them, and they will take effect after the data nodes and compute nodes are restarted.
+
+<img src="./images/multi_machine_cluster_deployment/2_2.png" width=80%>
+
+ 
+
+### 2.3 Access Cluster Manager via External Address
+
+If the nodes in a cluster are located within the same LAN, set the site information to the internal IP address for optimal network communication. To access the cluster manager via an external address, configure the *publicName* of the controller with an external IP address, or a domain name for HTTPS. The following script in *cluster.cfg* sets up the external addresses of all nodes on **P1**, **P2**, and **P3**, where `%` is a wildcard for the node alias.
+
+```
+P1-%.publicName=19.56.128.21
+P2-%.publicName=19.56.128.22
+P3-%.publicName=19.56.128.23
+
+```
+
+You also need to add the corresponding external domain name or IP address in *controller.cfg*.
+
+```
+publicName=19.56.128.21
+```
+
+## 3. Upgrade DolphinDB Cluster
+
+### Step 1: Close all nodes
+
+Log in the servers **P1**, **P2**, and **P3**. Navigate to  */DolphinDB/server/clusterDemo* to execute the following shell command:
+
+```
+./stopAllNode.sh
+```
+
+### Step 2: Back up the Metadata
+
+The metadata file is created only when data is written to the multi-machine cluster. Otherwise, you can just skip this step.
+
+- Back up the Metadata of Controller
+
+By default, the metadata of controller is stored in the *DFSMetaLog.0* file under */DolphinDB/server/clusterDemo/dfsMeta*:
+
+```
+/DolphinDB/server/clusterDemo/dfsMeta
+```
+
+If the metadata exceeds certain size limits, a *DFSMasterMetaCheckpoint.0* file will also be generated.  
+
+Log in the server **P1**. Then navigate to */DolphinDB/server/clusterDemo/dfsMeta* to execute the following shell commands:
+
+```
+mkdir backup
+cp -r DFSMetaLog.0 backup
+cp -r DFSMasterMetaCheckpoint.0 backup
+```
+
+- Back up the Metadata of Data Nodes
+
+By default, the metadata of data nodes is stored in  */DolphinDB/server/clusterDemo/data/\<data node alias>/storage/CHUNK_METADATA*. The default storage directory in this tutorial is:
+
+```
+/DolphinDB/server/clusterDemo/data/dnode1/storage/CHUNK_METADATA
+```
+
+Log in the server **P1**. Then navigate to the above directory to execute the following shell command:
+
+```
+cp -r CHUNK_METADATA ../../backup
+```
+
+> ❗ If the backup files are not in the above default directory, check the directory specified by the configuration parameters *dfsMetaDir* and *chunkMetaDir*. If the two parameters are not modified but the configuration parameter *volumes* is specified, then you can find the CHUNK_METADATA under the *volumes* directory.
+
+### Step 3: Upgrade
+
+> ❗ When the server is upgraded to a certain version, the plugin should also be upgraded to the corresponding version.
+
+- Online Upgrade
+
+Log in the servers **P1**, **P2**, and **P3**. Navigate to  */DolphinDB/server/clusterDemo* to execute the following command:
+
+```
+./upgrade.sh
+```
+
+The following prompt is returned:
+
+<img src="./images/multi_machine_cluster_deployment/3_1.png" width=60%>
+
+Type y and press Enter:
+
+<img src="./images/multi_machine_cluster_deployment/3_2.png" width=70%>
+
+Type 1 and press Enter:
+
+<img src="./images/multi_machine_cluster_deployment/3_3.png" width=70%>
+
+Type a version number and press Enter. To upgrade to version 2.00.9.1, for example, type 2.00.9.1 and press Enter. The following prompt indicates a successful upgrade.
+
+<img src="./images/multi_machine_cluster_deployment/3_4.png" width=80%>
+
+- Offline upgrade
+
+Download a new version of server package from [DolphinDB website](https://dolphindb.com/).
+
+Upload the installation package to */DolphinDB/server/clusterDemo* of  the servers **P1**, **P2**, and **P3**. Take version 2.00.9.1 as an example.
+
+<img src="./images/multi_machine_cluster_deployment/3_5.png" width=40%>
+
+Log in the servers **P1**, **P2**, and **P3**. Navigate to */DolphinDB/server/clusterDemo* to execute the following command:
+
+```
+./upgrade.sh
+```
+
+The following prompt is returned:
+
+<img src="./images/multi_machine_cluster_deployment/3_6.png" width=60%>
+
+Type y and press Enter:
+
+<img src="./images/multi_machine_cluster_deployment/3_7.png" width=70%>
+
+Type 2 and press Enter:
+
+<img src="./images/multi_machine_cluster_deployment/3_8.png" width=70%>
+
+Type a version number and press Enter. To upgrade to version 2.00.9.1, for example, type 2.00.9.1 and press Enter. The following prompt indicates a successful upgrade.
+
+<img src="./images/multi_machine_cluster_deployment/3_9.png" width=80%>
+
+### Step 4: Restart the Cluster
+
+- Start Controller
+
+Execute the following shell command in */DolphinDB/server/clusterDemo* of **P1** to start the controller:
+
+```
+sh startController.sh
+```
+
+> ❗ Start the controller on P1 since it is only deployed on this server.
+
+- Start Agent
+
+Execute the following shell command in */DolphinDB/server/clusterDemo* of each server:
+
+```
+sh startagent.sh
+```
+
+- Start Data Nodes and Compute Nodes
+
+You can start or stop data nodes and compute nodes, and modify cluster configuration parameters on the web interface. Enter the deployment server IP address and controller port number in the browser to navigate to the DolphinDB Web. The server address (*ip:port*) used in this tutorial is 10.0.0.80:8900. Below is the web interface. Log in with the default administrator account (username: admin, password: 123456). Then select the required data nodes and compute nodes, and click on the **execute**/**stop** button.
+
+<img src="./images/multi_machine_cluster_deployment/3_10.png" width=70%>
+
+Click on the **refresh** button to check the status of the nodes. The following green check marks mean all the selected nodes have been turned on:
+
+<img src="./images/multi_machine_cluster_deployment/3_11.png" width=70%>
+
+ 
+
+Open the web interface and execute the following script to check the current version of DolphinDB.
+
+```
+version()
+```
+
+## 4. Update License File
+
+Before updating, open the web interface of any node and execute the following code to check the expiration time:
+
+```
+use ops
+getAllLicenses()
+```
+
+<img src="./images/multi_machine_cluster_deployment/4_1.png" width=30%>
+
+Check the “end_date“ to confirm whether the update is successful.
+
+### Step 1: Replace the License File
+
+Log in the servers **P1**, **P2**, and **P3**. Replace an existing license file with a new one.
+
+License file path on Linux:
+
+```
+/DolphinDB/server/dolphindb.lic
+```
+
+### Step 2: Update License File
+
+- Online Update
+
+Open the web interface of any node to execute the following script:
+
+```
+use ops
+updateAllLicenses()
+```
+
+The “end_date” is updated:
+
+<img src="./images/multi_machine_cluster_deployment/4_2.png" width=30%>
+
+💡**Note:**
+
+> The client name of the license cannot be changed.
+>
+> The number of nodes, memory size, and the number of CPU cores cannot be smaller than the original license.
+>
+> The update takes effect only on the node where the function is executed. Therefore, in a cluster mode, the function needs to be run on all controllers, agents, data nodes, and compute nodes.
+>
+> The license type must be either commercial (paid) or free.
+
+
+
+- Offline Update
+
+Restart DolphinDB cluster to complete the updates.
+
+## 5. FAQ
+
+### Q1: Common causes of node startup failure
+
+- **Port is occupied.**
+
+If you cannot start the server, you can first check the log file of nodes under */DolphinDB/server/clusterDemo/log.*
+
+If the following error occurs, it indicates that the specified port is occupied by other programs.
+
+```
+<ERROR> :Failed to bind the socket on port 8900 with error code 98
+```
+
+In such case, you can change to another free port in the config file.
+
+- **The first line in *cluster.nodes* is empty.**
+
+If you cannot start the server, you can first check the log file of nodes under */DolphinDB/server/clusterDemo/log.*
+
+If the following error occurs, it means the first line in the file *cluster.nodes* is empty. 
+
+```
+<ERROR> :Failed to load the nodes file [/home/DolphinDB/server/clusterDemo/config/cluster.nodes] with error: The input file is empty.
+```
+
+In this case, remove the empty line from the file and restart the node.
+
+- **The macro variable \<ALIAS> has no effect when the node is specified.**
+
+In *cluster.cfg*, if the macro variable \<ALIAS> is used when a node is specified, e.g., `P1-datanode.persistenceDir = /hdd/hdd1/streamCache/<ALIAS>`, the node will not start. 
+
+```
+P1-datanode.persistenceDir = /hdd/hdd1/streamCache/<ALIAS>
+```
+
+In this case, replace \<ALIAS> with a specific node alias. For example:
+
+```
+P1-datanode.persistenceDir = /hdd/hdd1/streamCache/P1-datanode
+```
+
+To use macro variables for all nodes, try the following script:
+
+```
+persistenceDir = /hdd/hdd1/streamCache/<ALIAS>
+```
+
+### Q2: Use the systemd command to start DolphinDB cluster
+
+First, create the script files *controller.sh* and *agent.sh* in the *DolphinDB/server/clusterDemo* directory on each server with the following scripts:
+
+```
+vim ./controller.sh
+```
 
 ```
 #!/bin/bash
@@ -250,6 +721,12 @@ case $1 in
         start
         ;;
 esac
+```
+
+
+
+```
+vim ./agent.sh
 ```
 
 ```
@@ -282,68 +759,13 @@ case $1 in
 esac
 ```
 
-- **Controller**
-
-**Step 1: Configure Daemon**
-
-Configure the daemon for the controller:
-
-```shell
-$ vim /usr/lib/systemd/system/ddbcontroller.service
-```
-
-**Step 2: Configure Parameters**
-
-The following configuration parameters should be specified:
+Then, execute the following shell command to configure the daemon for the controller:
 
 ```
-[Unit]
-Description=ddbcontroller
-Documentation=https://www.dolphindb.com/
-
-[Service]
-Type=forking
-WorkingDirectory=/home/jwu/hav1.30.16/server/clusterDemo
-ExecStart=/bin/sh controller.sh start
-ExecStop=/bin/sh controller.sh stop
-ExecReload=/bin/sh controller.sh restart
-Restart=always
-RestartSec=10s
-LimitNOFILE=infinity
-LimitNPROC=infinity
-LimitCORE=infinity
-
-[Install]
-WantedBy=multi-user.target
+vim /usr/lib/systemd/system/ddbcontroller.service
 ```
 
-**Note:** Please specify *WorkingDirectory* in the following format: 
-\<dolphindbServer>/server/clusterDemo.
-
-
-**Step 3: Start Controller**
-
-```
-systemctl enable ddbcontroller.service   #enable the service
-systemctl start ddbcontroller.service  #start the service
-systemctl stop  ddbcontroller.service   #stop the service
-systemctl status  ddbcontroller.service  #check the status
-```
-
-- **Agent**
-
-**Step 1: Configure Daemon**
-
-Configure the daemon for the agent:
-
-```shell
-$ vim /usr/lib/systemd/system/ddbagent.service
-```
-
-
-**Step 2: Configure Parameters**
-
-The following configuration parameters should be specified:
+The following parameters should be configured:
 
 ```
 [Unit]
@@ -352,7 +774,7 @@ Documentation=https://www.dolphindb.com/
 
 [Service]
 Type=forking
-WorkingDirectory=/home/jwu/hav1.30.16/server/clusterDemo
+WorkingDirectory=/home/DolphinDB/server/clusterDemo
 ExecStart=/bin/sh agent.sh start
 ExecStop=/bin/sh agent.sh stop
 ExecReload=/bin/sh agent.sh restart
@@ -366,261 +788,158 @@ LimitCORE=infinity
 WantedBy=multi-user.target
 ```
 
-**Note:** Please specify WorkingDirectory in the following format: 
-\<dolphindbServer>/server/clusterDemo.
+> ❗ Specify *WorkingDirectory* as */DolphinDB/server/clusterDemo*.
 
-**Step 3: Start Controller**
+Execute the following shell command to configure the daemon for the agent:
+
+```
+vim /usr/lib/systemd/system/ddbagent.service
+```
+
+The following parameters should be configured:
+
+```
+[Unit]
+Description=ddbagent
+Documentation=https://www.dolphindb.com/
+
+[Service]
+Type=forking
+WorkingDirectory=/home/DolphinDB/server/clusterDemo
+ExecStart=/bin/sh agent.sh start
+ExecStop=/bin/sh agent.sh stop
+ExecReload=/bin/sh agent.sh restart
+Restart=always
+RestartSec=10s
+LimitNOFILE=infinity
+LimitNPROC=infinity
+LimitCORE=infinity
+
+[Install]
+WantedBy=multi-user.target
+```
+
+> ❗ Specify *WorkingDirectory* as */DolphinDB/server/clusterDemo*.
+
+Finally, execute the following shell command to start the controller:
+
+```
+systemctl enable ddbcontroller.service   #enable the service
+systemctl start ddbcontroller.service    #start the service
+systemctl stop  ddbcontroller.service    #stop the service
+systemctl status  ddbcontroller.service  #check the status
+```
+
+Execute the following shell command to start the agent:
 
 ```
 systemctl enable ddbagent.service   #enable the service
-systemctl start ddbagent.service  #start the service
-systemctl stop  ddbagent.service   #stop the service
+systemctl start ddbagent.service    #start the service
+systemctl stop  ddbagent.service    #stop the service
 systemctl status  ddbagent.service  #check the status
 ```
 
-#### 5.3.2 Start DolphinDB from Command Line
+### Q3: Failed to access the web interface
 
-**Start Agent**
+Despite the server running and the URL being correct, the web interface remains inaccessible.
 
-Log in each of **P1**,**P2**,**P3**, and **P5**, and run the command line described below in the directory where the DolphinDB executable is located. If the agent fails to start, you can troubleshoot according to the agent.log which is stored in "log" subdirectory.
+<img src="./images/multi_machine_cluster_deployment/5_1.jpg" width=55%>
 
+A common reason for the above problem is that the browser and DolphinDB are not deployed on the same server, and a firewall is enabled on the server where DolphinDB is deployed. You can solve this issue by turning off the firewall or by opening the corresponding port. 
 
-- **Start in Background (Linux)**
+### Q4: Roll back a failed upgrade on Linux
 
-```sh
-nohup ./dolphindb -console 0 -mode agent -home data -config config/agent.cfg -logFile log/agent.log &
+If you cannot start DolphinDB multi-machine cluster after upgrade, you can follow steps below to roll back to the previous version.
+
+**Step 1: Restore metadata files**
+
+- Restore metadata files of controller
+
+Log in the server where controller is deployed. Navigate to */DolphinDB/server/clusterDemo/dfsMeta* to restore metadata files from *backup* with the following commands:
+
+```
+cp -r backup/DFSMetaLog.0 ./
+cp -r backup/DFSMasterMetaCheckpoint.0 ./
 ```
 
-It is recommended to start DolphinDB in the background with Linux command nohup (header) and & (tail). This way, DolphinDB will keep running even if the terminal is disconnected.
+- Restore metadata files of data nodes
 
-"-console" indicates whether to start the DolphinDB terminal. It is set to 1 by default, meaning to start the terminal. To run in the background mode, set it to 0 ("-console 0"). Otherwise, the system will quit after running for a while. "-mode" indicates the node type; "-home" specifies the data and the metadata storage path; "-config" specifies the configuration file path; "-logFile" specifies the log file path.
+Log in the server where data nodes are deployed (e.g. **P1**). Navigate to */DolphinDB/server/clusterDemo/data* to restore metadata files from *backup* with the following command:
 
-
-- **Start in Console Mode (Linux)**
-
-```sh
-./dolphindb -mode agent -home data -config config/agent.cfg -logFile log/agent.log
+```
+cp -r backup/CHUNK_METADATA ./P1-datanode/storage
 ```
 
-The above code is equivalent to the command ``sh startAgent.sh`` .
+**Step 2: Restore program files**
 
-- **Start on Windows**
+Download the previous version of server package from the official website. Replace the server that failed to update with all files (except *dolphindb.cfg*, *clusterDemo* and *dolphindb.lic*) just downloaded.
 
-```sh
-dolphindb.exe -mode agent -home data -config config/agent.cfg -logFile log/agent.log
-```
+### Q5. Failed to update license file online
 
-**Start Controller**
+Updating the license file online requires meeting the requirements described in [Step 2, Chapter 4](#step-2-update-license-file-1). Otherwise, you can update offline or apply for an [Enterprise Edition License](https://www.dolphindb.com/mx_form/mx_form.php?id=98).
 
-Log in server **P4**. Run the following command line in the directory where the DolphinDB executable is located. If the controller fails to start, you can troubleshoot according to controller.log which is stored in "log" subdirectory.
+### Q6: Failed to start nodes on a cloud server
 
-"-clusterConfig" specifies the path to the cluster node configuration file; "-nodesFile" specifies node type, IP address, port number, and node alias.
+A DolphinDB cluster can be deployed on a LAN, or on cloud environment. By default, the DolphinDB cluster is deployed within a LAN (`lanCluster=1`) and uses UDP to monitor the heartbeats of nodes. However, the nodes on a cloud server are not necessarily located within the same LAN, and the cluster may not support UDP. On a cloud server, you must specify `lanCluster=0` in *controller.cfg* and *agent.cfg* to implement communication between nodes in a non-UDP mode. Otherwise, the cluster may malfunction due to the possible failure to detect the heartbeat of a node.
 
+### Q7: Specify volume path
 
-- **Start in Background (Linux)**
-```
-nohup ./dolphindb -console 0 -mode controller -home data -config config/controller.cfg -clusterConfig config/cluster.cfg -logFile log/controller.log -nodesFile config/cluster.nodes &
-```
+A volume is a folder on a data node that holds data in a DFS database in DolphinDB. A node can have multiple volumes. For optimal performance, each volume represents a unique hard disk.
 
-- **Start in Console Mode (Linux)**
-```
-./dolphindb -mode controller -home data -config config/controller.cfg -clusterConfig config/cluster.cfg -logFile log/controller.log -nodesFile config/cluster.nodes
-```
+The volume path can be specified in *cluster.cfg*. If it is not specified, the system will use the data node alias as the path name. For example, if the node alias is P1-datanode, the system automatically creates a subdirectory *P1-datanode* under the home directory */DophinDB/server/clusterDemo/data* of the node to store data. Note that only an absolute path can be used to specify a volume.
 
-The above code is equivalent to command ``sh startController.sh``.
-
-- **Start on Windows**
-
-```sh
-dolphindb.exe -mode controller -home data -config config/controller.cfg -clusterConfig config/cluster.cfg -logFile log/controller.log -nodesFile config/cluster.nodes
-```
-
-**Stop Controller and Agents**
-
-If the node was started in console mode, enter "quit" in the console to exit.
-
-```sh
-quit
-```
-
-If the node was started in background, use the Linux kill command. Assume the Linux system username is "ec2-user":
-
-```sh
-ps aux | grep dolphindb  | grep -v grep | grep ec2-user|  awk '{print $2}' | xargs kill -TERM
-```
-
-The above code is equivalent to command ``sh stopAllNode.sh``.
-
-
-#### 5.3.3 Start the Web-Based Cluster Manager
-
-After both the controller and all the agent nodes are started, we can start or stop data nodes in the DolphinDB cluster management web interface. Enter the IP and port number of the controller in the address bar of your browser (currently supporting Chrome and Firefox) where 8990 is the port number of the controller.
-
-```sh
- localhost:8990
-```
-
-![Cluster Managment](images/multi_web.JPG)
-
-#### 5.3.4 DolphinDB Access Control
-
-Only system administrators have permission to conduct cluster deployment. When using DolphinDB web-based cluster management interface for the first time, you need to log in with the following default administrator account.
-
-```txt
-Administrator Username: admin
-Default Password      : 123456
-```
-
-Click on the login link.
-
-![Login Link](images/login_logo.JPG)
-
-Enter the administrator username and password.
-
-![Enter Name And Password](images/login.JPG)
-
-After logging in the "admin" account, we can change the password and add users or other administrators.
-
-#### 5.3.5 Start Data Nodes
-
-Select all nodes, click on the "execute" icon and confirm. It may take 30 seconds to 1 minute for all the nodes to successfully start. Click on the "refresh" icon to check the status of the nodes. When all items in the "State" column are green check marks, this means all the nodes have been successfully started.
-
-
-![Start](images/multi_start_nodes.JPG)
-
-![Refresh](images/multi_started.JPG)
-
-
-Alternatively, we can start the data nodes with DolphinDB script on the controller node:
-
-```txt
-startDataNode(["P1-NODE1", "P2-NODE1","P3-NODE1","P5-NODE1"])
-```
-
-If a node fails to start, please check the log file of the node in "log" directory. For example, if the node alias is P1-NODE1, then check `log/P1-NODE1.log`.
-
-
-## 6. Common Reasons Why Nodes Cannot Start
-
-If the nodes cannot start after a long time, it may be due to the following reasons:
-1. **Port is occupied.** If you find in the log file an error message "Failed to bind the socket on XXXX" where XXXX is the port number on the node to be started, it means this port may be occupied by another program. Close the other program or reassign a port number and then restart the node. It may also be that this node has just been closed and the Linux kernel has not released this port number. Just wait about 30 seconds and then restart the node.
-
-2. **Port is blocked by firewall.** If the ports used are blocked, we need to open them in the firewall.
-
-3. **Incorrect IP address, port number or node alias in the configuration files.**
-
-4. DolphinDB cluster uses UDP broadcast to send heartbeats. **If an agent node has been started but the web-based cluster manager shows it's offline**, it may be because UDP is not supported by the networks where the cluster is located. Try switching to TCP for heartbeats by adding the configuration parameter *lanCluster*=0 to `agent.cfg` and `cluster.cfg`. 
-
-5. **The first line in the configuration file for cluster nodes (`cluster.nodes`) is empty**. If you find in the log file an error message "Failed to load the nodes file [XXXX/cluster.nodes] with error: The input file is empty.", it means the first line in the file *cluster.nodes* is empty. In this case just remove the empty line from the file and restart the node.
-
-6. **The macro variable\<ALIAS> has no effect when the node is specified explicitly.** In `cluster.cfg`, if the macro variable\<ALIAS> is used when a node is specified, e.g., P1-NODE1.persistenceDir = /hdd/hdd1/streamCache/\<ALIAS>, the node will not start properly. In this case just remove \<ALIAS> and replace it with a specific node alias, e.g., P1-NODE1.persistenceDir = /hdd/hdd1/streamCache/P1-NODE1. To use macro variables for all nodes, specify persistenceDir = /hdd/hdd1/streamCache/\<ALIAS>. For more information about how to use the macro variable, see [DolphinDB user guide](https://www.dolphindb.com/help/DatabaseandDistributedComputing/Configuration/ClusterMode.html).
-
-
-## 7. Web-Based Cluster Management
-
-After the above steps, we have successfully deployed DolphinDB cluster. We can modify the cluster configuration parameters with DolphinDB web-based cluster manager.
-
-### 7.1 Configuration Parameters for Controller
-
-Click on the button "Controller Config" and a window pops up. The parameters *localExectors*, *maxConnections*, *maxMemSize*, *webWorkerNum* and *workerNum* displayed in the window were specified in `controller.cfg` in [Sect 5.1.1](#511-controller.cfg). We can modify the configuration parameters in the window, and they will take effect after the controller is restarted. 
-
-Please note that to modify the configuration parameter *localSite*, the parameter *controllerSite* in each `agent.cfg` should also be changed, otherwise the cluster will not run properly. For a high-availability cluster, manual modification of the configuration files will not take effect. It is required to modify the configuration parameters in the web interface, and the modification will be automatically synchronized to all configuration files in the cluster.
-
-![controller_config](images/multi_controller_config.JPG)
-
-### 7.2 Add/Remove Data Node
-
-Click on the button "Nodes Setup", a window pops up displaying cluster nodes information as specified in `cluster.nodes` in [Sect 5.1.2](#512-cluster.nodes). We can add or remove a data node in this window. The configuration will take effect after the cluster is restarted. Follow the steps below to restart a cluster:
-
-1.	stop the data nodes
-2.	stop the agents
-3.	stop the controller
-4.	start the controller
-5.	start the agents
-6.	start the data nodes
-
-Please note that removing a data node may cause data loss.
-
-![nodes_setup](images/multi_nodes_setup.JPG)
-
-If the newly-added data node is on a new physical server, we must configure and start a new agent as described in [Sect 5.2](#52-agent-configuration-files) on the server, add the information of the agent and data node to `cluster.nodes`, and restart the controller.
-
-### 7.3 Configuration Parameters for Data Nodes
-
-Click on the button "Nodes Config" to modify the configuration parameters of the data nodes. The configuration parameters shown below are in `cluster.cfg` as specified in [Sect 5.1.3](#513-cluster.cfg). We can also add other parameters to be configured here and they will take effect after all the data nodes are restarted.
-
-![nodes_config](images/multi_nodes_config.JPG)
-
-### 7.4 Access Cluster Manager via External Address
-
-If the nodes in a cluster are located within the same LAN, set the site information to the internal IP address for optimal network communication. To access the cluster manager via an external address, the *publicName* should be configured on the controller to specify the external address. The parameter *publicName* can be a domain name or an IP address. It must be a domain name if HTTPS is used. The following script in `cluster.cfg` sets up the external addresses of all nodes on **P1**, **P2**, **P3** and **P5**, where % is a wildcard character for the node alias.
-
-```txt
-P1-%.publicName=19.56.128.21
-P2-%.publicName=19.56.128.22
-P3-%.publicName=19.56.128.23
-P5-%.publicName=19.56.128.25
-```
-
-We also need to add the corresponding external domain name or IP address in `controller.cfg`.
-
-```txt
-publicName=19.56.128.24
-```
-
-### 7.5 Specify Volume Path
-
-A volume is a folder on a data node that holds data in a DFS database in DolphinDB. A node can have multiple volumes. It is most efficient when each volume represents a unique hard disk, so multiple volumes can be written to or read in parallel. 
-
-We can specify the volume path in `cluster.cfg`. If it is not specified, the system will use the data node alias as the path name. For example, if the node alias is P5-NODE1, the system automatically creates a "P5-NODE1" subdirectory under the home directory of the node to store data. Please note that only an absolute path can be used to specify a volume.
+> ❗ It is recommended not to mount a remote NAS volume, which may affect the performance. If the partitions have been mounted with NFS protocol, please switch user to root to access the database. A database process started by a regular user is not allowed to read or write to the NAS disk, whereas a process started by a sudo user will cause access errors.
 
 There are 3 ways to specify the volume path:
 
-- #### Specify Separately for Each Node
+- **Specify separately for each node**
 
-```txt
-P3-NODE1.volumes=/DFS/P3-NODE1
-P5-NODE1.volumes=/DFS/P5-NODE1
+```
+P1-datanode.volumes=/DFS/P1-datanode
+P2-datanode.volumes=/DFS/P2-datanode
+
 ```
 
-- #### Specify with Wildcard Characters "%" and "?"
+- **Specify with wildcard characters** `%` **and** `?`
 
-"?" represents a single character; "%" can represent 0, 1 or more characters.
+`?`  represents a single character; `%` can represent 0, 1 or more characters.
 
-To store the data of all the nodes ending with "-NODE1" to /VOL1/:
+To store the data of all the nodes ending with "-datanode" to */VOL1*:
 
-```txt
-%-NODE1.volumes=/VOL1/
+```
+%-datanode.volumes=/VOL1
 ```
 
-This is equivalent to the following:
+This is equivalent to:
 
-```txt
-P1-NODE1.volumes=/VOL1/
-P2-NODE1.volumes=/VOL1/
-P3-NODE1.volumes=/VOL1/
-P5-NODE1.volumes=/VOL1/
+```
+P1-datanode.volumes=/VOL1
+P2-datanode.volumes=/VOL1
+
 ```
 
-- #### Specify with Symbol ALIAS
+- **Specify with symbol ALIAS**
 
-If each volume path contains a node alias, we can use \<ALIAS> to specify the volume paths. For example, to configure 2 volumes (/VOL1/ and /VOL2/) on each node:
+If each volume path contains a node alias, you can use \<ALIAS> to specify the volume paths. For example, to configure 2 volumes (*/VOL1* and */VOL2*) on each node:
 
-```txt
+```
 volumes=/VOL1/<ALIAS>,/VOL2/<ALIAS>
 ```
 
-This is equivalent to the following:
+This is equivalent to:
 
-```txt
-P1-NODE1.volumes=/VOL1/P1-NODE1,/VOL2/P1-NODE1
-P2-NODE1.volumes=/VOL1/P2-NODE1,/VOL2/P2-NODE1
-P3-NODE1.volumes=/VOL1/P3-NODE1,/VOL2/P3-NODE1
-P5-NODE1.volumes=/VOL1/P5-NODE1,/VOL2/P5-NODE1
+```
+P1-datanode.volumes=/VOL1/P1-datanode,/VOL2/P1-datanode
+P2-datanode.volumes=/VOL1/P2-datanode,/VOL2/P2-datanode
+
 ```
 
-## 8. Cloud Deployment
+### Q8: Change configuration
 
-A DolphinDB cluster can be deployed on a Local Area Network (LAN), or on private or public cloud. By default, DolphinDB assumes the cluster is on a LAN (lanCluster=1) and uses UDP heartbeats. However, the nodes on a cloud server are not necessarily located within the same LAN, and the cluster may not support UDP. On a cloud server, it is required to specify *lanCluster=0* in `controller.cfg` and `agent.cfg` to implement communication between nodes in a non-UDP mode. Otherwise, the cluster may not work normally as the nodes' heartbeats may not be detected properly.
+For more details on configuration parameters, refer to [Configuration](https://www.dolphindb.com/help/DatabaseandDistributedComputing/Configuration/index.html).
 
-For more information on configuration, please see DolphinDB documentation [Configuration](https://www.dolphindb.com/help/DatabaseandDistributedComputing/Configuration/index.html).
+If you encounter performance problems, you can contact our team on [Slack](https://dolphindb.slack.com/) for technical support.
+
+## 6. See Also
+
+For more information, refer to [DolphinDB Manual](https://www.dolphindb.com/help/index.html).
