@@ -9,7 +9,7 @@
 - [DolphinDB Deployment on a New Server](deploy_dolphindb_on_new_server.md)
 - [Deploy DolphinDB on Kubernetes](k8s_deployment.md)
 - [Grayscale Upgrade for High-availability Clusters](gray_scale_upgrade_ha.md)
-- [High availability for DolphinDB](ha_cluster_deployment.md)
+- [DolphinDB High-availability Cluster Deployment](ha_cluster_deployment.md)
 - [Scale out a DolphinDB Cluster](cluster_scaleout.md)
 - [GUI Tutorial](gui_tutorial.md)
 - [Best Practices for Using HAProxy in DolphinDB](haproxy_best_practices.md)

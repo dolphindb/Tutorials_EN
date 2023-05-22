@@ -1,4 +1,4 @@
-# High Availability for DolphinDB
+# DolphinDB High-availability Cluster Deployment
 
 A DolphinDB cluster consists of 4 types of nodes: controller, agent，data node, and compute node.
 
