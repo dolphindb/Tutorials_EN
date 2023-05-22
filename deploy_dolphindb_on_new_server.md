@@ -696,6 +696,8 @@ For detailed instructions of deployment procedures, you can refer to the followi
 - [DolphinDB Single-Server Cluster Deployment](https://github.com/dolphindb/Tutorials_EN/blob/master/single_machine_cluster_deploy.md)
     
 - [DolphinDB Multi-Machine Cluster Deployment](https://github.com/dolphindb/Tutorials_EN/blob/master/multi_machine_cluster_deployment.md)
+
+- [DolphinDB High-availability Cluster Deployment](https://github.com/dolphindb/Tutorials_EN/blob/master/ha_cluster_deployment.md)
     
 - [Scale out a DolphinDB Cluster](https://github.com/dolphindb/Tutorials_EN/blob/master/cluster_scaleout.md)
 
