@@ -23,6 +23,7 @@
 - [Backup and Restore](backup_and_restore.md)
 - [Cluster-to-Cluster Synchronization in DolphinDB](cluster_to_cluster_synchronization.md)
 - [Introduction to DolphinDB TSDB Storage Engine](tsdb_engine.md)
+- [Tiered Storage](tiered_storage.md)
 
 ## Programing Language
 - [DolphinDB Programming Guide](DolphinDB_Programming_Guide.md)
