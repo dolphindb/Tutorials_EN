@@ -86,6 +86,7 @@
 - [Feature Engineering for Stock Volatility Prediction](metacode_derived_features.md)
 - [High Frequency Data Analysis: Pivoting](hi_freq_data_analysis_pivoting.md)
 - [High Frequency Data Analysis: Converting High-frequency Signals to Discrete Buy/Sell Signals](hi_freq_data_analysis_converting_buy_sell_signals.md)
+- [Machine Learning in DolphinDB](machine_learning.md)
 - [Synchronizing Basic Product Information from MySQL with DolphinDB Cached Tables](cachedtable.md)
 - [Time Zones in DolphinDB](timezone.md)
 
