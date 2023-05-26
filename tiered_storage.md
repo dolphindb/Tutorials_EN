@@ -61,7 +61,7 @@ For more information on the DolphinDB AWS S3 plugin, see [plugin README](https:/
 
 ### 2.2 Setting Data Retention Period 
 
-Use the *hoursToColdVolume* parameter of the [setRetentionPolicy](https://www.dolphindb.cn/cn/help/FunctionsandCommands/CommandsReferences/s/setRetentionPolicy.html) function to specify the data retention period.
+Use the *hoursToColdVolume* parameter of the [setRetentionPolicy](https://dolphindb.com/help200/FunctionsandCommands/CommandsReferences/s/setRetentionPolicy.html) function to specify the data retention period.
 
 For example, cold data storage volumes have been specified as:
 
