@@ -24,6 +24,7 @@
 - [Cluster-to-Cluster Synchronization in DolphinDB](cluster_to_cluster_synchronization.md)
 - [Introduction to DolphinDB TSDB Storage Engine](tsdb_engine.md)
 - [Tiered Storage](tiered_storage.md)
+- [DECIMAL in DolphinDB](DECIMAL.md)
 
 ## Programing Language
 - [DolphinDB Programming Guide](DolphinDB_Programming_Guide.md)
