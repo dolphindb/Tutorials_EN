@@ -2,6 +2,7 @@
 
 This tutorial is a quick start guide describing how to deploy the DolphinDB ARM standalone, and update the server and license file. You can also find solutions to common issues in the FAQ section.
 
+
   - [1. System Requirements](#1-system-requirements)
   - [2. Deploy DolphinDB ARM Standalone](#2-deploy-dolphindb-arm-standalone)
     - [Step 1: Download](#step-1-download)
