@@ -41,6 +41,7 @@
 - [Streaming](streaming_tutorial.md)
 - [Stream Aggregator](stream_aggregator.md)
 - [Historical Data Replay](historical_data_replay.md)
+- [Understanding the Stream Engine Parser](StreamEngineParser.md)
 
 ## System Management
 - [Security and User Access Control](ACL_and_Security.md)
