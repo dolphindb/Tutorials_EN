@@ -1,0 +1,17 @@
+/**
+ * Demo for Slave Cluster
+ */
+
+login("admin", "123456")
+
+rpc(getControllerAlias(), startClusterReplication)  // Enable asynchronous replication on the controller of slave cluster
+// To stop the replication, use `rpc(getControllerAlias(), stopClusterReplication)`
+// To skip the replication tasks with ID 1-10 on the controller of slave cluster, use `rpc(getControllerAlias(), skipClusterReplicationTask, 1..10)`
+
+// Check if the data from the master cluster is synchronized to the slave cluster
+loadTable("dfs://testDB", "testTB")  // Check databases and tables
+select count(*) from loadTable("dfs://testDB", "testTB")  // Check data
+
+// Status monitoring
+rpc(getControllerAlias(), getSlaveReplicationStatus)  // View the status of the task execution queue from the slave cluster
+rpc(getControllerAlias(), getClusterReplicationMetrics, 30)  // If the parameter secs is set to -1, the function returns the replication metrics since asynchronous replication was enabled.

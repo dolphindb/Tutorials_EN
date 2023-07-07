@@ -1,0 +1,50 @@
+/**
+ * Demo for Master Cluster
+ */
+
+login("admin", "123456")
+
+rpc(getControllerAlias(), startClusterReplication)  // Enable asynchronous replication on the controller of master cluster
+// To stop the replication, use `rpc(getControllerAlias(), stopClusterReplication)` on the controller of master cluster
+
+// create database
+dbName = "dfs://testDB"
+if(existsDatabase(dbName)){
+  dropDatabase(dbName)
+}
+db = database(dbName, VALUE, 2023.01.01..2023.12.31)
+setDatabaseForClusterReplication(db, true)  // Enable asynchronous replication for the database db
+
+// Check replication states
+schema(db)  // Check through the value of clusterReplicationEnabled 
+// OR check all database with `getDatabaseClusterReplicationStatus()`
+
+// DDL and DML operations on the master cluster
+tbName = "testTB"
+colNames = `SecurityID`DateTime`PreClosePx`OpenPx`HighPx`LowPx`LastPx`Volume`Amount
+colTypes = [SYMBOL, DATETIME, DOUBLE, DOUBLE, DOUBLE, DOUBLE, DOUBLE, INT, DOUBLE]
+schemaTable = table(1:0, colNames, colTypes)
+db.createPartitionedTable(table=schemaTable, tableName=tbName, partitionColumns=`DateTime)  // 创建分区表
+
+// simulate the data and write to the table
+n = 1210000  
+randPrice = round(10+rand(1.0, 100), 2)
+randVolume = 100+rand(100, 100)
+SecurityID = lpad(string(take(0..4999, 5000)), 6, `0)
+DateTime = (2023.01.08T09:30:00 + take(0..120, 121)*60).join(2023.01.08T13:00:00 + take(0..120, 121)*60)
+PreClosePx = rand(randPrice, n)
+OpenPx = rand(randPrice, n)
+HighPx = rand(randPrice, n)
+LowPx = rand(randPrice, n)
+LastPx = rand(randPrice, n)
+Volume = int(rand(randVolume, n))
+Amount = round(LastPx*Volume, 2)
+tmp = cj(table(SecurityID), table(DateTime))
+t = tmp.join!(table(PreClosePx, OpenPx, HighPx, LowPx, LastPx, Volume, Amount))
+dbName = "dfs://testDB"
+tbName = "testTB"
+loadTable(dbName, tbName).append!(t)
+
+// Status monitoring
+rpc(getControllerAlias(), getMasterReplicationStatus)  // Check the task queue status of the master cluster
+rpc(getControllerAlias(), getRecentSlaveReplicationInfo)  // Check the task queue status of the slave clusters
