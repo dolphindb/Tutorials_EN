@@ -97,6 +97,7 @@
 - [Machine Learning in DolphinDB](machine_learning.md)
 - [Synchronizing Basic Product Information from MySQL with DolphinDB Cached Tables](cachedtable.md)
 - [Time Zones in DolphinDB](timezone.md)
+- [Cases for IoT: Query the Time-series Data](iot_query_case.md)
 
 ## Function Mappings
 - [Function Mappings: From Python to DolphinDB](function_mapping_python.md)
