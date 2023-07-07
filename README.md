@@ -1,21 +1,23 @@
 # DolphinDB Tutorials
 
-## Deployment
+## Installation and Deployment
 - [DolphinDB User Guide](dolphindb_user_guide.md)
 - [DolphinDB Standalone Deployment](standalone_deployment.md)
 - [DolphinDB ARM Standalone Deployment](ARM_standalone_deployment.md)
 - [DolphinDB Single-Server Cluster Deployment](single_machine_cluster_deploy.md)
 - [DolphinDB Multi-Machine Cluster Deployment](multi_machine_cluster_deployment.md)
 - [DolphinDB Deployment on a New Server](deploy_dolphindb_on_new_server.md)
-- [Deploy DolphinDB on Kubernetes](https://github.com/dolphindb/dolphindb-k8s/blob/master/k8s_deployment_EN.md)
-- [Deploy DolphinDB on AWS EKS](https://github.com/dolphindb/dolphindb-k8s/blob/master/k8s_deployment_in_AWS_EN.md)
-- [Deploy a DolphinDB Cluster on Docker](https://github.com/dolphindb/dolphindb-k8s/blob/master/docker_deployment_EN.md)
 - [Grayscale Upgrade for High-availability Clusters](gray_scale_upgrade_ha.md)
 - [DolphinDB High-availability Cluster Deployment](ha_cluster_deployment.md)
 - [Scale out a DolphinDB Cluster](cluster_scaleout.md)
 - [GUI Tutorial](gui_tutorial.md)
 - [Best Practices for Using HAProxy in DolphinDB](haproxy_best_practices.md)
 
+## Cloud Deployment
+- [Deploy DolphinDB on Kubernetes](https://github.com/dolphindb/dolphindb-k8s/blob/master/k8s_deployment_EN.md)
+- [Deploy DolphinDB on AWS EKS](https://github.com/dolphindb/dolphindb-k8s/blob/master/k8s_deployment_in_AWS_EN.md)
+- [DolphinDB Standalone Deployment on Docker](https://github.com/dolphindb/dolphindb-k8s/blob/master/docker_single_deployment_EN.md)
+- [DolphinDB Multi-Container Deployment With Docker Compose](https://github.com/dolphindb/dolphindb-k8s/blob/master/docker_compose_deployment.md)
 
 ## Database
 - [Partitioned Databases](database.md)
