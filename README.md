@@ -31,6 +31,7 @@
 - [Tiered Storage](tiered_storage.md)
 - [DECIMAL in DolphinDB](DECIMAL.md)
 - [Data Migration and Rebalancing](data_rebalancing.md)
+- [Cluster Asynchronous Replication](async_replication.md)
 
 ## Programing Language
 - [DolphinDB Programming Guide](DolphinDB_Programming_Guide.md)
