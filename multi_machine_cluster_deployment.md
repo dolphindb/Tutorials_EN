@@ -68,19 +68,19 @@ Requirements and preparation before deployment:
 Download DolphinDB installation package and unzip it on each physical server.
 
 - Official website: [DolphinDB](https://www.dolphindb.com/alone/alone.php?id=75)
-- Download DolphinDB with a shell command. Take version 2.00.9.1 for example:
+- Or you can download DolphinDB with a shell command:
 
-```
-wget "https://www.dolphindb.cn/downloads/DolphinDB_Linux64_V2.00.9.1.zip"
-```
-
-Then extract the installation package to the specified directory (e.g., to */DolphinDB*):
-
-```
-unzip DolphinDB_Linux64_V2.00.9.1.zip -d /DolphinDB
+```sh
+wget https://www.dolphindb.com/downLinux64-Current.php -O dolphindb.zip
 ```
 
-> ❗ The directory name cannot contain any space characters, otherwise the startup of the data node will fail.
+Then extract the installation package to the specified directory (`/path/to/directory`):
+
+```sh
+unzip dolphindb.zip -d </path/to/directory>
+```
+
+> **Note**: The directory name cannot contain any space characters, otherwise the startup of the data node will fail.
 
 ### Step 2: Update License File
 

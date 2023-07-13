@@ -58,16 +58,16 @@ If you encounter any problems, contact us (support@dolphindb.com) for technical 
 ### Step 1: Download
 
 - Official website: [DolphinDB](https://www.dolphindb.com/alone/alone.php?id=75)
-- Download DolphinDB for ARM with a shell command. Take version 2.00.9.1 for example:
+- Or you can download DolphinDB for ARM with a shell command: 
 
 ```sh
-wget "https://www.dolphindb.cn/downloads/DolphinDB_ARM64_V2.00.9.1.zip"
+wget https://www.dolphindb.com/downARM64-Current.php -O dolphindb.zip
 ```
 
-Then extract the installation package to the specified directory (e.g., to */DolphinDB*):
+Then extract the installation package to the specified directory (`/path/to/directory`):
 
 ```sh
-unzip DolphinDB_ARM64_V2.00.9.1.zip -d /DolphinDB
+unzip dolphindb.zip -d </path/to/directory>
 ```
 
 **Note**: The directory name cannot contain any space characters, otherwise the startup of the data node will fail. 
