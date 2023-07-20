@@ -390,7 +390,7 @@ time                vol tmsum_time
 
 The above calculation is also widely used in the quantile-based historical stock analysis (refer to section [3.1.1](#311-step1-window-sizen) for details).
 
-#### 2.2.3 step=n, window size=m**
+#### 2.2.3 step=n, window size=m
 
 You can find function `rolling` helpful in this case. 
 
