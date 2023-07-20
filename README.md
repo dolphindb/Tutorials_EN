@@ -74,7 +74,7 @@
 - [HDFS](https://github.com/dolphindb/DolphinDBPlugin/blob/release200/hdfs/README_EN.md)
 - [kdb](../../../DolphinDBPlugin/blob/release200/kdb/README.md)
 - [mat](../../../DolphinDBPlugin/blob/release200/mat/README_EN.md)
-- [MongoDB](../../../DolphinDBPlugin/blob/release200/mongodb/README_EN.md)
+- [MongoDB](../../../DolphinDBPlugin/blob/release200/mongodb/README.md)
 - [MySQL](../../../DolphinDBPlugin/blob/release200/mysql/README.md)
 - [ODBC](../../../DolphinDBPlugin/blob/release200/odbc/README.md)
 - [Parquet](../../../DolphinDBPlugin/blob/release200/parquet/README.md)
