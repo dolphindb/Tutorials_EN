@@ -29,8 +29,6 @@
 Partitioned databases can significantly reduce latency and improve throughput. 
 * Partitioning makes large tables more manageable by enabling users to access subsets of data quickly and efficiently, while maintaining the integrity of a data collection. 
 * Partitioning helps the system utilize all cluster resources. Data can be partitioned to multiple nodes and a task can be divided into multiple subtasks on these nodes. With distributed computing, these subtasks can be executed simultaneously to improve performance. 
-* Partitioning increases system availability. As partition replicas usually reside on different physical nodes, if a partition copy becomes unavailable, the system can use other replicas. 
-
 
 ## 2. The differences between DolphinDB and MPP databases regarding partitions
 
