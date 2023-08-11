@@ -71,6 +71,7 @@
 - [AWS S3](../../../DolphinDBPlugin/blob/release200/aws/README_EN.md)
 - [Excel](https://github.com/dolphindb/excel-add-in/blob/master/README.md)
 - [Feather](../../../DolphinDBPlugin/blob/release200/feather/README_EN.md)
+- [formatArrow](../../../DolphinDBPlugin/blob/release200/formatArrow/README.md)
 - [HDF5](../../../DolphinDBPlugin/blob/release200/hdf5/README.md)
 - [HDFS](https://github.com/dolphindb/DolphinDBPlugin/blob/release200/hdfs/README_EN.md)
 - [kdb](../../../DolphinDBPlugin/blob/release200/kdb/README.md)
