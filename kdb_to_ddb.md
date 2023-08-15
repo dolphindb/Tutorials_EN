@@ -110,7 +110,7 @@ This section explains the mapping between the data types, functions, keywords an
 
 | **kdb+ Datatype** | **DolphinDB Data Type** | **DolphinDB Examples**                                       | **Size** | **Range**        |
 | :---------------- | :---------------------- | :----------------------------------------------------------- | :------- | :--------------- |
-|                   | VOID                    | NULL                                                         |          |                  |
+|                   | VOID                    | NULL                                                         | 1        |                  |
 | boolean           | BOOL                    | 1b, 0b, true, false                                          | 1        | 0~1              |
 | byte              |                         |                                                              |          |                  |
 | char              | CHAR                    | 'a', 97c                                                     | 1        | -2 7 +1~2 7 -1   |
