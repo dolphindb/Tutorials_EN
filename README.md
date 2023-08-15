@@ -108,5 +108,7 @@
 - [Time Zones in DolphinDB](timezone.md)
 - [Cases for IoT: Query the Time-series Data](iot_query_case.md)
 
-## Function Mappings
+## Migration and Function Mappings
 - [Function Mappings: From Python to DolphinDB](function_mapping_python.md)
+- [Data Migration and Function Mapping: From kdb+ to DolphinDB](kdb_to_ddb.md)
+
