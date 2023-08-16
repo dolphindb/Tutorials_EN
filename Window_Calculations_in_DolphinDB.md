@@ -241,7 +241,7 @@ As market participation is skewed toward the beginning and end of the trading da
 The following example calculates the sum of volume per 100 trades in the last minute of the stock market on a given day.
 
 ```
-t=table(2021.01.05T02:59:00.000+rand(60000, 2000)).sort!() as time, take(`CL,600) as sym, 10* rand(50, 600) as vol)
+t=table(2021.01.05T02:59:00.000+(1..2000)*30 as time, take(`CL,2000) as sym, 10* rand(50, 2000) as vol)
 
 select rolling(last,time,100,100) as last_time,rolling(last,t.sym,100,100) as sym, rolling(sum,vol,100,100) as vol_100_sum from t 
 
