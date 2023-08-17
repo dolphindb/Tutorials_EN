@@ -245,7 +245,7 @@ t=table(2021.01.05T02:59:00.000+(1..2000)*30 as time, take(`CL,2000) as sym, 10*
 
 select rolling(last,time,100,100) as last_time,rolling(last,t.sym,100,100) as sym, rolling(sum,vol,100,100) as vol_100_sum from t
 
- # output (每次结果会因为rand函数结果而不同)
+ # output (Results are different because of the rand function)
 
 last_time               sym vol_100_sum
 ----------------------- --- -----------
