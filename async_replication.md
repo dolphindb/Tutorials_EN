@@ -122,8 +122,8 @@ vim ./cluster.cfg
 
 ```
 clusterReplicationMode=slave
-replicationExecutionUsername=admin
-replicationExecutionPassword=123456
+clusterReplicationExecutionUsername=admin
+clusterReplicationExecutionPassword=123456
 ```
 
 The specified user must have been granted to process transactions, i.e., the operations on the master cluster can be executed on the slave clusters by the user. Otherwise the asynchronous tasks would fail. See details of [User Access Control](https://www.dolphindb.com/help/SystemManagement/UserAccessControl.html).
