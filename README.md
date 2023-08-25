@@ -111,5 +111,5 @@
 ## Migration and Function Mappings
 - [Function Mappings: From Python to DolphinDB](function_mapping_python.md)
 - [Data Migration and Function Mapping: From kdb+ to DolphinDB](kdb_to_ddb.md)
-- [Data Migration: From SQL Server to DolphinDB](sqlserver_to_dolphindb.md)
+- [Data Migration: From SQL Server to DolphinDB](sql_server_to_ddb.md)
 
