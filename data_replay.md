@@ -1,4 +1,4 @@
-# DolphinDB Tutorial: Historical Data Replay
+# DolphinDB Tutorial: Data Replay
 
 In DolphinDB, we can import historical data into a stream table in chronological order as "real-time data" so that the same script can be used both for backtesting and real-time trading. Regarding streaming in DolphinDB please refer to [DolphinDB Streaming Tutorial](https://github.com/dolphindb/Tutorials_EN/blob/master/streaming_tutorial.md).
 
