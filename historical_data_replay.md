@@ -4,7 +4,7 @@ In DolphinDB, we can import historical data into a stream table in chronological
 
 This article introduces functions `replay` and `replayDS` and then demonstrates the process of data replaying.
 
-- [DolphinDB Tutorial: Historical Data Replay](#dolphindb-tutorial-historical-data-replay)
+- [DolphinDB Tutorial: Data Replay](#dolphindb-tutorial-historical-data-replay)
   - [1. Functions](#1-functions)
     - [`replay`](#replay)
     - [`replayDS`](#replayds)
