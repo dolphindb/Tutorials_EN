@@ -42,7 +42,7 @@ t2 = table(take(`A, 4) as Sym, 10:10:00.000+(0 3000 6000 9000) as Time, 12.6 12.
 select *  from aj(t1, t2, `Time)
 ```
 
-<img src="./images/join_engine/1_1.png" width=70%>
+<img src="./images/join_engine/1_1.png" width=50%>
 
 For each record with a timestamp *T* in the left table, the `asof join` takes from the right table a record with the closest timestamp that is prior or equal to *T*. In the above example where the join column "Time" is specified, each record in table t1 is paired with the record in table t2 whose "Time" value is less than or equal to the "Time" value in t1.
 
@@ -250,7 +250,7 @@ trades.append!(t1)
 
 The correspondence of records between the input streams is shown below:
 
-<img src="./images/join_engine/3_1.png" width=70%>
+<img src="./images/join_engine/3_1.png" width=50%>
 
 The output table is shown below. 
 
@@ -303,7 +303,7 @@ ohlc.append!(t1)
 
 The correspondence of records between the input streams is shown below:
 
-<img src="./images/join_engine/3_3.png" width=80%>
+<img src="./images/join_engine/3_3.png" width=60%>
 
 The output table is shown below. The last two columns use array vectors to display all values of column "TradeQty" and "TradeTime" within the window.
 
@@ -393,11 +393,11 @@ quotes.append!(t1)
 
 The correspondence of records between the left table and right table is shown below:
 
-<img src="./images/join_engine/3_6.png" width=80%>
+<img src="./images/join_engine/3_6.png" width=60%>
 
 The engine immediately returns when a record is ingested. The final output is as follows:
 
-<img src="./images/join_engine/3_7.png" width=60%>
+<img src="./images/join_engine/3_7.png" width=50%>
 
 
 ### Left Semi Join Engine: Joining Trades With Orders Data
@@ -494,7 +494,7 @@ stockKline.append!(t1)
 
 The correspondence of records between the input streams is shown below:
 
-<img src="./images/join_engine/3_10.png" width=70%>
+<img src="./images/join_engine/3_10.png" width=50%>
 
 As shown in the output table, both the stocks A and B are correlated to index idx1. The result of the first two minutes is empty because the window size of `mcorr` is 3.
 
