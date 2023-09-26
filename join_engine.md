@@ -78,11 +78,11 @@ First, we create two stream tables as inputs and one stream table as output. The
 ```
 // create table
 share streamTable(1:0, `Sym`Time`Price, [SYMBOL, TIME, DOUBLE]) as trade
-share streamTable(1:0, `Sym`Time`BidPrice, [SYMBOL, TIME, DOUBLE]) as snapshot
+share streamTable(1:0, `Sym`Time`BidPrice, [SYMBOL, TIME, DOUBLE]) as quotes
 share table(1:0, `Time`Sym`Price`t2_Time`BidPrice, [TIME, SYMBOL, DOUBLE, TIME, DOUBLE]) as output
 
 // create engine
-ajEngine = createAsofJoinEngine(name="asofJoin", leftTable=trade, rightTable=snapshot, outputTable=output, metrics=<[Price, snapshot.Time, BidPrice]>, matchingColumn=`Sym, timeColumn=`Time, useSystemTime=false, delayedTime=1000)
+ajEngine = createAsofJoinEngine(name="asofJoin", leftTable=trade, rightTable=quotes, outputTable=output, metrics=<[Price, quotes.Time, BidPrice]>, matchingColumn=`Sym, timeColumn=`Time, useSystemTime=false, delayedTime=1000)
 
 // subscribe topic
 subscribeTable(tableName="trade", actionName="joinLeft", offset=0, handler=getLeftStream(ajEngine), msgAsTable=true)
@@ -180,7 +180,6 @@ The equi join engine internally maintains two keyed tables in the cache, one for
 
 The equi join engine regularly performs garbage collection on all cached data, whether joined or un-joined. For details on the garbage collection rules, refer to the [user manual](https://dolphindb.com/help200/FunctionsandCommands/FunctionReferences/c/createEquiJoinEngine.html). If the equi join engine produces different results from the SQL equi join, it could be due to the differences in the specified garbage collection rules.
 
-
 ### Lookup Join Engine (`createLookupJoinEngine`)
 
 Similar to the SQL `left join`, the lookup join engine joins the left table and the right table on equivalent values in the join column(s). For each record ingested into the left table, the engine produces a result immediately. If no matching record is found in the right table, the corresponding columns are treated as NULL in the output.
@@ -192,7 +191,6 @@ The lookup join engine is typically used to enrich a stream table (left table) w
 The image below illustrates how the lookup join engine returns a single record as soon as a record is ingested into the left table. Each record in the left table contains a join column and a metrics column. For application scenarios of the engine, see Section [Lookup Join Engine: Joining Real-Time Market Data with Historical Daily Metrics](#lookup-join-engine-joining-real-time-market-data-with-historical-daily-metrics).
 
 <img src="./images/join_engine/2_6.png" width=60%>
-
 
 ### Left Semi Join Engine (`createLeftSemiJoinEngine`)
 
@@ -220,11 +218,11 @@ Since the tick trades and quotes often have different occuring times, we can use
 ```
 // create table
 share streamTable(1:0, `Sym`TradeTime`TradePrice, [SYMBOL, TIME, DOUBLE]) as trades
-share streamTable(1:0, `Sym`Time`Bid1Price`Ask1Price, [SYMBOL, TIME, DOUBLE, DOUBLE]) as snapshot
-share streamTable(1:0, `TradeTime`Sym`TradePrice`TradeCost`SnapshotTime, [TIME, SYMBOL, DOUBLE, DOUBLE, TIME]) as output
+share streamTable(1:0, `Sym`Time`Bid1Price`Ask1Price, [SYMBOL, TIME, DOUBLE, DOUBLE]) as quotes
+share streamTable(1:0, `TradeTime`Sym`TradePrice`TradeCost`quotesTime, [TIME, SYMBOL, DOUBLE, DOUBLE, TIME]) as output
 
 // create engine
-ajEngine = createAsofJoinEngine(name="asofJoin", leftTable=trades, rightTable=snapshot, outputTable=output, metrics=<[TradePrice, abs(TradePrice-(Bid1Price+Ask1Price)/2), snapshot.Time]>, matchingColumn=`Sym, timeColumn=`TradeTime`Time, useSystemTime=false, delayedTime=1000)
+ajEngine = createAsofJoinEngine(name="asofJoin", leftTable=trades, rightTable=quotes, outputTable=output, metrics=<[TradePrice, abs(TradePrice-(Bid1Price+Ask1Price)/2), quotes.Time]>, matchingColumn=`Sym, timeColumn=`TradeTime`Time, useSystemTime=false, delayedTime=1000)
 
 // subscribe topic
 subscribeTable(tableName="trades", actionName="appendLeftStream", handler=getLeftStream(ajEngine), msgAsTable=true, offset=-1, hash=0)
@@ -241,13 +239,12 @@ In this script, we subscribe to the table "trades" and "quotes" to ingest the st
 The following script writes "quotes" to the right stream and "trades" to the left stream:
 
 ```
-// generate data: trades
+// generate data: trade
 t1 = table(`A`A`B`A`B`B as Sym, 10:00:02.000+(1..6)*700 as TradeTime,  (3.4 3.5 7.7 3.5 7.5 7.6) as TradePrice)
 // generate data: quotes
 t2 = table(`A`B`A`B as Sym, 10:00:00.000+(3 3 6 6)*1000 as Time, (3.5 7.6 3.5 7.6) as Bid1Price, (3.5 7.6 3.6 7.6) as Ask1Price)
 // input data
 quotes.append!(t2)
-sleep(1000)
 trades.append!(t1)
 ```
 
