@@ -44,6 +44,7 @@
 ## Streaming
 - [Streaming](streaming_tutorial.md)
 - [Stream Aggregator](stream_aggregator.md)
+- [DolphinDB Streaming Join Engines: Joining Multiple Data Streams](join_engine.md)
 - [Data Replay](historical_data_replay.md)
 - [Understanding the Stream Engine Parser](StreamEngineParser.md)
 
