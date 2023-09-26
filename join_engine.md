@@ -254,7 +254,7 @@ The correspondence of records between the input streams is shown below:
 
 The output table is shown below. 
 
-<img src="./images/join_engine/3_2.png" width=50%>
+<img src="./images/join_engine/3_2.png" width=40%>
 
 In this example, the parameter *delayedTime* is specified. Even though no record with a timestamp greater than 10:00:06.200 is ingested in the right stream for the group "Sym" B, the join is still triggered two seconds after the last left record (B,10:00:06.200, 7.6) arrives.
 
@@ -358,7 +358,7 @@ quotes.append!(t1)
 
 Join result:
 
-<img src="./images/join_engine/3_5.png" width=50%>
+<img src="./images/join_engine/3_5.png" width=40%>
 
 
 ### Lookup Join Engine: Joining Real-Time Market Data with Historical Daily Metrics
@@ -447,7 +447,7 @@ The correspondence of records between the input streams is shown below:
 
 The output table shows that each trade record is joined with its corresponding buy and sell order records from the "orders" stream. It now displays information on the buy and sell quantity, price, and time for each trade.
 
-<img src="./images/join_engine/3_9.png" width=80%>
+<img src="./images/join_engine/3_9.png" width=90%>
 
 
 ### Left Semi Join Engine: Correlating Individual Stocks to Index
