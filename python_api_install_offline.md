@@ -1,10 +1,5 @@
 # Offline Installation Guide for DolphinDB Python API
 
-This tutorial explains how to install the DolphinDB Python API in an offline Windows or Linux environment. There are two installation options for each environment:
-
-- install in a conda environment
-- install using wheel packages directly
-
 - [Offline Installation Guide for DolphinDB Python API](#offline-installation-guide-for-dolphindb-python-api)
   - [1. Prerequisites](#1-prerequisites)
     - [1.1 Linux](#11-linux)
@@ -35,6 +30,10 @@ This tutorial explains how to install the DolphinDB Python API in an offline Win
     - [7.3 Troubleshooting](#73-troubleshooting)
 
 
+This tutorial explains how to install the DolphinDB Python API in an offline Windows or Linux environment. There are two installation options for each environment:
+
+- install in a conda environment
+- install using wheel packages directly
 
 ## 1. Prerequisites
 
