@@ -59,6 +59,7 @@
 
 ## API
 - [Python API](../../../api_python3/blob/master/README.md)
+- [Offline Installation Guide for DolphinDB Python API](python_api_install_offline.md)
 - [Java API](../../../api-java/blob/master/README.md)
 - [JDBC](https://github.com/dolphindb/jdbc/blob/master/README.md)
 - [C# API](../../../api-csharp/blob/master/README.md)
