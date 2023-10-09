@@ -14,7 +14,7 @@ Tick data replay is critical for high-frequency trading strategy development. Th
     - [2.4 Replayed Data Consumption](#24-replayed-data-consumption)
       - [2.4.1 Consuming With DolphinDB Built-in Streaming Engine](#241-consuming-with-dolphindb-built-in-streaming-engine)
       - [2.4.2 Consuming with Kafka](#242-consuming-with-kafka)
-      - [2.4.5 Consuming with DolphinDB C++ API](#245-consuming-with-dolphindb-c-api)
+      - [2.4.3 Consuming with DolphinDB C++ API](#243-consuming-with-dolphindb-c-api)
   - [3. Performance Testing](#3-performance-testing)
   - [4. Development Environment](#4-development-environment)
   - [5. Conclusion](#5-conclusion)
@@ -326,7 +326,7 @@ Return:
 
 ![](images/market_data_replay/KafkaToipic.png)
 
-#### 2.4.5 Consuming with DolphinDB C++ API
+#### 2.4.3 Consuming with DolphinDB C++ API
 
 The following example uses function `ThreadedClient::subscribe` to subscribe to the replayed data ("messageStream") and outputs results in real-time. 
 
