@@ -12,7 +12,7 @@ login("admin", "123456")
 
 def createStreamTableFunc(){
 	//create stream table: messageStream
-	colName = `msgTime`msgType`msgBody
+	colName = `timestamp`source`msg
 	colType = [TIMESTAMP,SYMBOL, BLOB]
 	messageTemp = streamTable(5000000:0, colName, colType)
 	enableTableShareAndPersistence(table=messageTemp, tableName="messageStream", asynWrite=true, compress=true, cacheSize=5000000, retentionMinutes=1440, flushMode=0, preCache=10000)
