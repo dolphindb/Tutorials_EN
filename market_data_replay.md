@@ -77,7 +77,7 @@ The output table "messageStream" has the following schema:
 
 Part of the table "messageStream":
 
-![](images/stock_market_replay/messageStream.png)
+![](images/market_data_replay/messageStream.png)
 
 Such schema guarantees multiple data sources are replayed in strict chronological order, and replayed data (stored in the same table "messageStream") can also be processed by a single thread in chronological order.
 
@@ -91,7 +91,7 @@ Examples of N-to-1 heterogenous replay in this chapter show how to replay and pr
 
 The figure below is the market data replay flowchart:
 
-![](images/stock_market_replay/flowChart.png)
+<img src="images/market_data_replay/flowChart.png" width="60%">
 
 The replay processing has two major phases: replay and consumption.
 
@@ -244,7 +244,7 @@ With parameter *offset* set to -1, the subscription starts with the next new mes
 
 - Check the result
 
-![](images/stock_market_replay/prevailingQuotes.png)
+![](images/market_data_replay/prevailingQuotes.png)
 
 Within each group of the *matchingColumn* (“SecurityID”), the order of the output is the same as the order of the input.
 
@@ -324,7 +324,7 @@ Start consumption from the first topic named “topic-message”.
 
 Return:
 
-![](images/stock_market_replay/KafkaToipic.png)
+![](images/market_data_replay/KafkaToipic.png)
 
 #### 2.4.5 Consuming with DolphinDB C++ API
 
@@ -375,7 +375,7 @@ The *listenport* parameter is the subscription port for the single-threaded clie
 
 - Check the result in the terminal
 
-![](images/stock_market_replay/C++API.png)
+![](images/market_data_replay/C++API.png)
 
 **Note**:
 
