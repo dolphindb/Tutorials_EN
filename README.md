@@ -112,10 +112,12 @@
 - [Synchronizing Basic Product Information from MySQL with DolphinDB Cached Tables](cachedtable.md)
 - [Time Zones in DolphinDB](timezone.md)
 - [Unified Stream and Batch Processing of High-frequency Data: Reactive State Engine](Reactive_State_Engine.md)
+- [Market Data Replay in DolphinDB](market_data_replay.md)
 - [Cases for IoT: Query the Time-series Data](iot_query_case.md)
 
 ## Migration and Function Mappings
 - [Function Mappings: From Python to DolphinDB](function_mapping_python.md)
 - [Data Migration and Function Mapping: From kdb+ to DolphinDB](kdb_to_ddb.md)
 - [Data Migration: From SQL Server to DolphinDB](sql_server_to_ddb.md)
+- [Data Migration: From InfluxDB to DolphinDB](InfluxDB_to_ddb.md)
 
