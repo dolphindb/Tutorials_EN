@@ -46,7 +46,7 @@ sample.data(set: "machineProduction")
 
 Create a database and a table in DolphinDB to store the migrated data. You need to define a database with reasonable partition scheme according to the data to be migrated. For more instructions, see [DolphinDB Partitioned Database Tutorial](https://github.com/dolphindb/Tutorials_EN/blob/master/database.md).
 
-The following script creates database "dfs://demo" and partitioned table "pt" [createTable.dos](script/InfluxDB_to_ddb/createTable.dos).
+The following script creates database "dfs://demo" and partitioned table "pt" ([createTable.dos](script/InfluxDB_to_ddb/createTable.dos)).
 
 ```
 login("admin","123456")
@@ -78,7 +78,7 @@ Download the compiled [Addax-DolphinDBWriter plugin](https://github.com/dolphind
 
 ### 2.4 Configure a Migration Job
 
-Create a configuration file to define the migration job based on Addax's job configuration. Pay attention to the format conversion of date and time values (refer to [Convert the Date and Time Values](#242-convert-the-date-and-time-values)).
+Create a configuration file to define the migration job based on Addax's job configuration. Pay attention to the format conversion of date and time values (refer to [section 2.4.2: Convert the Date and Time Values](#242-convert-the-date-and-time-values)).
 
 #### 2.4.1 Create a Configuration File
 
@@ -233,27 +233,27 @@ The above case illustrates the process of migrating data from InfluxDB 2.0 to Do
 
 | **Parameters** | **Required** | **Data Type** | **Default** | **Description** |
 | --- | --- | --- | --- | --- |
-| endpoint | ✔   | string |  /   | InfluxDB connection string   |
-| token | ✔   | string | /   | Token to access to the database |
+| endpoint | √   | string |  /   | InfluxDB connection string   |
+| token | √   | string | /   | Token to access to the database |
 | table |    | list | /   | The name of the table to be synchronize |
-| org | ✔   | string | /   | InfluxDB org name |
-| bucket | ✔   | string | /   | InfluxDB bucket name |
+| org | √   | string | /   | InfluxDB org name |
+| bucket | √   | string | /   | InfluxDB bucket name |
 | column |    | list | /   | A JSON array indicating column names of the table to be synchronized. A asterisk symbol (\*) indicates that all columns are to be synchronized, e.g. ["*"] |
-| range | ✔   | list | /   | The time range of the data to be read |
+| range | √   | list | /   | The time range of the data to be read |
 | limit |    | int | /   | The limit to the number of records acquired |
 
 ### 3.2 Configuration Parameters for DolphinDBWriter Plugin
 
 | **Parameters** | **Required** | **Data Type** | **Default** | **Description** |
 | --- | --- | --- | --- | --- |
-| host | ✔   | string | /    | Server Host |
-| port | ✔   | int | /    | Server Port |
-| userId | ✔   | string | /    | DolphinDB username  <br> Note that when importing data to a DFS database, the user must be granted appropriate privileges. |
-| pwd | ✔   | string | /    | Password for DolphinDB user |
-| dbPath | ✔   | string | /    | The target database to be written to, e.g., "dfs://MYDB". |
-| tableName | ✔  | string | /    | The target table |
+| host | √   | string | /    | Server Host |
+| port | √   | int | /    | Server Port |
+| userId | √   | string | /    | DolphinDB username  <br> Note that when importing data to a DFS database, the user must be granted appropriate privileges. |
+| pwd | √   | string | /    | Password for DolphinDB user |
+| dbPath | √   | string | /    | The target database to be written to, e.g., "dfs://MYDB". |
+| tableName | √  | string | /    | The target table |
 | batchSize |    | int | 10000000 | The number of records to be written for each batch |
-| table | ✔  |     |     | Column names of the table to be written to. For more information, refer to the details below. |
+| table | √  |     |     | Column names of the table to be written to. For more information, refer to the details below. |
 | saveFunctionName |    | string | /    | User-defined function to process data. If it is not specified, the data will be inserted into DolphinDB with function `tableInsert`. If specifed, the data will be processed with the specified function. |
 | saveFunctionDef |    | string | /    | User-defined function to append data to the database. It takes three arguments: *dfsPath*, *tbName*, and *data* (the table to be imported). |
 
