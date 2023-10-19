@@ -37,6 +37,12 @@ The following python libraries are covered:
 | slice       | slice          |
 | type        | type / typestr |
 | zip         | loop(pair, x, y) |
+| join        | concat         |
+| format      | strReplace     |
+| sort        | isort          |
+| rjust /zfill | lpad /rpad     |
+| lead / lag  | move           |
+| itertools.product | cross + join |
 
 ##  2. NumPy
 
@@ -74,7 +80,7 @@ The following python libraries are covered:
 | numpy.mean                                               | mean/avg                    |
 | numpy.sum                                                | sum                         |
 | nump.random.normal                                       | norm                        |
-
+| nump.clip                                                | winsorize                   |
 
 ##  3. Pandas
 
@@ -122,7 +128,7 @@ The following python libraries are covered:
 | pandas.DataFrame.cumsum / pandas.Series.cumsum               | cumsum                  |
 | pandas.DataFrame.cumprod / pandas.Series.cumprod             | cumprod                 |
 | pandas.DataFrame.nlargest(nsmallest) / pandas.Series.nlargest(nsmallest)  |  top + order by / aggrTopN |
-| pandas.DataFrame.diff / pandas.Series.diff                   | diff                    |
+| pandas.DataFrame.diff / pandas.Series.diff                   | eachPost, deltas        |
 | pandas.DataFrame.quantile / pandas.Series.quantile           | quantile                |
 | pandas.DataFrame.transpose                                   | transpose               |
 | pandas.Series.resample / pandas.DataFrame.resample           | resample                |
@@ -175,7 +181,7 @@ The following python libraries are covered:
 | pandas.rolling_mean                                          | mavg                  |
 | pandas.rolling_std                                           | mstd                  |
 | pandas.rolling_median                                        | mmed                  |
-
+| pandas.DataFrame.shift / pandas.Series.shift                 | move / tmove / prev / next |
 
 ##  4. SciPy
 
