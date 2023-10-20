@@ -118,7 +118,7 @@ The following chart displays the data we use in the example (which is stored in 
 
 We use DolphinDB GUI to implement all scripts in this example. For details about test environment configuration, see [Chapter 4: Development Environment](#4-development-environment).
 
-In this section, we replay three tables with different schemata to a single stream table. See full scripts in [01. MarketDataReplay](script/stock_market_replay/01.marketDataReplay.txt).
+In this section, we replay three tables with different schemata to a single stream table. See full scripts in [01. MarketDataReplay](script/market_data_replay/01.marketDataReplay.txt).
 
 - Define the shared stream table "messageStream".
 
@@ -182,7 +182,7 @@ submitJob("replay", "replay text", replay, inputDict, messageStream, `Date, `Tim
 
 #### 2.4.1 Consuming With DolphinDB Built-in Streaming Engine
 
-In the following example, we define asof join engine that returns the as of join result of trade and snapshot (from "messageStream") to calculate the transaction cost. See full scripts in [02. CalculateTxnCost_asofJoin](script/stock_market_replay/02.calculateTxnCost_asofJoin.txt).
+In the following example, we define asof join engine that returns the as of join result of trade and snapshot (from "messageStream") to calculate the transaction cost. See full scripts in [02. CalculateTxnCost_asofJoin](script/market_data_replay/02.calculateTxnCost_asofJoin.txt).
 
 - Define the shared stream table "prevailingQuotes" as the output table.
 
@@ -211,7 +211,7 @@ For each stock, the asof join engine matches each record of table "trade" with t
 
 Considering the common practice, we set parameter useSystemTime to false in the above script to perform asof join based on the "timeColumn".
 
-Alternatively, you can set parameter useSystemTime to true or use [lookup join engine](https://www.dolphindb.cn/cn/help/200/FunctionsandCommands/FunctionReferences/c/createLookupJoinEngine.html) (see full script in [03. CalculateTxnCost_lookupJoin](script/stock_market_replay/03.calculateTxnCost_lookupJoin.txt)).
+Alternatively, you can set parameter useSystemTime to true or use [lookup join engine](https://www.dolphindb.cn/cn/help/200/FunctionsandCommands/FunctionReferences/c/createLookupJoinEngine.html) (see full script in [03. CalculateTxnCost_lookupJoin](script/market_data_replay/03.calculateTxnCost_lookupJoin.txt)).
 
 - Define a stream filter engine.
 
@@ -252,7 +252,7 @@ Within each group of the *matchingColumn* (“SecurityID”), the order of the o
 
 In the following example, we send subscribed table (“messageStream”) to Kafka consumer. 
 
-You need to start Kafka server and install DolphinDB Kafka Plugin first. For details about test environment configuration, see [Chapter 4: Development Environment](#4-development-environment). For full scripts about this example, see [04. SendMsgToKafka](script/stock_market_replay/04.sendMsgToKafka.txt).
+You need to start Kafka server and install DolphinDB Kafka Plugin first. For details about test environment configuration, see [Chapter 4: Development Environment](#4-development-environment). For full scripts about this example, see [04. SendMsgToKafka](script/market_data_replay/04.sendMsgToKafka.txt).
 
 - Load Kafka Plugin and define a Kafka producer
 
@@ -330,7 +330,7 @@ Return:
 
 The following example uses function `ThreadedClient::subscribe` to subscribe to the replayed data ("messageStream") and outputs results in real-time. 
 
-To run the script below, you have to install C++ API first (refer to [Chapter 4: Development Environment](#4-development-environment)). For full scripts about this example, see [05. SubscribeInCppApi](script/stock_market_replay/05.subscribeInCppApi.cpp).
+To run the script below, you have to install C++ API first (refer to [Chapter 4: Development Environment](#4-development-environment)). For full scripts about this example, see [05. SubscribeInCppApi](script/market_data_replay/05.subscribeInCppApi.cpp).
 
 ```c++
 int main(int argc, char *argv[]){
@@ -379,7 +379,7 @@ The *listenport* parameter is the subscription port for the single-threaded clie
 
 **Note**:
 
-If the script (in section 2.3 and 2.4) is executed repeatedly, the overwrite error may be thrown. Therefore, you have to remove all objects that are stored in your environment ( including operations such as unsubscribing tables, droping stream tables and streaming engines, etc.) To clean your environment, see [06. RemoveObjectsFromEnvironment](script/stock_market_replay/06.removeObjectsFromEnvironment.txt).
+If the script (in section 2.3 and 2.4) is executed repeatedly, the overwrite error may be thrown. Therefore, you have to remove all objects that are stored in your environment ( including operations such as unsubscribing tables, droping stream tables and streaming engines, etc.) To clean your environment, see [06. RemoveObjectsFromEnvironment](script/market_data_replay/06.removeObjectsFromEnvironment.txt).
 
 ## 3. Performance Testing
 
@@ -481,10 +481,10 @@ This tutorial introduces how to simulate real-time ingestion of stream data, whi
 
 ## Appendices
 
-- [01. marketDataReplay](script/stock_market_replay/01.marketDataReplay.txt)
-- [02. calculateTxnCost_asofJoin](script/stock_market_replay/02.calculateTxnCost_asofJoin.txt)
-- [03. calculateTxnCost_lookupJoin](script/stock_market_replay/03.calculateTxnCost_lookupJoin.txt)
-- [04. sendMsgToKafka](script/stock_market_replay/04.sendMsgToKafka.txt)
-- [05. subscribeInCppApi](script/stock_market_replay/05.subscribeInCppApi.cpp)
-- [06. removeObjectsFromEnvironment](script/stock_market_replay/06.removeObjectsFromEnvironment.txt)
+- [01. marketDataReplay](script/market_data_replay/01.marketDataReplay.txt)
+- [02. calculateTxnCost_asofJoin](script/market_data_replay/02.calculateTxnCost_asofJoin.txt)
+- [03. calculateTxnCost_lookupJoin](script/market_data_replay/03.calculateTxnCost_lookupJoin.txt)
+- [04. sendMsgToKafka](script/market_data_replay/04.sendMsgToKafka.txt)
+- [05. subscribeInCppApi](script/market_data_replay/05.subscribeInCppApi.cpp)
+- [06. removeObjectsFromEnvironment](script/market_data_replay/06.removeObjectsFromEnvironment.txt)
 - [Sample data](https://www.dolphindb.com/downloads/docs/stock_market_replay.zip)
