@@ -46,11 +46,11 @@ def readIndexedMatrixFromWideCSV(absoluteFilename){
 allSymbols = readColumnsFromWideCSV(csvPath)$STRING
 dataMatrix = readIndexedMatrixFromWideCSV(csvPath)
 fundTable = table(dataMatrix.rowNames() as tradingDate, dataMatrix)
-result = fundTable.unpivot(`tradingdate, allSymbols).rename!(`tradingdate`fundNum`value)
+result = fundTable.unpivot(`tradingDate, allSymbols).rename!(`tradingDate`fundNum`value)
 allSymbols1 = readColumnsFromWideCSV(csvPath1)$STRING
 dataMatrix1 = readIndexedMatrixFromWideCSV(csvPath1)
 fundTable1 = table(dataMatrix1.rowNames() as tradingDate, dataMatrix1)
-result1 = fundTable1.unpivot(`tradingdate, allSymbols1).rename!(`tradingdate`fundNum`value)
+result1 = fundTable1.unpivot(`tradingDate, allSymbols1).rename!(`tradingDate`fundNum`value)
 result1
 //create database an table, then load data
 dbName = "dfs://fund_OLAP"
