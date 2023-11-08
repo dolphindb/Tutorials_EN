@@ -526,7 +526,7 @@ This section tests the performance of DolphinDB in relation to the number of job
 - the number of jobs: submit one or multiple jobs at one time;
 - CPU cores: configured by the configuration parameter *workerNum* that indicates the size of the worker pool. Note that it takes effect only after a server reboot. 
 
-The start time and end time of ``submitJob`` are taken to get the elapsed time of calculating daily metrics in DolphinDB. See full script in [Performance Test in DolphinDB]().
+The start time and end time of ``submitJob`` are taken to get the elapsed time of calculating daily metrics in DolphinDB. See full script in [Performance Test in DolphinDB](script/ddb_vs_py_daily_metrics/fund_factor_ddb.txt).
 
 In the following test, we first define the function to calculate 9 metrics:
 
