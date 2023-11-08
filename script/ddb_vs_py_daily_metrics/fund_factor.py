@@ -104,18 +104,18 @@ def getLog(value):
 s = ddb.session()
 s.connect("127.0.0.1", 8848, "admin", "123456")
 start = time.time()
-fund_OLAP = s.loadTable(dbPath="dfs://fund_OLAP", tableName="fund_OLAP").select("*").toDF().sort_values(['tradingdate'])
+fund_OLAP = s.loadTable(dbPath="dfs://fund_OLAP", tableName="fund_OLAP").select("*").toDF().sort_values(['tradingDate'])
 fund_hs_OLAP = s.loadTable(dbPath="dfs://fund_OLAP", tableName="fund_hs_OLAP").select("*").toDF()
-fund_hs_OLAP.rename(columns={'tradingdate': 'hstradingdate'}, inplace=True)
-fund_hs_OLAP = fund_hs_OLAP.sort_values(['hstradingdate'])
-fund_dui_OLAP = pd.merge_asof(fund_OLAP, fund_hs_OLAP, left_on="tradingdate", right_on="hstradingdate").sort_values(['fundNum_x', 'tradingdate'])
-fund_dui_OLAP = fund_dui_OLAP[fund_dui_OLAP['tradingdate'] == fund_dui_OLAP['hstradingdate']]
+fund_hs_OLAP.rename(columns={'tradingDate': 'hstradingDate'}, inplace=True)
+fund_hs_OLAP = fund_hs_OLAP.sort_values(['hstradingDate'])
+fund_dui_OLAP = pd.merge_asof(fund_OLAP, fund_hs_OLAP, left_on="tradingDate", right_on="hstradingDate").sort_values(['fundNum_x', 'tradingDate'])
+fund_dui_OLAP = fund_dui_OLAP[fund_dui_OLAP['tradingDate'] == fund_dui_OLAP['hstradingDate']]
 fund_dui_OLAP.reset_index(drop=True, inplace=True)
-fund_dui_OLAP.drop(columns=['fundNum_y', 'hstradingdate'], inplace=True)
-fund_dui_OLAP.columns = ['tradingdate', 'fundNum', 'value', 'price']
+fund_dui_OLAP.drop(columns=['fundNum_y', 'hstradingDate'], inplace=True)
+fund_dui_OLAP.columns = ['tradingDate', 'fundNum', 'value', 'price']
 fund_dui_OLAP["value"].fillna(method = 'ffill', inplace = True)
 fund_dui_OLAP["log"] = pd.Series(getLog(fund_dui_OLAP["value"]))
-list = fund_dui_OLAP[(fund_dui_OLAP['tradingdate'] >= datetime(2019, 5, 24)) & (fund_dui_OLAP['tradingdate'] <= datetime(2022, 5, 27))].groupby('fundNum')
+list = fund_dui_OLAP[(fund_dui_OLAP['tradingDate'] >= datetime(2019, 5, 24)) & (fund_dui_OLAP['tradingDate'] <= datetime(2022, 5, 27))].groupby('fundNum')
 Parallel(n_jobs=1)(delayed(main)(i) for _,i in list)
 end = time.time()
 print(end-start)
