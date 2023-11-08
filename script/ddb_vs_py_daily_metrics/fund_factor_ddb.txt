@@ -77,7 +77,7 @@ def getFactor(result2, symList){
 def parJob(){
   	timer{fund_OLAP=select * from loadTable("dfs://fund_OLAP", "fund_OLAP")
   		  fund_hs_OLAP=select * from loadTable("dfs://fund_OLAP", "fund_hs_OLAP")
-  		  ajResult = select tradingdate, fundNum, value, fund_hs_OLAP.tradingDate as hstradingDate, fund_hs_OLAP.value as price from aj(fund_OLAP, fund_hs_OLAP, `tradingDate)
+  		  ajResult = select tradingDate, fundNum, value, fund_hs_OLAP.tradingDate as hstradingDate, fund_hs_OLAP.value as price from aj(fund_OLAP, fund_hs_OLAP, `tradingDate)
   		  result2 = select tradingdate, fundNum, iif(isNull(value), ffill!(value), value) as value,price from ajResult where tradingDate == hstradingDate
   		  symList = exec distinct(fundNum) as fundNum from result2 order by fundNum
           symList2 = symList.cut(250)
