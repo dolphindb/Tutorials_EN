@@ -157,6 +157,7 @@ In the above table:
 ```
   pnodeRun(getRecentJobs)
 ```
+**Note**: `getRecentJobs` only returns jobs submitted after the current node was started. It does not return jobs submitted before the server was rebooted. To view jobs submitted prior to the last reboot, check the job files persisted on disk storage.
 
 DolphinDB saves the output of batch jobs to disk files whose directory is specified by the configuration parameter *batchJobDir*. If the parameter is not specified, the default path is *<HomeDir>/batchJobs*. Each batch job generates 2 files: *<job_id>.msg* and *<job_id>.obj* that store intermediate messages and return objects, respectively. In addition, each batch job adds 3 entries to the batch job log *<BatchJobDir>/batchJob.log* when the system receives, starts, and completes the batch jobs. Use the following functions to check the execution of a batch job:
 
