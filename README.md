@@ -39,6 +39,7 @@
 - [Modules](module_tutorial_EN.md)
 - [DolphinDB Tutorial: Just-in-time (JIT) Compilation](jit.md)
 - [User-Defined Aggregate Functions](udaf.md)
+- [Adding Columns and Calculated Metrics Dynamically](add_column.md)
 - [Window Calculations in DolphinDB](Window_Calculations_in_DolphinDB.md)
 
 ## Streaming
