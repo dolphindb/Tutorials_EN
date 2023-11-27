@@ -1,180 +1,179 @@
-# redo log 和 cache engine：相关概念和配置说明
+# Redo Log and Cache Engine in DolphinDB
 
-- [1. redo log/cache engine相关概念](#1-redo-logcache-engine相关概念)
-  - [1.1 什么是 redo log](#11-什么是-redo-log)
-  - [1.2 什么是 cache engine](#12-什么是-cache-engine)
-  - [1.3 redo log 和 cache engine 的写入和回收](#13-redo-log-和-cache-engine-的写入和回收)
-  - [1.4 为什么需要redo log/cache engine](#14-为什么需要redo-logcache-engine)
-- [2. 配置说明](#2-配置说明)
-  - [2.1 redo log 相关配置和函数](#21-redo-log-相关配置和函数)
-  - [2.2 cache engine 相关配置和函数](#22-cache-engine-相关配置和函数)
-- [3. 性能的影响与优化建议](#3-性能的影响与优化建议)
-  - [3.1 磁盘负载和内存使用](#31-磁盘负载和内存使用)
-  - [3.2 对节点启动的影响](#32-对节点启动的影响)
-  - [3.3 相关性能优化的建议](#33-相关性能优化的建议)
+- [1. Understanding Redo Log/Cache Engine](#1-understanding-redo-logcache-engine)
+  - [1.1 What is Redo Log?](#11-what-is-redo-log)
+  - [1.2 What is Cache Engine？](#12-what-is-cache-engine)
+  - [1.3 How Does Redo Log/Cache Engine Work?](#13-how-does-redo-logcache-engine-work)
+  - [1.4 Why Enable the Redo Log/Cache Engine?](#14-why-enable-the-redo-logcache-engine)
+- [2. Configuration Options](#2-configuration-options)
+  - [2.1 Planning the Redo Log](#21-planning-the-redo-log)
+  - [2.2 Planning the Cache Engine](#22-planning-the-cache-engine)
+- [3. Possible Impacts on Performance](#3-possible-impacts-on-performance)
+  - [3.1 Disk Writes and Memory Size](#31-disk-writes-and-memory-size)
+  - [3.2 Startup of Nodes](#32-startup-of-nodes)
+  - [3.3 Suggestions for Performance Tuning](#33-suggestions-for-performance-tuning)
 
-这篇教程重点介绍了 DolphinDB 中的 redo log 和 cache engine 机制以及其配置对整体性能的影响。
+This tutorial introduces how redo log and cache engine work in DolphinDB.
 
-:bulb: **注意**：
+**Note**:
 
-- 它们只对 DFS 数据库起作用，对流表不起作用
-- TSDB 存储引擎必须开启 cache engine 和 redo log
-- OLAP 存储引擎可以不开启 redo log，但启用了 redo log 之后必须启用 cache engine
-
-
-## 1. redo log/cache engine相关概念
+- They only work with DFS databases, not stream tables.
+- Redo log and cache engine must be enabled in TSDB engine.
+- Redo log is optional for OLAP engine. The cache engine, however, must be enabled once the redo log is enabled.
 
 
-### 1.1 什么是 redo log
-
-在关系型数据库系统中，预写式日志 (write-ahead logging, WAL) 是用于提供原子性和持久性的一系列技术。DolphinDB 中的 redo log 与 WAL 的概念类似。简而言之，redo log 的核心思想是：只有在描述事务更改的日志记录刷新到持久化存储介质以后，才对数据库的数据文件进行修改。如果遵循这个过程，就不需要在每次提交事务时都将数据页刷新到磁盘上，因为在数据库发生宕机时，可以使用日志来恢复数据库，尚未应用的所有更改可以通过日志记录回放并重做。
+## 1. Understanding Redo Log/Cache Engine
 
 
-### 1.2 什么是 cache engine
+### 1.1 What is Redo Log?
 
-cache engine 是 DolphinDB 中的一种数据写入缓存机制，它是为了解决数据表列数过多的情况下写入性能急剧下降的问题而引入的。
+The concept of redo log in DolphinDB is similar to write-ahead logging (WAL) which is a family of techniques for providing atomicity and durability in relational database systems. 
 
-对一个文件进行写入时，写入 1 行数据和写入 1000 行数据的时间基本相等，大部分时间都花在打开和关闭文件上。因此，引入 cache engine 以后，写入操作时首先写入缓存中，到达一定阈值以后，异步将缓存中的数据写入磁盘中。
+In a nutshell, the core of the redo log is that changes to database files must be written only after persisting all log records describing the changes.
 
-### 1.3 redo log 和 cache engine 的写入和回收
+As a result, you can recover the database from a crash by using the log records. Any changes that have not been made to the data pages can be reapplied using the log records.
 
+
+### 1.2 What is Cache Engine？
+
+Cache engine in DolphinDB serves as the write caching, which is designed to improve write throughput. 
+
+When writing to a file, the time to insert 1 record and 1000 records is basically the same. Most of the time is spent opening and closing the file. With cache engine enabled, data is written to the cache first, and then asynchronously written to the disk in batches.
+
+### 1.3 How Does Redo Log/Cache Engine Work?
 
 <figure align="left">
     <img src="./images/redoLog_cacheEngine/1_1.png" width=60%>
-    <figcaption>数据写入与回收过程</figcaption>
+    <figcaption>Writing and Garbage Collection</figcaption>
 </figure>
 
+The above three steps in the figure briefly show the process of writing data:
 
-由上图可知，数据整体的写入流程可以分成三个部分：
+(1) Changes made to the database are logged and persisted into the redo log. Each transaction is stored in one file.
 
-（1）数据写入 redo log，一个事务的数据存成一个文件。
+(2) Data is written to the cache engine, and then asynchronously written to columnar files (OLAP) and level files (TSDB).
 
-（2）数据写入 cache engine， 并由 cache engine 异步写入数据到列文件（OLAP）或者 level file（TSDB）。
+(3) Reclaim the cache engine and the redo log after transaction completed.
 
-（3）事务完成后回收 cache engine 和 redo log。
+To recover data from redo logs in the event of a crash or outage, redo logs can only be reclaimed after the associated entries are removed from the cache engine and written to disk. Therefore, in step 3, cache engine is reclaimed first.
 
-在系统内部，为了保证极端情况下还能够从 redo log 中恢复数据，redo log 在对某个事务的日志进行回收之前，首先要向 cache engine 确认该事务已经不在缓存当中，即已经被 cache engine 回收。因此，对于步骤 （3），系统实质上是先完成 cache engine 的回收，才会进一步回收 redo log。
+Garbage collection (GC) of the cache engine completes once the data is flushed to disk successfully. The cache engine is reclaimed:
 
-cache engine 的回收，在写入磁盘后完成。
+- at a fixed interval
+  - For OLAP engine, the system checks whether to reclaim every 60s.
+  - For TSDB engine, the system checks whether to reclaim every 30s.
+- when files reach a fixed size 
+  - For OLAP engine, when the data in the cache reaches 30% of the `OLAPCacheEngineSize`, it is written to the column file on the disk.
+  - For TSDB engine, when the data in the cache reaches `TSDBCacheEngineSize`, it is written to the level file (similar to leveldb's flush memtable).
+- manually using `flushOLAPCache`, `flushTSDBCache` 
 
-- 定期回收
-  - OLAP引擎：每30秒
-  - TSDB引擎：每60秒
-- cache engine 的内存占用大小达到一定阈值时回收
-  - OLAP 引擎：当缓存中的数据量达到 OLAPCacheEngineSize 的 30% 时，cache engine 会将内容写到**列文件**，完成回收。
-  - TSDB 引擎：将当数据量达到 TSDBCacheEngineSize 大小后，cache engine 将内容写入 **level file** （类似于 leveldb 的 flush memtable 的过程），完成回收。
-- 通过 `flushOLAPCache`，`flushTSDBCache` 手动清理缓存
+Then redo log is reclaimed:
+- at a fixed interval (configured with `redoLogPurgeInterval`)
+- when files reach a fixed size (configured with `redoLogPurgeLimit`)
 
-系统定期回收已完成且 cache engine 完成落盘的事务的 redo log。DolphinDB 提供了两种回收机制：
+Therefore, it is not suggested setting cache engine size too large, otherwise completed transactions are cached in the cache engine for a long time without triggering GC, and the redo log cannot be reclaimed,  resulting in the continuous increasing space of the redo log.
 
-- 定期回收（`redoLogPurgeInterval`）
-- 文件大小达到一定阈值时回收（`redoLogPurgeLimit`）
+### 1.4 Why Enable the Redo Log/Cache Engine?
 
-因此，需要注意不可以将 cahce engine 的大小设置过大，否则事务长期滞留在缓存当中，无法被 redo log 回收，将导致 redo log 占用的空间持续增长。
+The redo log cannot only maintain data consistency in the event of a power outage, but also optimize the performance of writes. 
 
-### 1.4 为什么需要redo log/cache engine
+Consider, write data to 100 partitions (of the OLAP database) at a time, and each partition has 200 columns, then you have 20,000 columnar files to be written together. If these columnar files are all on one HDD, the synchronous writes will lead to long disk access time. Flushing data with redo log enabled greatly reduces the access time and optimizes the write performance. 
 
-除了解决断电、数据库系统宕机等极端情况下的数据一致性问题，redo log同时优化了写入性能。
+In addition, using redo log leads to a better performance on sequential writes. Only log records need to be flushed to disk when the transaction commits. It is much optimized for the OLAP engine.
 
-以 OLAP 引擎的写入场景为例，如果一次写入 100 个分区，每个分区有 200 个列文件，那么一次就需要写入 20000 个列文件。如果这些列文件都在 1 块 HDD 上，数据直接同步落盘，那么寻址的开销将非常大。而引入  redo log 机制后，落盘时数据无需按分区和列文件进行写入，大幅减小了寻址的开销，优化写入性能。
+The cache engine is designed to improve write throughput with less frequent disk writes, especially when there are too many columns. The reason why cache engine optimizes the performance lies in batch writes. 
 
-使用 redo log 的主要优势为：
-
-- 顺序写入性能更好，在事务提交时只需要将日志文件刷新到磁盘，而不是将事务涉及到的所有文件刷新。这点对于 OLAP 引擎来说优化更加明显。
-
-cache engine 大大减少了磁盘的写入次数，能够提升写入性能，尤其是在数据表列数过多的情况下。
-
-DolphinDB 采用列式存储，一个分区内的每一列数据单独存放在一个文件中。如果表的列数过多（比如物联网场景下同时记录几千个指标），每进行一次数据写入，就要对几千个物理文件进行操作（打开，写入，关闭等）。如果把多次少量的写入缓存起来，一次批量写入，就可以节省许多对文件进行打开和关闭带来的时间开销，从而在整体上提升系统的写入性能。
+DolphinDB adopts column-based storage where each column in a partition is stored in a separate file. If there are too many columns (eg. thousands of metrics in IoT scenarios), you need to operate (open, write-in, close, etc.) on thousands of physical files each time. Therefore, the data is cached in small amounts several times, and then written in batches. This could spare the overheads of opening and closing files, improving the overall performance of writes.
 
 
 
-## 2. 配置说明
+## 2. Configuration Options
 
-### 2.1 redo log 相关配置和函数
+### 2.1 Planning the Redo Log
 
-配置参数：
+Configuration parameters:
 
-- [dataSync](https://www.dolphindb.cn/cn/help/DatabaseandDistributedComputing/Configuration/StandaloneMode.html?highlight=dataSync): 是否使用 redo log 功能。取值为 1 代表开启 redo log；默认值为 0，表示不启用该功能。
-- [redoLogDir](https://www.dolphindb.cn/cn/help/DatabaseandDistributedComputing/Configuration/StandaloneMode.html?highlight=redoLogDir): redo log 文件的存放位置。一般建议将该位置设置到 SSD 硬盘上以获取最佳的性能。默认在 homeDir（由 home 参数决定）下的 log/redoLog 目录下。如果是集群模式，注意要分别设置不同数据节点的目录，避免使用相同目录，造成写入错误。
-- [redoLogPurgeLimit](https://www.dolphindb.cn/cn/help/DatabaseandDistributedComputing/Configuration/StandaloneMode.html?highlight=redoLogPurgeLimit): redo log 文件占用的最大空间，单位为 GB，默认值为 4。当 redo log 文件大小超过该值时会自动开始回收。
-- [redoLogPurgeInterval](https://www.dolphindb.cn/cn/help/DatabaseandDistributedComputing/Configuration/StandaloneMode.html?highlight=redoLogPurgeInterval): redo log 自动回收的周期，单位为秒，默认值为 30，表示每 30 秒自动回收一次。
-- [TSDBRedoLogDir](https://www.dolphindb.cn/cn/help/DatabaseandDistributedComputing/Configuration/StandaloneMode.html?highlight=TSDBRedoLogDir): TSDB 存储引擎重做日志的目录。
+- dataSync: Decide whether to enable redo log. Redo log is not enabled by default. The default value is 0. To enable it, set *dataSync*=1.
+- redoLogDir: The directory of the redo log. It is recommended to set it to an SSD for optimal performance. The default value is <homeDir>/log/redoLog (determined by the *home parameter*). For cluster mode, set directories for each data node separately to avoid writing errors.
+- redoLogPurgeLimit: The maximum disk space (in GB) for the redo log. The default value is 4. If the size of the redo log exceeds *redoLogPurgeLimit*, the system will automatically purge the redo log.
+- redoLogPurgeInterval: Remove the redo log of transactions whose data have been persisted at intervals (in seconds) specified by *redoLogPurgeInterval*. The default value is 30.
+- TSDBRedoLogDir: The directory of the redo log of TSDB engine. The default value is <HomeDir>/log/TSDBRedo.
 
-> 需要注意有些参数需要配置在控制节点配置文件，有些参数则需要配置在数据节点的配置文件里，上面链接会有具体说明。
+> It should be noted whether parameters are configured in files on the controller or data nodes. 
 
-运维函数：
+Functions/Commands:
 
-- [getRedoLogGCStat](https://www.dolphindb.cn/cn/help/200/FunctionsandCommands/FunctionReferences/g/getRedoLogGCStat.html): 获取 redo log 垃圾回收的状态。
-- [imtForceGCRedolog](https://www.dolphindb.cn/cn/help/200/FunctionsandCommands/imt/imtForceGCRedolog.html): 跳过长时间未回收的事务继续回收后续事务。
+- [getRedoLogGCStat](https://docs.dolphindb.cn/en/help/FunctionsandCommands/FunctionReferences/g/getRedoLogGCStat.html): Get the status of garbage collection of the redo log.
+- imtForceGCRedolog: Cancel the garbage collection of the specified transaction so that redo logs of the subsequent transactions can be removed.
 
-### 2.2 cache engine 相关配置和函数
+### 2.2 Planning the Cache Engine
 
-**OLAP 引擎 cache engine 相关参数和函数**
+**OLAP engine**
 
-配置参数：
+Configuration parameters:
 
-- [OLAPCacheEngineSize](https://www.dolphindb.cn/cn/help/DatabaseandDistributedComputing/Configuration/StandaloneMode.html?highlight=olapcacheenginesize): cache engine 中数据量上限，单位为 GB。默认值为 0，表示不使用 cache engine。若该值大于 0，那么当 cache engine 占用内存大于该值的 30% 时，会主动开始异步回收。
+- OLAPCacheEngineSize: The capacity of the cache engine in units of GB. The default value is 0, indicating the cache engine is not enabled. After cache engine is enabled, i.e., *OLAPCacheEngineSize*>0, data is asynchronously written to disk when data in cache exceeds 30% of *OLAPCacheEngineSize*.
 
-函数/命令：
+Functions/Commands:
 
-- [flushOLAPCache](https://www.dolphindb.cn/cn/help/FunctionsandCommands/CommandsReferences/f/flushOLAPCache.html): 手动清空缓存。只有已经完成的事务才会被清空，正在进行但是还没有提交的事务不会被清空。
-- [getOLAPCacheEngineSize](https://www.dolphindb.cn/cn/help/FunctionsandCommands/FunctionReferences/g/getOLAPCacheEngineSize.html): 返回 cache engine 占用的内存量。
-- [setOLAPCacheEngineSize](https://www.dolphindb.cn/cn/help/FunctionsandCommands/CommandsReferences/s/setOLAPCacheEngineSize.html): 在线修改 OLAP 引擎 cache engine 的容量。
-- [getOLAPCacheEngineStat](https://www.dolphindb.cn/cn/help/FunctionsandCommands/FunctionReferences/g/getOLAPCacheEngineStat.html): 返回 cache engine 的状态。
+- [flushOLAPCacheEngine](https://www.dolphindb.com/help200/FunctionsandCommands/CommandsReferences/f/flushOLAPCache.html): Forcibly flush the data of completed transactions cached in the OLAP cache engine to the database.
+- [getOLAPCacheEngineSize](https://www.dolphindb.com/help200/FunctionsandCommands/FunctionReferences/g/getOLAPCacheEngineSize.html): Obtain the memory status (in bytes) of the cache engine.
+- [setOLAPCacheEngineSize](https://www.dolphindb.com/help200/FunctionsandCommands/CommandsReferences/s/setOLAPCacheEngineSize.html): Modify the capacity of the OLAP cache engine online.
+- [getOLAPCacheEngineStat](https://www.dolphindb.com/help200/FunctionsandCommands/FunctionReferences/g/getOLAPCacheEngineStat.html): Get the status of the OLAP cache engine.
 
-**TSDB 引擎 cache engine 相关参数和函数**
+**TSDB engine**
 
-配置参数：
+Configuration parameters:
 
-- [TSDBCacheEngineSize](https://www.dolphindb.cn/cn/help/DatabaseandDistributedComputing/Configuration/StandaloneMode.html?highlight=TSDBCacheEngineSize): 默认为 1G， 用于配置 TSDB cache engine 的大小，注意如果写入压力太大，系统的 cache engine 内存占用会达到两倍的 TSDBCacheEngineSize 大小。 这是因为写入数据量达到 TSDBCacheEngineSize 时 ，系统会开始将这部分数据刷盘。若刷盘时有新数据的继续写入，系统会重新申请一个新的内存空间。老的内存空间在后台继续做刷盘操作，如果刷盘不够快，有可能因为写入导致新的内存也达到 TSDB CacheEngineSize 大小，所以内存峰值可能会达到 2 倍的 TSDBCacheEngineSize。
+- TSDBCacheEngineSize: The capacity of the TSDB cache engine in units of GB. The default value is 1G. The memory used by the cache engine may be twice as big as the set value. An extra memory block will be allocated to cache the incoming data while the original data is being written to disk. If the flush process is not fast enough, the newly allocated memory may also reach *TSDBCacheEngineSize*.
 
-函数/命令:
+Functions/Commands:
 
-- [flushTSDBCache](https://www.dolphindb.cn/cn/help/FunctionsandCommands/CommandsReferences/f/flushTSDBCache.html?highlight=flushtsdbcache): 将 TSDB 引擎缓冲区里已经完成的事务强制写入数据库。
-- [getTSDBCacheEngineSize](https://www.dolphindb.cn/cn/help/FunctionsandCommands/FunctionReferences/g/getTSDBCacheEngineSize.html?highlight=gettsdbcacheenginesize): 查看 TSDB 引擎 CacheEngine 许使用的内存上限。
-- [setTSDBCacheEngineSize](https://www.dolphindb.cn/cn/help/FunctionsandCommands/CommandsReferences/s/setTSDBCacheEngineSize.html?highlight=settsdb): 用于在线修改 TSDB 引擎的 CacheEngine 容量。
+- [flushTSDBCache](https://www.dolphindb.com/help200/FunctionsandCommands/CommandsReferences/f/flushTSDBCache.html?highlight=flushtsdbcache): Forcibly flush the completed transactions cached in the TSDB cache engine to the database.
+- [getTSDBCacheEngineSize](https://www.dolphindb.com/help200/FunctionsandCommands/FunctionReferences/g/getTSDBCacheEngineSize.html?highlight=gettsdbcacheenginesize): Get the maximum memory (in bytes) allocated to the TSDB cache engine.
+- [setTSDBCacheEngineSize](https://www.dolphindb.com/help200/FunctionsandCommands/CommandsReferences/s/setTSDBCacheEngineSize.html?highlight=settsdbcacheenginesize): Modify the capacity of the TSDB cache engine online.
 
 
 
 
-## 3. 性能的影响与优化建议
+## 3. Possible Impacts on Performance
 
-### 3.1 磁盘负载和内存使用
+### 3.1 Disk Writes and Memory Size
 
-- redo log 会增加磁盘占用，在数据文件以外额外写 redo log 文件增加了数据的写入量。
-- cache engine 可以减少磁盘负载，因为写入的次数减少了，少量多次的写入变成了批次写入。
-- cache engine也会增加内存占用，因为系统对还未写入磁盘的数据进行了缓存。
+- Enabling the redo log leads to higher disk usage. Additional disk resources are allocated for the redo log.
+- Enabling cache engine can optimize the disk I/O performance. Writing to disk in batches reduces disk writes. 
+- Enabling cache engine results in higher memory usage. Data that has not been written to disk is cached in cache engine, occupying more memory.
 
-### 3.2 对节点启动的影响
+### 3.2 Startup of Nodes
 
-redo log 过大可能导致节点启动时间过长，可能有以下原因：
+Excessive redo logs stored in the disk may result in a slow startup. It can be explained from the following aspects:
 
-1. redo log 配置的磁盘空间太大，导致 redo log 文件一直没有回收。
-2. redo log 配置的回收周期太长，导致一直没有触发回收。
-3. cache engine 配置的内存太大，导致 cache engine 一直没有回收，从而阻塞了 redo log 的回收。
-4. redo log 文件存储在机械硬盘（HDD）上，致使集群启动的时候读取这些文件耗费的时间较多。
+1. The specified disk space for redo logs is too large, so that the redo log cannot be reclaimed.
+2. The specified interval to remove redo logs is too long to trigger garbage collection.
+3. The specified cache engine memory size is too large, so that the cache engine cannot be reclaimed, thereby blocking garbage collection of the redo log.
+4. Redo log files are stored on HDD, and it costs too much time to read these files when the cluster starts. 
 
-启动时 redo log 可能需要回放很长时间，用户可以通过在日志里搜索 "transactions to be replayed have been completed" 字符串来查看回放的进度。
+**Note**: Replaying redo logs may take a long time when starting up. You can check the progress by searching “transactions to be replayed have been completed” in the log.
 
-### 3.3 相关性能优化的建议
+### 3.3 Suggestions for Performance Tuning
 
-根据以上叙述，为了提升数据库的整体写入性能，有以下几点建议：
+To improve the overall performance of writing to the database, it is recommended that:
 
-1. 将所有元数据的存放目录以及 redo log 存放目录配置到 SSD 磁盘，有条件的情况下使用工业级 SSD 磁盘。具体建议的配置如下：
+1. Set all directories storing metadata and redo logs on SSDs, and use industrial SSDs if possible. Specific suggestions are as follows:
 
-> dfsMetaDir: 控制节点元数据存储目录，设置到 SSD 磁盘，在 *controller.cfg* 中设置。
->
-> chunkMetaDir: 数据节点元数据存储目录，设置到 SSD 磁盘，在 *cluster.cfg* 中设置。
->
-> redoLogDir: 设置到 SSD 磁盘，在 *cluster.cfg* 中设置。 
->
-> persistenceDir: 流数据的存储路径，建议设置到 SSD 磁盘。在 *cluter.cfg* 中设置。在集群模式中，需要保证同一机器上的数据节点配置了不同的 persistenceDir
->
->  logFile: 各个节点的运行日志，记录节点的运行状态、错误信息等，可以写到 HDD 磁盘。在 *controller.cfg*, *agent.cfg*, *cluster.cfg* 中设置。
->
-> batchJobDir: 批处理任务的日志目录，例如 submiJob 提交的任务日志，可以写到 HDD 磁盘。在 *cluster.cfg* 中设置。
->
->  jobLogFile: 各个节点的 query 日志，记录各个 query 的执行情况，可以写到 HDD 磁盘。在 *cluster.cfg* 中设置。
+> dfsMetaDir: The directory for the metadata on the controller node. Set it to SSD in controller.cfg.
+> 
+> chunkMetaDir: The directory for the metadata on each data node. Set it to SSD in cluster.cfg.
+> 
+> redoLogDir: The directory of the redo log. Set it to SSD in cluster.cfg.
+> 
+> persistenceDir: The directory where shared streaming tables are persisted to. Set it to SSD in cluster.cfg. In the cluster mode, *persistenceDir*  should be specified for each data node separately.
+> 
+> logFile: The log file of each node. It displays the running status, error messages, etc. It can be specified on HDD in controller.cfg, agent.cfg, cluster.cfg.
+> 
+> batchJobDir: The folder for batch job logs and results, such as job logs submitted by submiJob. It can be specified on HDD in cluster.cfg.
+> 
+> jobLogFile: The query log of each node, logging the execution status of queries. It can be specified on HDD in cluster.cfg.
 
-2. 合理配置 redo log 的磁盘空间上限和垃圾回收周期，一般建议配置磁盘空间不超过 4GB，不低于 1GB，回收周期配置为 60 秒。
-3. 合理配置 cache engine 的内存大小，不宜过大或过小，最大不超过数据节点内存配置的 1/4，设置为 1~4GB 适合大部分情况。具体结合机器硬件与写入数据的速率来决定。
+2. Set a reasonable disk space and garbage collection interval of redo logs. It is recommended to specify the space to be 1-4 GB, and set the GC interval to be 60 seconds.
+3. Set a reasonable memory size of the cache engine. The maximum memory size should not exceed 1/4 of the memory configured on data nodes. 1-4 GB is recommended. Please take the specific SSD and its write speed into consideration.
