@@ -114,6 +114,7 @@
 - [Time Zones in DolphinDB](timezone.md)
 - [Unified Stream and Batch Processing of High-frequency Data: Reactive State Engine](Reactive_State_Engine.md)
 - [Market Data Replay in DolphinDB](market_data_replay.md)
+- [DolphinDB Streaming: Calculate Real-time Rank of Price Rate of Change](realtime_ROC_rankings.md)
 - [DolphinDB vs. Python: Calculate Daily Metrics of Mutual Fund](ddb_vs_py_daily_metrics.md)
 - [Cases for IoT: Query the Time-series Data](iot_query_case.md)
 
