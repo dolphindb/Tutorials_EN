@@ -44,17 +44,18 @@ This tutorial uses the market data on 2021.12.01 as the sample data. The table s
 
 Before calculating the ROC rankings, we need to obtain the ROC first.
 
-* Formula to calculate the ROC:
+* **Formula to calculate the ROC**:
+
 *(lastPx - prevLastPx) / prevLastPx \* 100 %*
 
 where: *prevLastPx* is the price n minutes before the current time.
 
-* Three metrics are defined based on the formula above:
-	- factor_1min: 1 minute ROC;
-	- factor_5min: 5 minute ROC;
-	- factor_10min: 10 minute ROC.
+* **Three metrics are defined based on the formula above**:
+	- factor_1min: 1-minute ROC;
+	- factor_5min: 5-minute ROC;
+	- factor_10min: 10-minute ROC.
 
-* The following rules should be noted:
+**The following rules should be noted**:
 
 - Only ROC of the stocks whose ID start with 60 will be calculated. 
 - Since the earliest price comes at 09:25:00, only records after 09:25:00 will be filtered to participate in the calculation.
@@ -62,7 +63,6 @@ where: *prevLastPx* is the price n minutes before the current time.
 	For example, for factor_5min, supposing that the last record for the morning session is at 11:30:00, after which no data is generated (between 11:30:01 and 12:59:59). For the record at 13:03:00 in the afternoon session, *prevLastPx* takes the most recent value, i.e., *lastPx* at 11:30:00.
 - If no record exists at (current time - n) or before, *prevLastPx* takes the price of the first available record.
 	For example, for factor_10min, supposing that the current time is 09:30:00 and the first record comes at 09:25:00, there is no record 10 minutes ago (09:20:00). In this case, prevLastPx takes the price of the first record, i.e., lastPx at 09:25:00.
-  - 比如 10 分钟涨幅，假设 09:30:00 时，只有 09:25:00~09:30:00 的数据，没有前 10 分钟的 09:20:00 的数据，也没有 10 分钟前的临近时间的数据，则 *prevLastPx* 为窗口第一条数据，即 09:25:00 的 *lastPx*。
 - The first result will be output at 09:30:00, which is the start time of a trading day.
 
 ### 1.3 Workflow
@@ -275,19 +275,19 @@ Refer to [DolphinDB Grafana DataSource Plugin](https://gitee.com/dolphindb/grafa
 
 Execute the following script to check the ROC rankings with Grafana.
 
-- 1 minute ROC ranking:
+- 1-minute ROC ranking:
 
 ```
 select SecurityID, DateTime, factor_1min from changeCrossSectionalTable order by rank_1min
 ```
 
-- 5 minute ROC ranking:
+- 5-minute ROC ranking:
 
 ```
 select SecurityID, DateTime, factor_5min from changeCrossSectionalTable order by rank_5min
 ```
 
-- 10 minute ROC ranking:
+- 10-minute ROC ranking:
 
 ```
 select SecurityID, DateTime, factor_10min from changeCrossSectionalTable order by rank_10min
