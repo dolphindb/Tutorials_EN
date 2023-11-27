@@ -38,10 +38,12 @@ cache engine 是 DolphinDB 中的一种数据写入缓存机制，它是为了�
 
 ### 1.3 redo log 和 cache engine 的写入和回收
 
+
 <figure align="left">
     <img src="./images/redoLog_cacheEngine/1_1.png" width=60%>
     <figcaption>数据写入与回收过程</figcaption>
 </figure>
+
 
 由上图可知，数据整体的写入流程可以分成三个部分：
 
