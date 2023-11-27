@@ -1,13 +1,12 @@
 # Cluster-to-Cluster Synchronization in DolphinDB
 
-- [Cluster-to-Cluster Synchronization in DolphinDB](#cluster-to-cluster-synchronization-in-dolphindb)
-	- [1. Offline Synchronization](#1-offline-synchronization)
-		- [1.1 Backup](#11-backup)
-		- [1.2 Transfer Backup Data](#12-transfer-backup-data)
-		- [1.3 Restore](#13-restore)
-		- [1.4 Example](#14-example)
-	- [2. Online Synchronization](#2-online-synchronization)
-	- [3. Comparison](#3-comparison)
+- [1. Offline Synchronization](#1-offline-synchronization)
+	- [1.1 Backup](#11-backup)
+	- [1.2 Transfer Backup Data](#12-transfer-backup-data)
+	- [1.3 Restore](#13-restore)
+	- [1.4 Example](#14-example)
+- [2. Online Synchronization](#2-online-synchronization)
+- [3. Comparison](#3-comparison)
 
 In DolphinDB, there are 2 ways to synchronize DFS databases between 2 clusters:
 
@@ -160,14 +159,14 @@ When the available memory is not enough, executing the above script may cause OO
 
 ```
 def writeData(dbName,tableName,t) : loadTable(dbName,tableName).append!(t)
-def writeRemoteDB(t, ip, port, dbName,tableName,writeData=writeData){
+def writeRemoteDB(t, ip, port, dbName,tableName,writeData){
 	conn = xdb(ip, port)
 	conn(login{`admin,`123456})
 	remoteRun(conn,writeData,dbName,tableName,t)
 }
-def synDataBaseOnline(ip, port,writeRemoteDB=writeRemoteDB){
+def synDataBaseOnline(ip, port){
 	ds = sqlDS(<select * from loadTable("dfs://db1","mt") where Timestamp > timestamp(date(now())) and Timestamp < now()>)
-	mr(ds, writeRemoteDB{,ip,port,"dfs://db1","mt"},,, false)
+	mr(ds, writeRemoteDB{,ip,port,"dfs://db1","mt",writeData},,, false)
 }
 login(`admin,`123456)
 restoreServerIP = '115.239.209.234'
