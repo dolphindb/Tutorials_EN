@@ -22,9 +22,7 @@ When utilizing traditional tech stacks like Python, MySQL, and Java as ETL tools
   - [Recommended Reading](#recommended-reading)
   - [Appendices](#appendices)
 
-## 1. Scenario and Data Preparation
-
-### 1.1 Data Preparation
+## 1. Data Preparation
 
 In this tutorial, we prepare 1 year's raw trade data (up to 1.7 TB before compression) for ETL processing. Table "trade" contains tick data of around 3000 stocks with 60 million records per day.
 
@@ -43,8 +41,6 @@ In this tutorial, we prepare 1 year's raw trade data (up to 1.7 TB before compre
 
 We will write the processed data to the target table. Both the source and target tables use the OLAP storage engines and adopt composite partitions that combine date-based value partition and stock-based hash partition (with 20 hash partitions). 
 
-### 1.2 Business Requirements
-
 To meet the requirements for quantitative analysis listed below, the ETL process is supposed to convert the field types, add symbol suffixes, add calculated fields, filter failed trades, etc.
 
 - Convert the data type of column "tradingDate" from DATE to INT;
@@ -52,7 +48,7 @@ To meet the requirements for quantitative analysis listed below, the ETL process
 - Add a column of BSFlag (Buy/Sell flag);
 - Add a column of tradevalue (total value traded).
 
-### 1.3 Environment
+The server environment is configured as follows:
 
 - CPU: Intel(R) Xeon(R) Silver 4216 CPU @ 2.10GHz
 - Logical processors: 16
@@ -65,17 +61,15 @@ To meet the requirements for quantitative analysis listed below, the ETL process
 
 ### 2.1 ETL Design
 
-In DolphinDB, a general ETL design will cut the database into multiple partitions, process data within each partition, and aggregate the results to the target table. Specifically, it includes the following steps:
+A typical ETL design operates on each shard of source dataset and consolidates the outcomes into the target database. Specifically in DolphinDB, the ETL process works as follows:
 
 (1) Partition the original dataset by trading date and stock ID.
-
-```
-data = [cut1, cut2, ... , cutN]
-```
 
 (2) Clean and transform the data within each partition, and save the processed data to an in-memory object "tradingdf".
 
 (3) Append the in-memory table "tradingdf" to a DFS table.
+
+The code is as follows:
 
 ```
 def genDataV1(date1, dateN){
@@ -103,11 +97,11 @@ def genDataV1(date1, dateN){
 }
 ```
 
-When using ETL tools lik Python, MySQL, Java, or middleware like Kettle, the processing is often limited due to its single-threaded nature. When the similar logic is applied to the ETL process in DolphinDB, it takes up to 4.5 hours to process trade data of 20 trading days. In the following part we will analyze the performance bottleneck and demonstrate how to optimize the script.
+ETL tools like Python, MySQL, Java, or middleware like Kettle often have limited processing performance because they only utilize the computing resources of one data node. When similar logic is applied to an ETL process in DolphinDB, it takes up to 4.5 hours to process 20 days of trade data. In the following section, we will analyze the performance bottlenecks and demonstrate how to optimize the script to improve efficiency.
 
 ### 2.2 Bottleneck Analysis
 
-The performances bottleneck of the ETL process mainly lie in:
+The performance bottlenecks of the ETL process mainly lie in:
 
 (1) Nested loops
 
@@ -121,13 +115,13 @@ t = O(N) * O(M) * t0 = O(MN) * t0
 - M: number of stocks
 - t0: execution time (in seconds) of the innermost loop
 
-The execution time of the innermost loop is about 400 ms (i.e., 0.4 seconds), and the elapsed time for the full script is estimated to be `t ~= 20 * 0.4 * 3000 = 6.7 hours`.
+The execution time of the innermost loop is about 0.4 seconds, and the elapsed time for the full script is estimated to be `t ~= 20 * 0.4 * 3000 = 6.7 hours`.
 
-(2) Repeated queries
+(2) Repeated data access
 
 As shown above, the transformation script repeatedly operates on the same dataset, causing higher round-trip time. However, some operations, such as data filtering and sorting, can be done within one query.
 
-(3) Calculation on one data node
+(3) Computing is conducted on only one data node
 
 Starting from the assignment statement for "tradingdf":
 
@@ -159,7 +153,7 @@ For the time series data that is divided into partitions (based on the temporal 
 
 - Columnar storage
 
-For example, table "snapshot" contains hundreds of columns, but only a few of them are needed for an aggregate query. DolphinDB's OLAP storage engine adopts columnar storage, enabling users to access only the required columns, which greatly reduces the disk I/O.
+For example, a table contains hundreds of columns, but only a few of them are needed for an aggregate query. DolphinDB databases adopt columnar storage, enabling users to access only the required columns, which greatly reduces the disk I/O.
 
 - Indexing
 
@@ -167,7 +161,7 @@ An index is a data structure used to provide quick access to the table based on 
 
 ### 3.2 Processing Speed
 
-To improve the efficiency of batch processing, you can set a proper batch size and apply multithreaded and distributed computing.
+To improve the efficiency of batch processing, you can set a proper batch size and apply multithreading and distributed computing.
 
 - Proper batch size
 
@@ -175,11 +169,11 @@ DolphinDB manages historical data for batching processing on a partition basis. 
 
 - Multithreading
 
-DolphinDB makes extensive use of multithreading. Specifically, for a distributed SQL query, multiple threads (localExecutors configuration parameter) are applied to concurrent processing of partitioned data.
+DolphinDB makes extensive use of multithreading. Specifically, for a distributed SQL query, multiple threads can be applied to concurrent processing of partitioned data.
 
 - Distributed computing
 
-In DolphinDB, you can deploy a horizontally scalable distributed cluster with multiple servers where distributed transactions are supported. When a distributed SQL query is executed, distributed computing is performed through the Map-Reduce-Merge model. In the Map phase, nodes in the cluster are automatically scheduled to make full use of the hardware resources of the cluster.
+DolphinDB leverages distributed computing in multi-machine clusters. When querying a DFS table, a distributed SQL statement employs a Map-Reduce-Merge model to enable distributed computation. During the Map phase, the query is automatically split into tasks that are assigned to the nodes in the cluster to maximize the utilization of the cluster's hardware resources.
 
 ## 4. Optimized ETL Process
 
@@ -225,7 +219,7 @@ for(aDate in allDays){
 }
 ```
 
-The script takes about 40 seconds to process one day's market data of 3000 stocks. Data of 20 trading days can be processed in concurrent jobs submitted by the function `submitJob`. By configuring *maxBatchJobWorker* =16 (generally it is set to the number of CPU cores), the optimized script takes only 210 seconds with its performance improved by 74 times.
+The script takes about 40 seconds to process one day’s market data of 3000 stocks. Data of 20 trading days can be processed in concurrent jobs submitted by the function `submitJob`. By configuring _maxBatchJobWorker_ =16 (generally set to the number of CPU cores), the script takes only 210 seconds, which improves the performance by 74 times.
 
 ### 4.2 Performance Analysis
 
@@ -233,19 +227,19 @@ The performance improvement is mainly due to:
 
 - Distributed computing with high parallelism
 
-The `select` statement is executed in parallel, and the parallelism depends on the number of partitions and the number of available *localExecutors* in a cluster. Specifically, for the configuration environment used in this tutorial, the 3 nodes are equipped with 15 local executors each. Based on the partitioning scheme of the source table "trade", the parallelism is 20. Compared with single-threaded processing, the execution speed on data for one trading day is increased to 18 times. Furthermore, multiple tasks can be executed in parallel through `submitJob`.
+The `select` statement uses distributed and parallel execution. The degree of parallelism is 20, meaning that compared to single-threaded data processing the execution speed can be theoretically improved by 20 times. In practical tests, this enhancement is observed to be 18 times when handling data for a single trading day. Furthermore, multiple tasks can be executed in parallel through `submitJob`.
 
 - Efficient queries
 
 All the processing logic, including data filtering, data type conversion, and adding derived fields, can be done within one query. The data does not need to be accessed repeatedly.
 
-- Vectorized processing
+- Vectorization
 
-The OLAP engine adopts columnar storage, and each column is loaded into memory in the form of a vector. Therefore, vectorized processing is applied to improve the efficiency of SQL queries.
+The OLAP engine adopts columnar storage, and each column is loaded into memory in the form of a vector. Vectorization is applied to improve the efficiency of SQL queries.
 
 ## 5. Conclusion
 
-In this tutorial we explore the optimization of ETL process in DolphinDB using a practical example of SQL query tuning. By avoiding nested loops and adopting distributed and vectorized computing techniques, the optimized SQL query demonstrates a remarkable 74-fold increase in efficiency. Specifically, the ETL processing of market data for 3000 stocks over 20 trading days, which previously took over 4.5 hours, can now be completed in just 210 seconds. Theses features makes DolphinDB a highly efficient ETL tool for preprocessing on large data sets.
+In this tutorial we explore the optimization of ETL process in DolphinDB using a practical example of SQL query tuning. By avoiding nested loops and adopting distributed and vectorized computing techniques, the optimized SQL query demonstrates a remarkable 74-fold increase in efficiency. Specifically, the ETL processing of market data of 3000 stocks over 20 trading days, which previously took over 4.5 hours, can now be completed in just 210 seconds. By incorporating vectorization and leveraging the distributed, parallel processing capabilities of columnar databases, DolphinDB can serve as a highly efficient ETL tool for preprocessing large datasets.
 
 ## Recommended Reading
 
