@@ -11,7 +11,7 @@ To develop big data applications, in addition to a distributed database that can
     - [2.4 Other new features](#24-other-new-features)
   - [3. Imperative Programming](#3-imperative-programming)
   - [4. Functional Programming](#4-functional-programming)
-    - [4.1 User Defined Function & Lambda Function](#41-user-defined-function--lambda-function)
+    - [4.1 User Defined Function \& Lambda Function](#41-user-defined-function--lambda-function)
     - [4.2 Higher Order Function](#42-higher-order-function)
     - [4.3 Partial Application](#43-partial-application)
   - [5. RPC Programming](#5-rpc-programming)
@@ -63,7 +63,7 @@ timer mavg(a, window)
 Time elapsed: 12.968 ms
 ```
 
-Vector programming also has its limitations. First, not all operations can be conducted with vectorized computing. In machine learning and statistical analysis, there are numerious occasions where we can only process data through iteration sentence by sentence instead of vectorization. To improve system performance in these situations, you can use DolphinDB just-in-time (JIT) compilation version, which dynamically compiles script to machine code.
+Vector programming also has its limitations. First, not all operations can be conducted with vectorized computing. In machine learning and statistical analysis, there are numerious occasions where we can only process data through iteration sentence by sentence instead of vectorization. <!-- To improve system performance in these situations, you can use DolphinDB just-in-time (JIT) compilation version, which dynamically compiles script to machine code. -->
 
 Second, languages like MATLAB and R usually load an entire vector into a contiguous memory block. Sometimes large segments of contiguous memory may not be found due to the memory fragmentation problem. DolphinDB introduces big array to handle this problem. Big array can represent a vector with segmented memory blocks. Whether the system uses big array is dynamically determined and transparent to users. Usually, compared with contiguous memory, the performance loss is 1%~5% for scanning a big array and 20%~30% for random access. DolphinDB sacrifices acceptable performance for improved system availability in return.
 
