@@ -5,9 +5,34 @@
   - [2. Importing Data from kdb+ to DolphinDB](#2-importing-data-from-kdb-to-dolphindb)
   - [3. DolphinDB Reference for kdb+ Users](#3-dolphindb-reference-for-kdb-users)
     - [3.1 Datatypes](#31-datatypes)
+      - [3.1.1 Basic Datatypes](#311-basic-datatypes)
+      - [3.1.2 Other Datatypes](#312-other-datatypes)
+      - [3.1.3 Data Type Checking Functions](#313-data-type-checking-functions)
     - [3.2 Keywords by Category](#32-keywords-by-category)
+      - [3.2.1 control](#321-control)
+      - [3.2.2 env](#322-env)
+      - [3.2.3 interpret](#323-interpret)
+      - [3.2.4 join](#324-join)
+      - [3.2.5 list](#325-list)
+      - [3.2.6 logic](#326-logic)
+      - [3.2.7 math](#327-math)
+      - [3.2.8 meta](#328-meta)
+      - [3.2.9 query](#329-query)
+      - [3.2.10 sort](#3210-sort)
+      - [3.2.11 table](#3211-table)
+      - [3.2.12 text](#3212-text)
+      - [3.2.13 User-Defined Functions](#3213-user-defined-functions)
     - [3.3 Overloaded Glyphs and Operators](#33-overloaded-glyphs-and-operators)
+      - [3.3.1 `.` dot](#331--dot)
+      - [3.3.2 `@` at](#332--at)
+      - [3.3.3 `$` dollar](#333--dollar)
+      - [3.3.4 `!` bang](#334--bang)
+      - [3.3.5 `?` query](#335--query)
+      - [3.3.6 `##` hash](#336--hash)
+      - [3.3.7 Operators](#337-operators)
     - [3.4 Iterators](#34-iterators)
+      - [3.4.1 `'` quote](#341--quote)
+      - [3.4.2 Other Iterators](#342-other-iterators)
     - [3.5 Evaluation Control](#35-evaluation-control)
 
 ## 1. Overview
@@ -387,7 +412,7 @@ def func(x=1): x+1;
 def i2t(mutable tb) { return tb.replaceColumn!(`time, time(tb.time/10); }
 ```
 
-<!-- - DolphinDB user-defined functions supports JIT compilation for performance optimization. -->
+- DolphinDB user-defined functions supports JIT compilation for performance optimization.
 - In DolphinDB, user-defined functions can call built-in functions in various forms: 
   - standard function call format: <func>(parameters)
   - object-method call format: x.<func>(parameters) where x is the first parameter. 
