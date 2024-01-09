@@ -1,5 +1,11 @@
 # DolphinDB Tutorials
 
+============================================================================================
+
+> Note: This README file contains DolphinDB tutorials for DolphinDB Server version **2.00.10** and earlier. As of version **2.00.11**, this file is no longer maintained. For documentation and tutorials on the latest DolphinDB Server, please refer to the new [DolphinDB Documentation](https://docs.dolphindb.com/en/index.html).
+
+============================================================================================
+
 ## Installation and Deployment
 - [DolphinDB User Guide](dolphindb_user_guide.md)
 - [DolphinDB Standalone Deployment](standalone_deployment.md)
