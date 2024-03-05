@@ -2,9 +2,8 @@
 
 For high frequency data in financial markets, each record typically holds the information of a stock at a specific timestamp. We often need to rearrange a column (or the calculation results involving multiple columns) into a matrix or table with the timestamps as row labels and security IDs as column labels. This operation (referred to as "pivoting") can be achieved with the SQL `pivot by` keyword or the `pivot` function in DolphinDB. The result can be used in vector operations for optimal performance.
 
-- [High Frequency Data Analysis: Working with Pivoting](#high-frequency-data-analysis-working-with-pivoting)
-  - [1. Calculating Pairwise Correlations of Stock Returns](#1-calculating-pairwise-correlations-of-stock-returns)
-  - [2. IOPV Calculation](#2-iopv-calculation)
+- [1. Calculating Pairwise Correlations of Stock Returns](#1-calculating-pairwise-correlations-of-stock-returns)
+- [2. IOPV Calculation](#2-iopv-calculation)
 
 ## 1. Calculating Pairwise Correlations of Stock Returns
 

@@ -1,31 +1,26 @@
-Feature Engineering for Stock Volatility Prediction
-====
-The Unified Stream and Batch Processing Framework in DolphinDB
----
+# Feature Engineering for Stock Volatility Prediction
 
 This article introduces how to conduct [feature engineering](https://en.wikipedia.org/wiki/Feature_engineering) for model training and prediction in DolphinDB. Inspired by the [1st place solution](https://www.kaggle.com/competitions/optiver-realized-volatility-prediction/discussion/274970) of the time series prediction competition [Kaggle Optiver Realized Volatility Prediction](https://www.kaggle.com/c/optiver-realized-volatility-prediction), we propose a solution applicable to both batch and stream processing in DolphinDB to fit in comprehensive machine learning application scenarios. The comparison shows that DolphinDB delivers about 30x performance improvement than Python pandas.
 
->  The examples in this tutorial use DolphinDB server (Enterprise Edition) 2.00.6 and above.
+**Note**: The examples in this tutorial use DolphinDB server (Enterprise Edition) 2.00.6 and above.
 
-- [Feature Engineering for Stock Volatility Prediction](#feature-engineering-for-stock-volatility-prediction)
-  - [The Unified Stream and Batch Processing Framework in DolphinDB](#the-unified-stream-and-batch-processing-framework-in-dolphindb)
-  - [1. Snapshot Market Data](#1-snapshot-market-data)
-  - [2. Feature Engineering](#2-feature-engineering)
-    - [2.1 Technical Indicators](#21-technical-indicators)
-    - [2.2 Derived Features](#22-derived-features)
-  - [3. DolphinDB Metaprogramming](#3-dolphindb-metaprogramming)
-    - [3.1 Calculation of Indicators](#31-calculation-of-indicators)
-    - [3.2 Calculation of Derived Features](#32-calculation-of-derived-features)
-  - [4. DolphinDB vs Python](#4-dolphindb-vs-python)
-  - [5. Modeling](#5-modeling)
-    - [5.1 Data Processing](#51-data-processing)
-    - [5.2 Train Test Split](#52-train-test-split)
-    - [5.3 Training and Evaluation](#53-training-and-evaluation)
-  - [6. Stream Processing](#6-stream-processing)
-    - [6.1 Streaming Framework](#61-streaming-framework)
-    - [6.2 Latency](#62-latency)
-  - [7. Conclusion](#7-conclusion)
-  - [Appendices](#appendices)
+- [1. Snapshot Market Data](#1-snapshot-market-data)
+- [2. Feature Engineering](#2-feature-engineering)
+  - [2.1 Technical Indicators](#21-technical-indicators)
+  - [2.2 Derived Features](#22-derived-features)
+- [3. DolphinDB Metaprogramming](#3-dolphindb-metaprogramming)
+  - [3.1 Calculation of Indicators](#31-calculation-of-indicators)
+  - [3.2 Calculation of Derived Features](#32-calculation-of-derived-features)
+- [4. DolphinDB vs Python](#4-dolphindb-vs-python)
+- [5. Modeling](#5-modeling)
+  - [5.1 Data Processing](#51-data-processing)
+  - [5.2 Train Test Split](#52-train-test-split)
+  - [5.3 Training and Evaluation](#53-training-and-evaluation)
+- [6. Stream Processing](#6-stream-processing)
+  - [6.1 Streaming Framework](#61-streaming-framework)
+  - [6.2 Latency](#62-latency)
+- [7. Conclusion](#7-conclusion)
+- [Appendices](#appendices)
 
 ## 1. Snapshot Market Data
 

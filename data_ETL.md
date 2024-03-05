@@ -4,23 +4,19 @@ Extract, transform, and load (ETL) is a data integration process which first ext
 
 When utilizing traditional tech stacks like Python, MySQL, and Java as ETL tools, it's common for users to experience performance limitations as the volume of data grows, particularly when processing high-frequency trading data. In this tutorial, we will show you how to implement an ETL process and enhance its performance with SQL tuning techniques using DolphinDB. Our optimized script reduces the processing time from 4.5 hours to 3.5 minutes, with the performance improved by over 70 times.
 
-- [DolphinDB ETL Tuning: From 4.5 Hours to 3.5 Minutes](#dolphindb-etl-tuning-from-45-hours-to-35-minutes)
-  - [1. Scenario and Data Preparation](#1-scenario-and-data-preparation)
-    - [1.1 Data Preparation](#11-data-preparation)
-    - [1.2 Business Requirements](#12-business-requirements)
-    - [1.3 Environment](#13-environment)
-  - [2. ETL Process](#2-etl-process)
-    - [2.1 ETL Design](#21-etl-design)
-    - [2.2 Bottleneck Analysis](#22-bottleneck-analysis)
-  - [3. Performance Tuning](#3-performance-tuning)
-    - [3.1 Space Complexity](#31-space-complexity)
-    - [3.2 Processing Speed](#32-processing-speed)
-  - [4. Optimized ETL Process](#4-optimized-etl-process)
-    - [4.1 Optimized Script](#41-optimized-script)
-    - [4.2 Performance Analysis](#42-performance-analysis)
-  - [5. Conclusion](#5-conclusion)
-  - [Recommended Reading](#recommended-reading)
-  - [Appendices](#appendices)
+- [1. Data Preparation](#1-data-preparation)
+- [2. ETL Process](#2-etl-process)
+  - [2.1 ETL Design](#21-etl-design)
+  - [2.2 Bottleneck Analysis](#22-bottleneck-analysis)
+- [3. Performance Tuning](#3-performance-tuning)
+  - [3.1 Space Complexity](#31-space-complexity)
+  - [3.2 Processing Speed](#32-processing-speed)
+- [4. Optimized ETL Process](#4-optimized-etl-process)
+  - [4.1 Optimized Script](#41-optimized-script)
+  - [4.2 Performance Analysis](#42-performance-analysis)
+- [5. Conclusion](#5-conclusion)
+- [Recommended Reading](#recommended-reading)
+- [Appendices](#appendices)
 
 ## 1. Data Preparation
 
